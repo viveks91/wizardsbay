@@ -25,7 +25,7 @@ server:
   type: simple
   connector:
     type: http
-    port: 8080
+    port: 8100
 
 # Logging settings.
 logging:
