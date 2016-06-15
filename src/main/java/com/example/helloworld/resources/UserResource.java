@@ -21,9 +21,7 @@ import javax.ws.rs.core.Response;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.Set;
-/**
- * Created by amala on 14/06/16.
- */
+
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
