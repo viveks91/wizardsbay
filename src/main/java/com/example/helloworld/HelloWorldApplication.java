@@ -1,19 +1,25 @@
 package com.example.helloworld;
 
 import com.example.helloworld.cli.RenderCommand;
+import com.example.helloworld.core.Person;
 import com.example.helloworld.core.Template;
 import com.example.helloworld.resources.HelloWorldResource;
+import com.example.helloworld.db.UserDAO;
+import com.example.helloworld.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.hibernate.HibernateBundle;
+import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
+import org.skife.jdbi.v2.DBI;
 
 import java.util.Map;
 
@@ -21,6 +27,14 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
     public static void main(String[] args) throws Exception {
         new HelloWorldApplication().run(args);
     }
+
+    private final HibernateBundle<HelloWorldConfiguration> hibernateBundle =
+        new HibernateBundle<HelloWorldConfiguration>(Person.class) {
+            @Override
+            public DataSourceFactory getDataSourceFactory(HelloWorldConfiguration configuration) {
+                return configuration.getDataSourceFactory();
+            }
+        };
 
     @Override
     public String getName() {
@@ -62,8 +76,11 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
     }
 
     @Override
-    public void run(HelloWorldConfiguration configuration, Environment environment) {
+    public void run(HelloWorldConfiguration configuration, Environment environment) throws ClassNotFoundException {
         final Template template = configuration.buildTemplate();
-        environment.jersey().register(new HelloWorldResource(template));
+        final DBIFactory factory = new DBIFactory();
+        final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
+        final UserDAO userDao = jdbi.onDemand(UserDAO.class);
+        environment.jersey().register(new UserResource(userDao));
     }
 }

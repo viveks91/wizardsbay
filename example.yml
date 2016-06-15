@@ -5,20 +5,15 @@ swagger:
 
 defaultName: ${DW_DEFAULT_NAME:-Stranger}
 
-# Database settings.
+
 database:
-
-  # the name of your JDBC driver
-  driverClass: org.h2.Driver
-
-  # the username
-  user: sa
-
-  # the password
-  password: sa
-
-  # the JDBC URL
-  url: jdbc:h2:./target/example
+  driverClass: org.postgresql.Driver
+  url: jdbc:postgresql://localhost/wizards
+  user: user
+  password: password
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
 # use the simple server factory if you only want to run on a single port
 server:
