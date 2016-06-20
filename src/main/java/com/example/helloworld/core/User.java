@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
-import java.security.Principal;
+
 
 import java.util.Objects;
 
-@JsonIgnoreProperties({"address"})
-public class User implements Principal {
+
+public class User{
 
     @JsonProperty
     @NotEmpty
@@ -40,8 +40,6 @@ public class User implements Principal {
     public User(String username) {
         this.username = username;
     }
-
-
 
     public int getId() {
         return id;
@@ -96,10 +94,6 @@ public class User implements Principal {
         return Objects.hash(username, password, firstname, lastname, address);
     }
 
-    @Override
-    public String getName() {
-        return username;
-    }
 
     @Override
     public boolean equals(Object o) {
