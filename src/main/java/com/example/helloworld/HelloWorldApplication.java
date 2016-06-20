@@ -1,10 +1,12 @@
 package com.example.helloworld;
 
 import com.example.helloworld.cli.RenderCommand;
-import com.example.helloworld.core.Person;
 import com.example.helloworld.core.Template;
+import com.example.helloworld.core.User;
+import com.example.helloworld.db.ItemDAO;
 import com.example.helloworld.resources.HelloWorldResource;
 import com.example.helloworld.db.UserDAO;
+import com.example.helloworld.resources.ItemResource;
 import com.example.helloworld.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
@@ -28,13 +30,13 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         new HelloWorldApplication().run(args);
     }
 
-    private final HibernateBundle<HelloWorldConfiguration> hibernateBundle =
-        new HibernateBundle<HelloWorldConfiguration>(Person.class) {
-            @Override
-            public DataSourceFactory getDataSourceFactory(HelloWorldConfiguration configuration) {
-                return configuration.getDataSourceFactory();
-            }
-        };
+//    private final HibernateBundle<HelloWorldConfiguration> hibernateBundle =
+//        new HibernateBundle<HelloWorldConfiguration>(User.class) {
+//            @Override
+//            public DataSourceFactory getDataSourceFactory(HelloWorldConfiguration configuration) {
+//                return configuration.getDataSourceFactory();
+//            }
+//        };
 
     @Override
     public String getName() {
@@ -82,5 +84,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
         environment.jersey().register(new UserResource(userDao));
+        final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
+        environment.jersey().register(new ItemResource(itemDao));
     }
 }
