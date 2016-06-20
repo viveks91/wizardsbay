@@ -1,26 +1,16 @@
 package com.example.helloworld.resources;
 
 import io.dropwizard.hibernate.UnitOfWork;
-import io.dropwizard.jackson.Jackson;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.example.helloworld.exception.ResponseException;
-import com.example.helloworld.auth.ExampleAuthenticator;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
 
 
-
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.security.SecureRandom;
-import java.util.Random;
-import java.util.Set;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,16 +28,11 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public JsonNode post(User user) {
+    public User post(User user) {
         User existingUser = userDao.retrieve(user.getUsername());
         if (existingUser == null) {
-            String password = user.getPassword();
-            user.setPassword(password);
-
-            user.setFirstname("alice");
-            user.setLastname("wonderland");
-            user.setAddress("223 sky villa");
             userDao.create(user.getUsername(), user.getPassword(), user.getFirstname(), user.getLastname() , user.getAddress());
+            existingUser = userDao.retrieve(user.getUsername());
         }
         else {
             String sentPassword = user.getPassword();
@@ -58,9 +43,9 @@ public class UserResource {
         }
 
         //Session session = sessionDao.createSession(user.getEmail());
-        ObjectNode object = (ObjectNode)Jackson.newObjectMapper().convertValue(user, JsonNode.class);
+        //ObjectNode object = (ObjectNode)Jackson.newObjectMapper().convertValue(user, JsonNode.class);
         //object.put("session", session.getSession());
-        return object;
+        return existingUser;
     }
 
 //    @PUT
@@ -100,17 +85,17 @@ public class UserResource {
         return user;
     }
 
-//    @DELETE
-//    @Timed
-//    @UnitOfWork
-//    @ExceptionMetered
-//    public String delete(User existingUser, @HeaderParam("Authorization") String sessionToken) {
-//        if (existingUser.getUsername().equals("admin")) {
-//            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "You cannot delete the admin user");
-//        }
-//        userDao.delete(existingUser);
-//        return "{}";
-//    }
+    @DELETE
+    @Timed
+    @UnitOfWork
+    @ExceptionMetered
+    public String delete(User existingUser) {
+        if (existingUser.getUsername().equals("admin")) {
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "You cannot delete the admin user");
+        }
+        userDao.delete(existingUser);
+        return "{}";
+    }
 
     @OPTIONS
     @Timed
