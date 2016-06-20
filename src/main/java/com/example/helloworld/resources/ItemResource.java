@@ -3,7 +3,6 @@ package com.example.helloworld.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.example.helloworld.core.Item;
-import com.example.helloworld.core.User;
 import com.example.helloworld.db.ItemDAO;
 import com.example.helloworld.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -12,10 +11,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-
-/**
- * Created by amala on 16/06/16.
- */
 
 @Path("/item")
 @Produces(MediaType.APPLICATION_JSON)

@@ -1,7 +1,3 @@
-/**
- * Created by amala on 14/06/16.
- */
-
 package com.example.helloworld.resources;
 
 import io.dropwizard.hibernate.UnitOfWork;
