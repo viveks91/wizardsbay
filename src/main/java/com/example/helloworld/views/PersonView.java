@@ -1,3 +1,4 @@
+/*
 package com.example.helloworld.views;
 
 import com.example.helloworld.core.Person;
@@ -30,3 +31,4 @@ public class PersonView extends View {
         return person;
     }
 }
+*/
