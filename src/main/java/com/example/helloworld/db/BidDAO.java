@@ -10,6 +10,7 @@ import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -44,5 +45,14 @@ public interface BidDAO {
     //> purpose of this method?
     @SqlQuery("select id, itemId, bidder, bidAmount from bids limit :limit offset :offset")
     public Set<User> list(@Bind("limit") int limit, @Bind("offset") int offset);
+
+    //return the history of bids for a certain item
+    @SqlQuery("select * from bids where itemid = :itemid")
+    public List<Bid> findBidsByItemId(@Bind("itemid")int itemid);
+
+    //find bid by id
+    @SqlQuery("select * from bids where id = :id")
+    public Bid findItemById(@Bind("id") int id);
+
 
 }
