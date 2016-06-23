@@ -19,18 +19,10 @@ import java.util.Set;
 public interface FeedbackDAO {
 
     @SqlUpdate("insert into feedback (userId, desc) values (:userId, :desc)")
-    public void create(@Bind("userId") int userId, @Bind("desc") String desc);
+    public Feedback create(@Bind("userId") int userId, @Bind("desc") String desc);
 
-
-    //> How do we retrieve and what would we want to retrieve? A set of feedback for a particular user?
     @SqlQuery("select desc from feedback where userId = :userId")
     public Set<Feedback> retrieve(@Bind("userId") int userId);
-
-
-    //> Should we even be able to update feedback?
-    @SqlUpdate("update feedback set desc = :desc where id = :id")
-    public void update(@Bind("desc") String desc);
-
 
     //> Delete feedback by unique id
     @SqlUpdate("delete from feedback where id = :id")

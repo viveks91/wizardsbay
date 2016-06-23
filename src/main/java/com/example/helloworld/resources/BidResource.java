@@ -3,7 +3,9 @@ package com.example.helloworld.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.example.helloworld.core.Bid;
+import com.example.helloworld.core.Item;
 import com.example.helloworld.db.BidDAO;
+import com.example.helloworld.db.ItemDAO;
 import com.example.helloworld.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -33,24 +35,28 @@ public class BidResource {
     @UnitOfWork
     @ExceptionMetered
     public Bid post(Bid bid) {
+        //> How can I access the item associated with this bid?
+
         List<Bid> bidList = get(bid.getItemId());
+
         if (bidList.isEmpty()) {
-            bidDao.create(bid.getId(), bid.getBidder(), bid.getBidAmount());
+            bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
             Bid existingBid = bidDao.retrieve(bid.getId());
             return existingBid;
         }
         // should get the last index of the list which should be the highest bid
         Bid highest = bidList.get(bidList.size());
         if (bid.getBidAmount() > highest.getBidAmount()) {
-            bidDao.create(bid.getId(), bid.getBidder(), bid.getBidAmount());
+            bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
             Bid existingBid = bidDao.retrieve(bid.getId());
             return existingBid;
         }
         // don't know if this is the right thing to do here.
+        // if the given bid was invalid, just return the highest bid. Or should I throw an exception?
         return highest;
     }
 
-    //get all bids on an item
+    //get all bids for a given item
     @GET
     @Path("/history/{itemId}")
     @Timed
