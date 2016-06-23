@@ -3,11 +3,11 @@ package com.example.helloworld;
 import com.example.helloworld.cli.RenderCommand;
 import com.example.helloworld.core.Template;
 import com.example.helloworld.core.User;
+import com.example.helloworld.db.BidDAO;
+import com.example.helloworld.db.FeedbackDAO;
 import com.example.helloworld.db.ItemDAO;
-import com.example.helloworld.resources.HelloWorldResource;
+import com.example.helloworld.resources.*;
 import com.example.helloworld.db.UserDAO;
-import com.example.helloworld.resources.ItemResource;
-import com.example.helloworld.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
@@ -86,5 +86,9 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         environment.jersey().register(new UserResource(userDao));
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));
+        final BidDAO bidDao = jdbi.onDemand(BidDAO.class);
+        environment.jersey().register(new BidResource(bidDao));
+        final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
+        environment.jersey().register(new FeedbackResource(feedbackDao));
     }
 }

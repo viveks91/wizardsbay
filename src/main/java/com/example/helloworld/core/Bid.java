@@ -27,7 +27,7 @@ public class Bid {
 
     @JsonProperty
     @NotEmpty
-    private BigDecimal bidAmount;
+    private int bidAmount;
 
     public Bid(){}
 
@@ -55,11 +55,11 @@ public class Bid {
         this.bidder = bidder;
     }
 
-    public BigDecimal getBidAmount() {
+    public int getBidAmount() {
         return bidAmount;
     }
 
-    public void setBidAmount(BigDecimal bidAmount) {
+    public void setBidAmount(int bidAmount) {
         this.bidAmount = bidAmount;
     }
 
@@ -78,7 +78,7 @@ public class Bid {
         if (id != bid.id) return false;
         if (itemId != bid.itemId) return false;
         if (bidder != bid.bidder) return false;
-        return bidAmount != null ? bidAmount.equals(bid.bidAmount) : bid.bidAmount == null;
+        return bidAmount == bid.bidAmount;
 
     }
 

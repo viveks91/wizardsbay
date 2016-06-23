@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by susannaedens on 6/21/16.
  */
-@Path("/bid")
+@Path("/bids")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BidResource {
@@ -26,21 +26,31 @@ public class BidResource {
         this.bidDao = bidDao;
     }
 
-    //Create bid
+    //Create bid only if given bid is higher than the current bid on the item
+    // OR if it is the first bid on an item
     @POST
     @Timed
     @UnitOfWork
     @ExceptionMetered
     public Bid post(Bid bid) {
-        Bid existingBid = bidDao.retrieve(bid.getId());
-        if(existingBid == null){
+        List<Bid> bidList = get(bid.getItemId());
+        if (bidList.isEmpty()) {
             bidDao.create(bid.getId(), bid.getBidder(), bid.getBidAmount());
-            existingBid = bidDao.retrieve(bid.getId());
+            Bid existingBid = bidDao.retrieve(bid.getId());
+            return existingBid;
         }
-        return existingBid;
+        // should get the last index of the list which should be the highest bid
+        Bid highest = bidList.get(bidList.size());
+        if (bid.getBidAmount() > highest.getBidAmount()) {
+            bidDao.create(bid.getId(), bid.getBidder(), bid.getBidAmount());
+            Bid existingBid = bidDao.retrieve(bid.getId());
+            return existingBid;
+        }
+        // don't know if this is the right thing to do here.
+        return highest;
     }
 
-    //get all items listed by a seller
+    //get all bids on an item
     @GET
     @Path("/history/{itemId}")
     @Timed
@@ -70,7 +80,7 @@ public class BidResource {
     @ExceptionMetered
     public String delete(@PathParam("bidId") int bidId) {
         //> Would we ever need to delete a bid? Maybe delete all bids from a given item after the auction is over
-        //> and the buyer has been notified. 
+        //> and the buyer has been notified.
 //        Bid bid = bidDao.findItemById(bidId);
 //        if (bid == null) {
 //            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Bid not found");

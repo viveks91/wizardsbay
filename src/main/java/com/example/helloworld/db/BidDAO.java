@@ -21,7 +21,7 @@ import java.util.Set;
 public interface BidDAO {
 
     @SqlUpdate("insert into bids (itemId, bidder, bidAmount) values (:itemId, :bidder, :bidAmount)")
-    public void create(@Bind("itemId") int itemId, @Bind("bidder") int bidder, @Bind("bidAmount") BigDecimal bidAmount);
+    public void create(@Bind("itemId") int itemId, @Bind("bidder") int bidder, @Bind("bidAmount") int bidAmount);
 
 
     //> retrieve by itemId because each item only has one bid? Or if we're creating bids for each new bid use
@@ -36,7 +36,7 @@ public interface BidDAO {
     //> Should we update the bid if there's a new higher bidder or do we just create a new one?
     //> If we create a new one there should be no reason to have an update method...
     @SqlUpdate("update bids set bidder = :bidder, bidAmount = :bidAmount where itemId = :itemId")
-    public void update(@Bind("bidder") int bidder, @Bind("bidAmount") BigDecimal bidAmount);
+    public void update(@Bind("bidder") int bidder, @Bind("bidAmount") int bidAmount);
 
     //> Delete bid by unique id
     @SqlUpdate("delete from bids where id = :id")

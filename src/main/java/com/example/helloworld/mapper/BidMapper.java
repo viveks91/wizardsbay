@@ -18,7 +18,7 @@ public class BidMapper implements ResultSetMapper<Bid> {
         bid.setId(resultSet.getInt("id"));
         bid.setItemId(resultSet.getInt("itemId"));
         bid.setBidder(resultSet.getInt("bidder"));
-        bid.setBidAmount(resultSet.getBigDecimal("bidAmount"));
+        bid.setBidAmount(resultSet.getInt("bidAmount"));
         return bid;
     }
 
