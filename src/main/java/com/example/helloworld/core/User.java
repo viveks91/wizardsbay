@@ -7,12 +7,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
-
+import com.google.common.base.Optional;
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.Authenticator;
+import io.dropwizard.auth.basic.BasicCredentials;
 
 import java.util.Objects;
+import java.security.Principal;
 
-
-public class User{
+public class User implements Principal{
 
     @JsonProperty
     @NotEmpty
@@ -87,6 +90,10 @@ public class User{
 
     public String getAddress() {
         return address;
+    }
+    
+    public String getName() {
+        return username;
     }
 
     @Override

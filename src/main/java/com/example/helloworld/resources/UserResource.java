@@ -9,8 +9,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.example.helloworld.exception.ResponseException;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
-
-
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.Authenticator;
+import io.dropwizard.auth.basic.BasicCredentials;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import com.example.helloworld.auth.ExampleAuthenticator;
+import io.dropwizard.auth.AuthFilter;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.AuthValueFactoryProvider.Binder;
+import io.dropwizard.auth.Auth;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -83,14 +91,14 @@ public class UserResource {
 
         return existingUser;
     }
-
+	
     @GET
     @Path("/{username}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
     //Get user by username
-    public User get(@PathParam("username") String username) {
+    public User get(@PathParam("username") String username, @Auth User auth_user) {
         User user = userDao.retrieve(username);
         System.out.println(user);
         return user;
