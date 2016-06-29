@@ -1,7 +1,7 @@
 package com.example.helloworld.db;
 
 import com.example.helloworld.core.User;
-import com.example.helloworld.mapper.*;
+import com.example.helloworld.mapper.UserMapper;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
