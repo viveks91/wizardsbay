@@ -8,14 +8,93 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet id="1" author="wizards" dbms="postgresql">
-        <createTable tableName="people">
-            <column name="id" type="bigint" autoIncrement="true">
+
+        <createTable tableName="users">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="fullName" type="varchar(255)">
+            <column name="username" type="varchar">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="password" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="jobTitle" type="varchar(255)"/>
+            <column name="firstname" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastname" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="varchar">
+              <constraints nullable="false"/>
+            </column>
         </createTable>
+
+
+        <createTable tableName="items">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="itemname" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="itemdesc" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="buyer" type="int" defaultValue="NULL">
+                <constraints foreignKeyName="fk_item_buyer" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="seller" type="int">
+                <constraints foreignKeyName="fk_item_seller" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="auctionstarttime" type="timestamp" defaultValue="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="auctionendtime" type="timestamp" defaultValue="NULL"/>
+            <column name="minprice" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="bids">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="bidder" type="int">
+                <constraints foreignKeyName="fk_bids_bidder" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="itemid" type="int">
+                <constraints foreignKeyName="fk_bids_itemid" nullable="false" referencedTableName="items" referencedColumnNames="id"/>
+            </column>
+            <column name="bidtime" type="timestamp" defaultValue="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bidamount" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="feedback">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="userid" type="int">
+                <constraints foreignKeyName="fk_feedback_userid" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="rating" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="feedbackdesc" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="timestamp" defaultValue="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
     </changeSet>
+
+    
 </databaseChangeLog>
