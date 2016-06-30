@@ -1,5 +1,6 @@
 package com.example.helloworld;
 
+import com.example.helloworld.core.User;
 import com.example.helloworld.cli.RenderCommand;
 import com.example.helloworld.core.Template;
 import com.example.helloworld.db.ItemDAO;
