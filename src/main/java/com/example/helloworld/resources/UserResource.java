@@ -88,8 +88,8 @@ public class UserResource {
     @ExceptionMetered
     //Get user by username
     public User get(@PathParam("username") String username, @Auth User auth_user) {
+        System.out.println(auth_user);
         User user = userDao.retrieve(username);
-        System.out.println(user);
         return user;
     }
 

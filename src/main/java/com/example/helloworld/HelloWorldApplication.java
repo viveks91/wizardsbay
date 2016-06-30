@@ -83,12 +83,6 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 
     @Override
     public void run(HelloWorldConfiguration configuration, Environment environment) throws ClassNotFoundException {
-        environment.jersey().register(new AuthDynamicFeature(
-            new BasicCredentialAuthFilter.Builder<User>()
-                .setAuthenticator(new ExampleAuthenticator())
-                .setRealm("SUPER SECRET STUFF")
-                .buildAuthFilter()));
-        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
         final Template template = configuration.buildTemplate();
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
@@ -96,5 +90,13 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         environment.jersey().register(new UserResource(userDao));
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));
+        
+        environment.jersey().register(new AuthDynamicFeature(
+            new BasicCredentialAuthFilter.Builder<User>()
+                .setAuthenticator(new ExampleAuthenticator(userDao))
+                .setRealm("Needs Authentication")
+                .buildAuthFilter()));
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
+        
     }
 }
