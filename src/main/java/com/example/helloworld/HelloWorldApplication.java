@@ -2,9 +2,7 @@ package com.example.helloworld;
 
 import com.example.helloworld.cli.RenderCommand;
 import com.example.helloworld.core.Template;
-import com.example.helloworld.core.User;
 import com.example.helloworld.db.ItemDAO;
-import com.example.helloworld.resources.HelloWorldResource;
 import com.example.helloworld.db.UserDAO;
 import com.example.helloworld.resources.ItemResource;
 import com.example.helloworld.resources.UserResource;
@@ -14,7 +12,6 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;

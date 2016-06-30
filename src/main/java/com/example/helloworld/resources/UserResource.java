@@ -1,24 +1,13 @@
 package com.example.helloworld.resources;
 
-import io.dropwizard.hibernate.UnitOfWork;
-import io.dropwizard.jackson.Jackson;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.example.helloworld.exception.ResponseException;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
-import io.dropwizard.auth.AuthenticationException;
-import io.dropwizard.auth.Authenticator;
-import io.dropwizard.auth.basic.BasicCredentials;
-import io.dropwizard.auth.AuthDynamicFeature;
-import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
-import com.example.helloworld.auth.ExampleAuthenticator;
-import io.dropwizard.auth.AuthFilter;
-import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.auth.AuthValueFactoryProvider.Binder;
 import io.dropwizard.auth.Auth;
+import com.example.helloworld.exception.ResponseException;
+import io.dropwizard.hibernate.UnitOfWork;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

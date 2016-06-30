@@ -3,7 +3,9 @@ package com.example.helloworld.logging;
 /**
  * Created by amala on 14/06/16.
  */
+
 import org.apache.log4j.Logger;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
