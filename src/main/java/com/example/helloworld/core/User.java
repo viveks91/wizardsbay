@@ -37,8 +37,13 @@ public class User{
 
     public User() { }
 
-    public User(String username) {
+    public User(String username, String password, String firstname, String lastname, String address) {
         this.username = username;
+        this.password = password;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.address = address;
+
     }
 
     public int getId() {
