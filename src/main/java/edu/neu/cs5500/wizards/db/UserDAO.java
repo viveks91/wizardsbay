@@ -13,10 +13,10 @@ import java.util.Set;
 @RegisterMapper(UserMapper.class)
 public interface UserDAO {
 
-    @SqlUpdate("insert into users (username, password, firstname, lastname, address) values (:username, :password, :firstname, :lastname, :address)")
-    public void create(@Bind("username") String username, @Bind("password") String password, @Bind("firstname") String firstname, @Bind("lastname") String lastname, @Bind("address") String address);
+    @SqlUpdate("insert into users (username, password, firstname, lastname, address) values (:username, :password, :firstname, :lastname, :address) RETURNING *")
+    public User create(@Bind("username") String username, @Bind("password") String password, @Bind("firstname") String firstname, @Bind("lastname") String lastname, @Bind("address") String address);
 
-    @SqlQuery("select id, username, password, firstname, lastname, address from users where username = :username")
+    @SqlQuery("select username, password, firstname, lastname, address from users where username = :username")
     public User retrieve(@Bind("username") String username);
 
     @SqlUpdate("update users set password = :password, firstname = :firstname, lastname = :lastname, address = :address where username = :username")

@@ -99,10 +99,14 @@ public class UserResource {
     @ExceptionMetered
     /* delete user by username*/
     public String delete(User existingUser) {
+        User checkUser = userDao.retrieve(existingUser.getUsername());
+        if(checkUser== null){
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "No such user exist");
+        }
         if (existingUser.getUsername().equals("admin")) {
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "You cannot delete the admin user");
         }
-            userDao.delete(existingUser);
+        userDao.delete(existingUser);
 
         return "{}";
     }
