@@ -1,19 +1,18 @@
 package com.example.helloworld;
 
+import com.example.helloworld.core.User;
 import com.example.helloworld.cli.RenderCommand;
 import com.example.helloworld.core.Template;
-import com.example.helloworld.core.User;
 import com.example.helloworld.db.ItemDAO;
-import com.example.helloworld.resources.HelloWorldResource;
 import com.example.helloworld.db.UserDAO;
 import com.example.helloworld.resources.ItemResource;
 import com.example.helloworld.resources.UserResource;
+import com.example.helloworld.auth.ExampleAuthenticator;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -22,7 +21,12 @@ import io.dropwizard.views.ViewBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import org.skife.jdbi.v2.DBI;
-
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.Authenticator;
+import io.dropwizard.auth.basic.BasicCredentials;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.auth.AuthValueFactoryProvider;
 import java.util.Map;
 
 public class HelloWorldApplication extends Application<HelloWorldConfiguration> {
@@ -86,5 +90,13 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         environment.jersey().register(new UserResource(userDao));
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));
+        
+        environment.jersey().register(new AuthDynamicFeature(
+            new BasicCredentialAuthFilter.Builder<User>()
+                .setAuthenticator(new ExampleAuthenticator(userDao))
+                .setRealm("Needs Authentication")
+                .buildAuthFilter()));
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
+        
     }
 }

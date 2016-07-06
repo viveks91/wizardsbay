@@ -36,4 +36,5 @@ public class Saying {
                 .add("content", content)
                 .toString();
     }
+
 }

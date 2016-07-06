@@ -1,18 +1,15 @@
 package com.example.helloworld.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
-
+import com.google.common.base.Optional;
 
 import java.util.Objects;
+import java.security.Principal;
 
-
-public class User{
+public class User implements Principal{
 
     @JsonProperty
     @NotEmpty
@@ -92,6 +89,10 @@ public class User{
 
     public String getAddress() {
         return address;
+    }
+    
+    public String getName() {
+        return username;
     }
 
     @Override
