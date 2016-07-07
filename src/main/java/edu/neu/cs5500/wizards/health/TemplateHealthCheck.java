@@ -1,8 +1,8 @@
 package edu.neu.cs5500.wizards.health;
 
 import com.codahale.metrics.health.HealthCheck;
-import edu.neu.cs5500.wizards.core.Template;
 import com.google.common.base.Optional;
+import edu.neu.cs5500.wizards.core.Template;
 
 public class TemplateHealthCheck extends HealthCheck {
     private final Template template;

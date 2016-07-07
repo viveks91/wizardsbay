@@ -22,15 +22,15 @@ import org.skife.jdbi.v2.DBI;
 
 import java.util.Map;
 
-public class HelloWorldApplication extends Application<HelloWorldConfiguration> {
+public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
     public static void main(String[] args) throws Exception {
-        new HelloWorldApplication().run(args);
+        new EbayCloneApplication().run(args);
     }
 
-//    private final HibernateBundle<HelloWorldConfiguration> hibernateBundle =
-//        new HibernateBundle<HelloWorldConfiguration>(User.class) {
+//    private final HibernateBundle<EbayCloneConfiguration> hibernateBundle =
+//        new HibernateBundle<EbayCloneConfiguration>(User.class) {
 //            @Override
-//            public DataSourceFactory getDataSourceFactory(HelloWorldConfiguration configuration) {
+//            public DataSourceFactory getDataSourceFactory(EbayCloneConfiguration configuration) {
 //                return configuration.getDataSourceFactory();
 //            }
 //        };
@@ -41,7 +41,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
     }
 
     @Override
-    public void initialize(Bootstrap<HelloWorldConfiguration> bootstrap) {
+    public void initialize(Bootstrap<EbayCloneConfiguration> bootstrap) {
         // Enable variable substitution with environment variables
         bootstrap.setConfigurationSourceProvider(
                 new SubstitutingSourceProvider(
@@ -51,31 +51,31 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         );
 
         //
-        bootstrap.addBundle(new SwaggerBundle<HelloWorldConfiguration>() {
+        bootstrap.addBundle(new SwaggerBundle<EbayCloneConfiguration>() {
             @Override
-            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(HelloWorldConfiguration configuration) {
+            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(EbayCloneConfiguration configuration) {
                 return configuration.swaggerBundleConfiguration;
             }
         });
 
         bootstrap.addCommand(new RenderCommand());
         bootstrap.addBundle(new AssetsBundle());
-        bootstrap.addBundle(new MigrationsBundle<HelloWorldConfiguration>() {
+        bootstrap.addBundle(new MigrationsBundle<EbayCloneConfiguration>() {
             @Override
-            public DataSourceFactory getDataSourceFactory(HelloWorldConfiguration configuration) {
+            public DataSourceFactory getDataSourceFactory(EbayCloneConfiguration configuration) {
                 return configuration.getDataSourceFactory();
             }
         });
-        bootstrap.addBundle(new ViewBundle<HelloWorldConfiguration>() {
+        bootstrap.addBundle(new ViewBundle<EbayCloneConfiguration>() {
             @Override
-            public Map<String, Map<String, String>> getViewConfiguration(HelloWorldConfiguration configuration) {
+            public Map<String, Map<String, String>> getViewConfiguration(EbayCloneConfiguration configuration) {
                 return configuration.getViewRendererConfiguration();
             }
         });
     }
 
     @Override
-    public void run(HelloWorldConfiguration configuration, Environment environment) throws ClassNotFoundException {
+    public void run(EbayCloneConfiguration configuration, Environment environment) throws ClassNotFoundException {
         final Template template = configuration.buildTemplate();
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");

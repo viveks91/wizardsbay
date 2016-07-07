@@ -1,9 +1,9 @@
 package edu.neu.cs5500.wizards.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Optional;
 import edu.neu.cs5500.wizards.api.Saying;
 import edu.neu.cs5500.wizards.core.Template;
-import com.google.common.base.Optional;
 import io.dropwizard.jersey.caching.CacheControl;
 import io.dropwizard.jersey.params.DateTimeParam;
 import io.swagger.annotations.*;
