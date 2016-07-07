@@ -16,8 +16,9 @@ public class FeedbackMapper implements ResultSetMapper<Feedback> {
     public Feedback map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
         Feedback feedback = new Feedback();
         feedback.setId(resultSet.getInt("id"));
-        feedback.setUserId(resultSet.getInt("userId"));
-        feedback.setDesc(resultSet.getString("desc"));
+        feedback.setUserId(resultSet.getInt("userid"));
+        feedback.setDesc(resultSet.getString("feedbackdesc"));
+        System.out.println("in the feedback mapper");
         return feedback;
     }
 

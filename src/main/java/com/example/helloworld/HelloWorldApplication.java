@@ -82,12 +82,16 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         final Template template = configuration.buildTemplate();
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
+
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
         environment.jersey().register(new UserResource(userDao));
+
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));
+
         final BidDAO bidDao = jdbi.onDemand(BidDAO.class);
         environment.jersey().register(new BidResource(bidDao));
+
         final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
         environment.jersey().register(new FeedbackResource(feedbackDao));
     }
