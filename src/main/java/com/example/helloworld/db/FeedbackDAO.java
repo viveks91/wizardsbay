@@ -1,8 +1,7 @@
 package com.example.helloworld.db;
 
 import com.example.helloworld.core.Feedback;
-import com.example.helloworld.core.User;
-import com.example.helloworld.mapper.*;
+import com.example.helloworld.mapper.FeedbackMapper;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -10,7 +9,6 @@ import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by susannaedens on 6/20/16.
@@ -31,6 +29,6 @@ public interface FeedbackDAO {
     //> Delete feedback by unique id
     @SqlUpdate("delete from feedback where id = :id")
     public void delete(@BindBean Feedback feedback);
-    
+
 
 }
