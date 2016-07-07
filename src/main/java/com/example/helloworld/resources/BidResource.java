@@ -3,9 +3,7 @@ package com.example.helloworld.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.example.helloworld.core.Bid;
-import com.example.helloworld.core.Item;
 import com.example.helloworld.db.BidDAO;
-import com.example.helloworld.db.ItemDAO;
 import com.example.helloworld.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -35,25 +33,22 @@ public class BidResource {
     @UnitOfWork
     @ExceptionMetered
     public Bid post(Bid bid) {
-        //> How can I access the item associated with this bid?
-
         List<Bid> bidList = get(bid.getItemId());
-
+        Bid newBid = new Bid();
         if (bidList.isEmpty()) {
             bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
-            Bid existingBid = bidDao.retrieve(bid.getId());
-            return existingBid;
+            newBid = bidDao.retrieve(bid.getId());
+        } else {
+            Bid highest = bidDao.retrieveHighestBid(bid.getItemId());
+            if (bid.getBidAmount() > highest.getBidAmount()) {
+                bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
+                newBid = bidDao.retrieve(bid.getId());
+            } else {
+                ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Your bid must be higher than current " +
+                        "highest bid: $" + highest.getBidAmount());
+            }
         }
-        // should get the last index of the list which should be the highest bid
-        Bid highest = bidList.get(bidList.size());
-        if (bid.getBidAmount() > highest.getBidAmount()) {
-            bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
-            Bid existingBid = bidDao.retrieve(bid.getId());
-            return existingBid;
-        }
-        // don't know if this is the right thing to do here.
-        // if the given bid was invalid, just return the highest bid. Or should I throw an exception?
-        return highest;
+        return newBid;
     }
 
     //get all bids for a given item
@@ -78,6 +73,18 @@ public class BidResource {
     }
 
 
+    //get highest bid for an item given itemId
+    @GET
+    @Path("/item/{itemId}")
+    @Timed
+    @UnitOfWork
+    @ExceptionMetered
+    public Bid getByItemId(@PathParam("itemId") int itemId) {
+        Bid highest = bidDao.retrieveHighestBid(itemId);
+        return highest;
+    }
+
+
     //Delete a bid by bid id
     @DELETE
     @Path("/{bidId}")
@@ -85,13 +92,11 @@ public class BidResource {
     @UnitOfWork
     @ExceptionMetered
     public String delete(@PathParam("bidId") int bidId) {
-        //> Would we ever need to delete a bid? Maybe delete all bids from a given item after the auction is over
-        //> and the buyer has been notified.
-//        Bid bid = bidDao.findItemById(bidId);
-//        if (bid == null) {
-//            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Bid not found");
-//        }
-//        bidDao.deleteItem(bid);
+        Bid bid = bidDao.findItemById(bidId);
+        if (bid == null) {
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Bid not found");
+        }
+        bidDao.delete(bid);
         return "{}";
     }
 
