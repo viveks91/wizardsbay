@@ -120,7 +120,7 @@
           <transformers>
             <transformer />
             <transformer>
-              <mainClass>com.example.helloworld.HelloWorldApplication</mainClass>
+              <mainClass>edu.neu.cs5500.wizards.EbayCloneApplication</mainClass>
             </transformer>
           </transformers>
         </configuration>
