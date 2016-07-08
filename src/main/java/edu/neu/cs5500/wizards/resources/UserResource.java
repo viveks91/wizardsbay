@@ -2,10 +2,10 @@ package edu.neu.cs5500.wizards.resources;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import io.dropwizard.auth.Auth;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.exception.ResponseException;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.*;
