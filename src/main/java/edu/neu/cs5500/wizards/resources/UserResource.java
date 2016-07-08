@@ -38,10 +38,6 @@ public class UserResource {
         }
         User createdUser = userDao.create(user);
         return createdUser;
-
-        //Session session = sessionDao.createSession(user.getEmail());
-        //ObjectNode object = (ObjectNode)Jackson.newObjectMapper().convertValue(user, JsonNode.class);
-        //object.put("session", session.getSession());
     }
 
 
