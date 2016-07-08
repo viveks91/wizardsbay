@@ -11,9 +11,9 @@ import java.security.Principal;
 
 public class User implements Principal{
 
-    @JsonProperty
-    @NotEmpty
-    private int id;
+//    @JsonProperty
+//    @NotEmpty
+//    private int id;
 
     @JsonProperty
     @NotEmpty
@@ -43,13 +43,13 @@ public class User implements Principal{
 
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     public String getUsername() {
         return username;
