@@ -17,18 +17,40 @@ import java.util.List;
 @RegisterMapper(FeedbackMapper.class)
 public interface FeedbackDAO {
 
+    /**
+     * Creates a feedback given the userid of the user to leave feedback for and the description.
+     *
+     * @param userid       userId of the user to leave feedback for
+     * @param feedbackdesc the body of the feedback, the description
+     */
     @SqlUpdate("insert into feedback (userid, feedbackdesc) values (:userid, :feedbackdesc)")
-    public void create(@Bind("userid") int userid, @Bind("feedbackdesc") String feedbackdesc);
+    void create(@Bind("userid") int userid, @Bind("feedbackdesc") String feedbackdesc);
 
+    /**
+     * Retrieves a single feedback based on the unique id assigned to each feedback.
+     *
+     * @param id an individual feedback id
+     * @return the feedback with the id that matches the given id
+     */
     @SqlQuery("select id, userid, feedbackdesc from feedback where id = :id")
-    public Feedback retrieveOne(@Bind("id") int id);
+    Feedback retrieveOne(@Bind("id") int id);
 
+    /**
+     * Retrieves a list of feedback for any given user based on the given userId.
+     *
+     * @param userid the id of the user we want feedback for
+     * @return the list of feedback left for a given user
+     */
     @SqlQuery("select * from feedback where userid = :userid")
-    public List<Feedback> retrieve(@Bind("userid") int userid);
+    List<Feedback> retrieve(@Bind("userid") int userid);
 
-    //> Delete feedback by unique id
+    /**
+     * Given a feedback, delete it from the database.
+     *
+     * @param feedback the feedback to delete
+     */
     @SqlUpdate("delete from feedback where id = :id")
-    public void delete(@BindBean Feedback feedback);
+    void delete(@BindBean Feedback feedback);
 
 
 }

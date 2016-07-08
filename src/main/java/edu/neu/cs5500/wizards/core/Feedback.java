@@ -24,8 +24,7 @@ public class Feedback {
     @NotEmpty
     private String feedbackdesc;
 
-    public Feedback() {
-    }
+    public Feedback() {}
 
     public int getId() {
         return id;
