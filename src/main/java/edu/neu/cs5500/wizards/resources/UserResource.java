@@ -5,6 +5,7 @@ import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.exception.ResponseException;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.*;
@@ -79,16 +80,16 @@ public class UserResource {
 
         return existingUser;
     }
-
+	
     @GET
     @Path("/{username}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
     //Get user by username
-    public User get(@PathParam("username") String username) {
+    public User get(@PathParam("username") String username, @Auth User auth_user) {
+        System.out.println(auth_user);
         User user = userDao.retrieve(username);
-        System.out.println(user);
         return user;
     }
 

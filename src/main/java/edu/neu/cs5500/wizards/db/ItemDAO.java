@@ -36,7 +36,8 @@ public interface ItemDAO {
     @SqlUpdate("update items set itemname = :itemname, itemdescription = :itemdescription, auctionendtime = :auctionendtime where id = :itemid")
     public void update(@Bind("itemid") String itemid, @Bind("itemname") String itemname, @Bind("itemdescription") String itemdescription, @Bind("auctionendtime") Timestamp auctionendtime);
 
-    //delete item by item Id ****** TO DO -- delete should be possible only by item owners/sellers ******
+    //delete item by item Id
+    //TODO : delete should be possible only by item owners/sellers
     @SqlUpdate("delete from items where id = :id")
     public void deleteItem(@BindBean Item item);
 

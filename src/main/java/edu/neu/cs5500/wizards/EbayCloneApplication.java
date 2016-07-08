@@ -1,13 +1,31 @@
 package edu.neu.cs5500.wizards;
 
+<<<<<<< HEAD:src/main/java/edu/neu/cs5500/wizards/EbayCloneApplication.java
 import edu.neu.cs5500.wizards.cli.RenderCommand;
 import edu.neu.cs5500.wizards.core.Template;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.resources.ItemResource;
 import edu.neu.cs5500.wizards.resources.UserResource;
+=======
+import com.example.helloworld.auth.ExampleAuthenticator;
+import com.example.helloworld.cli.RenderCommand;
+import com.example.helloworld.core.Template;
+import com.example.helloworld.core.User;
+import com.example.helloworld.db.BidDAO;
+import com.example.helloworld.db.FeedbackDAO;
+import com.example.helloworld.db.ItemDAO;
+import com.example.helloworld.db.UserDAO;
+import com.example.helloworld.resources.BidResource;
+import com.example.helloworld.resources.FeedbackResource;
+import com.example.helloworld.resources.ItemResource;
+import com.example.helloworld.resources.UserResource;
+>>>>>>> master:src/main/java/com/example/helloworld/HelloWorldApplication.java
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
@@ -79,9 +97,25 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         final Template template = configuration.buildTemplate();
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
+
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
         environment.jersey().register(new UserResource(userDao));
+
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));
+
+        final BidDAO bidDao = jdbi.onDemand(BidDAO.class);
+        environment.jersey().register(new BidResource(bidDao));
+
+        final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
+        environment.jersey().register(new FeedbackResource(feedbackDao));
+        
+        environment.jersey().register(new AuthDynamicFeature(
+                new BasicCredentialAuthFilter.Builder<User>()
+                        .setAuthenticator(new ExampleAuthenticator(userDao))
+                        .setRealm("Needs Authentication")
+                        .buildAuthFilter()));
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
+
     }
 }

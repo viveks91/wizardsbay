@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
+import com.google.common.base.Optional;
 
 import java.util.Objects;
+import java.security.Principal;
 
-
-public class User{
+public class User implements Principal{
 
     @JsonProperty
     @NotEmpty
@@ -83,6 +84,10 @@ public class User{
 
     public String getAddress() {
         return address;
+    }
+    
+    public String getName() {
+        return username;
     }
 
     @Override
