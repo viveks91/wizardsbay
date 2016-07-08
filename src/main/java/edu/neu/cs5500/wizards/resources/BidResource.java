@@ -69,7 +69,7 @@ public class BidResource {
     @UnitOfWork
     @ExceptionMetered
     public Bid getById(@PathParam("id") int id) {
-        return bidDao.findItemById(id);
+        return bidDao.retrieve(id);
     }
 
 
@@ -92,7 +92,7 @@ public class BidResource {
     @UnitOfWork
     @ExceptionMetered
     public String delete(@PathParam("bidId") int bidId) {
-        Bid bid = bidDao.findItemById(bidId);
+        Bid bid = bidDao.retrieve(bidId);
         if (bid == null) {
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Bid not found");
         }
