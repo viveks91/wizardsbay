@@ -17,6 +17,7 @@ public class ExampleAuthenticator implements Authenticator<BasicCredentials, Use
 
     @Override
     public Optional<User> authenticate(BasicCredentials credentials) throws AuthenticationException {
+
         User user = userDao.retrieve(credentials.getUsername());
         if(user != null && user.getPassword().equals(credentials.getPassword())){
             return Optional.of(user);
