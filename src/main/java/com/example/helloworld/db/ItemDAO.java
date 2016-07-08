@@ -6,7 +6,7 @@ package com.example.helloworld.db;
 
 import com.example.helloworld.core.Item;
 import com.example.helloworld.core.User;
-import com.example.helloworld.mapper.*;
+import com.example.helloworld.mapper.ItemMapper;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -14,8 +14,8 @@ import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
 import java.sql.Timestamp;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 @RegisterMapper(ItemMapper.class)
 public interface ItemDAO {

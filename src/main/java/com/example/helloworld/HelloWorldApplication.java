@@ -1,19 +1,25 @@
 package com.example.helloworld;
 
+import com.example.helloworld.auth.ExampleAuthenticator;
 import com.example.helloworld.cli.RenderCommand;
 import com.example.helloworld.core.Template;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.BidDAO;
 import com.example.helloworld.db.FeedbackDAO;
 import com.example.helloworld.db.ItemDAO;
-import com.example.helloworld.resources.*;
 import com.example.helloworld.db.UserDAO;
+import com.example.helloworld.resources.BidResource;
+import com.example.helloworld.resources.FeedbackResource;
+import com.example.helloworld.resources.ItemResource;
+import com.example.helloworld.resources.UserResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -94,5 +100,13 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 
         final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
         environment.jersey().register(new FeedbackResource(feedbackDao));
+        
+        environment.jersey().register(new AuthDynamicFeature(
+                new BasicCredentialAuthFilter.Builder<User>()
+                        .setAuthenticator(new ExampleAuthenticator(userDao))
+                        .setRealm("Needs Authentication")
+                        .buildAuthFilter()));
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
+
     }
 }

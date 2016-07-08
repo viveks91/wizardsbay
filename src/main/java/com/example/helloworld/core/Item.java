@@ -3,7 +3,6 @@ package com.example.helloworld.core;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Item {

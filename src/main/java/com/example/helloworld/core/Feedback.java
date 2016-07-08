@@ -18,11 +18,11 @@ public class Feedback {
 
     @JsonProperty
     @NotEmpty
-    private int userId;
+    private int userid;
 
     @JsonProperty
     @NotEmpty
-    private String desc;
+    private String feedbackdesc;
 
     public Feedback() {
     }
@@ -37,27 +37,27 @@ public class Feedback {
     }
 
 
-    public int getUserId() {
-        return userId;
+    public int getUserid() {
+        return userid;
     }
 
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserid(int userid) {
+        this.userid = userid;
     }
 
 
-    public String getDesc() {
-        return desc;
+    public String getFeedbackdesc() {
+        return feedbackdesc;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setFeedbackdesc(String feedbackdesc) {
+        this.feedbackdesc = feedbackdesc;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, desc);
+        return Objects.hash(id, userid, feedbackdesc);
     }
 
     @Override
@@ -68,8 +68,8 @@ public class Feedback {
         Feedback feedback = (Feedback) o;
 
         if (id != feedback.id) return false;
-        if (userId != feedback.userId) return false;
-        return desc != null ? desc.equals(feedback.desc) : feedback.desc == null;
+        if (userid != feedback.userid) return false;
+        return feedbackdesc != null ? feedbackdesc.equals(feedback.feedbackdesc) : feedback.feedbackdesc == null;
     }
 
     @Override

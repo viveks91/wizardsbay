@@ -1,15 +1,12 @@
 package com.example.helloworld.resources;
 
-import io.dropwizard.hibernate.UnitOfWork;
-import io.dropwizard.jackson.Jackson;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.example.helloworld.exception.ResponseException;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
-
+import io.dropwizard.auth.Auth;
+import com.example.helloworld.exception.ResponseException;
+import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -83,16 +80,16 @@ public class UserResource {
 
         return existingUser;
     }
-
+	
     @GET
     @Path("/{username}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
     //Get user by username
-    public User get(@PathParam("username") String username) {
+    public User get(@PathParam("username") String username, @Auth User auth_user) {
+        System.out.println(auth_user);
         User user = userDao.retrieve(username);
-        System.out.println(user);
         return user;
     }
 

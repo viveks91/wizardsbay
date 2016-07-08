@@ -9,7 +9,7 @@ defaultName: ${DW_DEFAULT_NAME:-Stranger}
 database:
   driverClass: org.postgresql.Driver
   url: jdbc:postgresql://localhost/wizards
-  user: user
+  user: site_user
   password: password
   properties:
     charSet: UTF-8

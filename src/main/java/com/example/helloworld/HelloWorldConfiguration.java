@@ -26,6 +26,7 @@ public class HelloWorldConfiguration extends Configuration {
 
     @Valid
     @NotNull
+    @JsonProperty("database")
     private DataSourceFactory database = new DataSourceFactory();
 
     @NotNull
@@ -58,6 +59,8 @@ public class HelloWorldConfiguration extends Configuration {
         return new Template(template, defaultName);
     }
 
+    @Valid
+    @NotNull
     @JsonProperty("database")
     public DataSourceFactory getDataSourceFactory() {
         return database;
