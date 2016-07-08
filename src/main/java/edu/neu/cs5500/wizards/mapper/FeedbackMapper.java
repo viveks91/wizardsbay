@@ -18,7 +18,6 @@ public class FeedbackMapper implements ResultSetMapper<Feedback> {
         feedback.setId(resultSet.getInt("id"));
         feedback.setUserid(resultSet.getInt("userid"));
         feedback.setFeedbackdesc(resultSet.getString("feedbackdesc"));
-        System.out.println("in the feedback mapper");
         return feedback;
     }
 
