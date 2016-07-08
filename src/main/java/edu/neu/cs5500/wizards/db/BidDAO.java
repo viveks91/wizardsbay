@@ -1,7 +1,6 @@
 package edu.neu.cs5500.wizards.db;
 
 import edu.neu.cs5500.wizards.core.Bid;
-import com.example.helloworld.core.User;
 import edu.neu.cs5500.wizards.mapper.BidMapper;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;

@@ -1,26 +1,17 @@
 package edu.neu.cs5500.wizards;
 
-<<<<<<< HEAD:src/main/java/edu/neu/cs5500/wizards/EbayCloneApplication.java
+import edu.neu.cs5500.wizards.auth.ExampleAuthenticator;
 import edu.neu.cs5500.wizards.cli.RenderCommand;
 import edu.neu.cs5500.wizards.core.Template;
+import edu.neu.cs5500.wizards.core.User;
+import edu.neu.cs5500.wizards.db.BidDAO;
+import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import edu.neu.cs5500.wizards.resources.BidResource;
+import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
 import edu.neu.cs5500.wizards.resources.UserResource;
-=======
-import com.example.helloworld.auth.ExampleAuthenticator;
-import com.example.helloworld.cli.RenderCommand;
-import com.example.helloworld.core.Template;
-import com.example.helloworld.core.User;
-import com.example.helloworld.db.BidDAO;
-import com.example.helloworld.db.FeedbackDAO;
-import com.example.helloworld.db.ItemDAO;
-import com.example.helloworld.db.UserDAO;
-import com.example.helloworld.resources.BidResource;
-import com.example.helloworld.resources.FeedbackResource;
-import com.example.helloworld.resources.ItemResource;
-import com.example.helloworld.resources.UserResource;
->>>>>>> master:src/main/java/com/example/helloworld/HelloWorldApplication.java
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;

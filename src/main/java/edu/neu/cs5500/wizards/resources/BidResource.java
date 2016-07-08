@@ -4,7 +4,7 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Bid;
 import edu.neu.cs5500.wizards.db.BidDAO;
-import com.example.helloworld.exception.ResponseException;
+import edu.neu.cs5500.wizards.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.*;
