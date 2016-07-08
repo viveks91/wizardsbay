@@ -79,14 +79,14 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
-    public String delete(@PathParam("itemId") int itemId) {
+    public Response delete(@PathParam("itemId") int itemId) {
         Item item = itemDao.findItemById(itemId);
         if (item == null) {
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Item not found");
         }
         itemDao.deleteItem(item);
 
-        return "{\"status\": 204}";
+        return Response.status(204).build();
     }
 
 

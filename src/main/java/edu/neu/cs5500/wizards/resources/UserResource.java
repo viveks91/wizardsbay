@@ -90,7 +90,7 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
-    public String delete(User existingUser) {
+    public Response delete(User existingUser) {
         if(existingUser == null || userDao.retrieve(existingUser.getUsername()) == null){
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "No such user exist");
         }
@@ -99,7 +99,7 @@ public class UserResource {
         }
         userDao.delete(existingUser);
 
-        return "{\"status\": 204}";
+        return Response.status(204).build();
     }
 
     @OPTIONS
