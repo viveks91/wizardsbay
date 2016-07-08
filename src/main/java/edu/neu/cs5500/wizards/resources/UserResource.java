@@ -30,22 +30,18 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     public User post(User user) {
-        User existingUser = userDao.retrieve(user.getUsername());
-        if (existingUser == null) {
-            userDao.create(user.getUsername(), user.getPassword(), user.getFirstname(), user.getLastname() , user.getAddress());
-            existingUser = userDao.retrieve(user.getUsername());
+        if (user == null) {
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "User is empty");
         }
-        else {
-            String sentPassword = user.getPassword();
-            if (!sentPassword.equals(existingUser.getPassword())) {
-                ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Invalid email / password");
-            }
+        else if (userDao.retrieve(user.getUsername()) != null) {
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "User already exists!");
         }
+        User createdUser = userDao.create(user);
+        return createdUser;
 
         //Session session = sessionDao.createSession(user.getEmail());
         //ObjectNode object = (ObjectNode)Jackson.newObjectMapper().convertValue(user, JsonNode.class);
         //object.put("session", session.getSession());
-        return existingUser;
     }
 
 
@@ -99,8 +95,7 @@ public class UserResource {
     @ExceptionMetered
     /* delete user by username*/
     public String delete(User existingUser) {
-        User checkUser = userDao.retrieve(existingUser.getUsername());
-        if(checkUser== null){
+        if(existingUser == null || userDao.retrieve(existingUser.getUsername()) == null){
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "No such user exist");
         }
         if (existingUser.getUsername().equals("admin")) {
@@ -108,7 +103,7 @@ public class UserResource {
         }
         userDao.delete(existingUser);
 
-        return "{}";
+        return "{\"status\": 204}";
     }
 
     @OPTIONS
