@@ -47,11 +47,16 @@ public class UserResource {
     @UnitOfWork
     @Path("/{username}")
     @ExceptionMetered
-    public User put(@PathParam("username") String username, User user) {
+    public User put(@PathParam("username") String username, User user, @Auth User auth_user) {
         User existingUser = userDao.retrieve(username);
+        if(!auth_user.equals(existingUser)){
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Not Authorized");
+        }
+        
         if(existingUser == null){
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Invalid username, update failed");
         }
+        
         if (user.getPassword() != null) {
             String password = user.getPassword();
             existingUser.setPassword(password);
@@ -79,8 +84,7 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     //Get user by username
-    public User get(@PathParam("username") String username, @Auth User auth_user) {
-        System.out.println(auth_user);
+    public User get(@PathParam("username") String username) {
         User user = userDao.retrieve(username);
         return user;
     }
@@ -90,7 +94,11 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
-    public Response delete(User existingUser) {
+    public Response delete(User existingUser, @Auth User auth_user) {
+        if(!auth_user.equals(existingUser)){
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Not Authorized");
+        }
+        
         if(existingUser == null || userDao.retrieve(existingUser.getUsername()) == null){
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "No such user exist");
         }
