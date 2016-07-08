@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,8 +84,8 @@ public class ItemResourceTest {
         when(itemDAO.findItemById(anyInt())).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO);
 
-        String response = itemResource.delete((int) Math.random());
-        assertEquals(response, "{}");
+        Response response = itemResource.delete((int) Math.random());
+        assertEquals(response.getStatus(), 204);
     }
 
     @Test(expected = WebApplicationException.class)
@@ -92,6 +93,6 @@ public class ItemResourceTest {
         when(itemDAO.findItemById(anyInt())).thenReturn(null);
         ItemResource itemResource = new ItemResource(itemDAO);
 
-        String response = itemResource.delete((int) Math.random());
+        Response response = itemResource.delete((int) Math.random());
     }
 }
