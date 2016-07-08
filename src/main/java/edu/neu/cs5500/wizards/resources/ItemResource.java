@@ -3,6 +3,7 @@ package edu.neu.cs5500.wizards.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Item;
+import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -85,7 +86,7 @@ public class ItemResource {
         }
         itemDao.deleteItem(item);
 
-        return "{}";
+        return "{\"status\": 204}";
     }
 
 
