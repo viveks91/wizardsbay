@@ -1,7 +1,9 @@
 package edu.neu.cs5500.wizards;
 
+import edu.neu.cs5500.wizards.auth.ExampleAuthenticator;
 import edu.neu.cs5500.wizards.cli.RenderCommand;
 import edu.neu.cs5500.wizards.core.Template;
+import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.resources.ItemResource;
