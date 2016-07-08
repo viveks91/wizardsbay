@@ -110,23 +110,24 @@ public class BidResource {
 
 
     /**
-     * Given the id of a bid, delete the bid with the matching id from the database.
+     * Given the id of a bid, delete the bid with the matching id from the database. If the bid is not found, throw
+     * an exception. If the bid is successfully deleted, return a 204 response code.
      *
      * @param bidId the id of the bid
-     * @return an string representing an empty set
+     * @return a 204 response code representing successful deletion
      */
     @DELETE
     @Path("/{bidId}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public String delete(@PathParam("bidId") int bidId) {
+    public Response delete(@PathParam("bidId") int bidId) {
         Bid bid = bidDao.retrieve(bidId);
         if (bid == null) {
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Bid not found");
         }
         bidDao.delete(bid);
-        return "{}";
+        return Response.status(204).build();
     }
 
 }

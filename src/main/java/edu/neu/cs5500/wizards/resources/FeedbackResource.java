@@ -81,21 +81,22 @@ public class FeedbackResource {
 
     /**
      * Given a feedback, delete that feedback from the database. If the feedback is not found, throw an exception.
+     * If the feedback is successfully deleted, return a 204 response code.
      *
      * @param existingfeedback the feedback to delete
-     * @return a string representing an empty set
+     * @return a 204 response code representing successful deletion
      */
     @DELETE
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public String delete(Feedback existingfeedback) {
+    public Response delete(Feedback existingfeedback) {
         Feedback feedback = feedbackDao.retrieveOne(existingfeedback.getId());
         if (feedback == null) {
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Feedback not found");
         }
         feedbackDao.delete(feedback);
-        return "{}";
+        return Response.status(204).build();
     }
 
 
