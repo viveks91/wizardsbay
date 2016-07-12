@@ -33,15 +33,15 @@ public class UserResource {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("{\"Error\": \"User is empty\"}")
-                    .type(MediaType.APPLICATION_JSON)
+                    .entity("Error: User is empty")
+                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
         else if (userDao.retrieve(user.getUsername()) != null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("{\"Error\": \"User already exists!\"}")
-                    .type(MediaType.APPLICATION_JSON)
+                    .entity("Error: User already exists!")
+                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
         User createdUser = userDao.create(user);
@@ -60,8 +60,8 @@ public class UserResource {
         if(existingUser == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("{\"Error\": \"Invalid username, update failed\"}")
-                    .type(MediaType.APPLICATION_JSON)
+                    .entity("Error: Invalid username, update failed")
+                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
         if (user.getPassword() != null) {
@@ -80,8 +80,8 @@ public class UserResource {
         if (user.getUsername() != null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("{\"Error\": \"Username cannot be changed\"}")
-                    .type(MediaType.APPLICATION_JSON)
+                    .entity("Error: Username cannot be changed")
+                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
         userDao.update(existingUser.getUsername(), existingUser.getPassword(), existingUser.getFirstname(), existingUser.getLastname(), existingUser.getAddress());
@@ -101,8 +101,8 @@ public class UserResource {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("{\"Error\": \"User not found\"}")
-                    .type(MediaType.APPLICATION_JSON)
+                    .entity("Error: User not found")
+                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
         return Response.ok(user).build();
@@ -117,15 +117,15 @@ public class UserResource {
         if(existingUser == null || userDao.retrieve(existingUser.getUsername()) == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("{\"Error\": \"User not found\"}")
-                    .type(MediaType.APPLICATION_JSON)
+                    .entity("Error: User not found")
+                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
         if (existingUser.getUsername().equals("admin")) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("{\"Error\": \"Admin cannot be deleted\"}")
-                    .type(MediaType.APPLICATION_JSON)
+                    .entity("Error: Admin cannot be deleted")
+                    .type(MediaType.TEXT_PLAIN)
                     .build();
         }
         userDao.delete(existingUser);
