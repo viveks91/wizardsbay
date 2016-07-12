@@ -4,9 +4,9 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.UserDAO;
-import edu.neu.cs5500.wizards.exception.ResponseException;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -29,15 +29,23 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public User post(User user) {
+    public Response post(User user) {
         if (user == null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "User is empty");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("{\"Error\": \"User is empty\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
         else if (userDao.retrieve(user.getUsername()) != null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "User already exists!");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("{\"Error\": \"User already exists!\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
         User createdUser = userDao.create(user);
-        return createdUser;
+        return Response.ok(createdUser).build();
     }
 
 
@@ -47,10 +55,14 @@ public class UserResource {
     @UnitOfWork
     @Path("/{username}")
     @ExceptionMetered
-    public User put(@PathParam("username") String username, User user) {
+    public Response put(@PathParam("username") String username, User user) {
         User existingUser = userDao.retrieve(username);
         if(existingUser == null){
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Invalid username, update failed");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("{\"Error\": \"Invalid username, update failed\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
         if (user.getPassword() != null) {
             String password = user.getPassword();
@@ -66,11 +78,15 @@ public class UserResource {
             existingUser.setAddress(user.getAddress());
         }
         if (user.getUsername() != null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "You cannot update a username");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("{\"Error\": \"Username cannot be changed\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
         userDao.update(existingUser.getUsername(), existingUser.getPassword(), existingUser.getFirstname(), existingUser.getLastname(), existingUser.getAddress());
 
-        return existingUser;
+        return Response.ok(existingUser).build();
     }
 	
     @GET
@@ -79,10 +95,17 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     //Get user by username
-    public User get(@PathParam("username") String username, @Auth User auth_user) {
+    public Response get(@PathParam("username") String username, @Auth User auth_user) {
         System.out.println(auth_user);
         User user = userDao.retrieve(username);
-        return user;
+        if (user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("{\"Error\": \"User not found\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        return Response.ok(user).build();
     }
 
     @DELETE
@@ -92,10 +115,18 @@ public class UserResource {
     /* delete user by username*/
     public Response delete(User existingUser) {
         if(existingUser == null || userDao.retrieve(existingUser.getUsername()) == null){
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "No such user exist");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("{\"Error\": \"User not found\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
         if (existingUser.getUsername().equals("admin")) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "You cannot delete the admin user");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("{\"Error\": \"Admin cannot be deleted\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
         userDao.delete(existingUser);
 
