@@ -7,6 +7,7 @@ import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -30,15 +31,19 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Item post(Item item) {
+    public Response post(Item item) {
         if( item == null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Invalid item");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Invalid item")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
 
         item.setCurrentMaxBid(item.getMinBidAmount());
         Item createdItem = itemDao.create(item);
 
-        return createdItem;
+        return Response.ok(createdItem).build();
     }
 
     //get all items listed by a seller
@@ -47,8 +52,9 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public List<Item> get(@PathParam("sellerId") int sellerId) {
-        return itemDao.findItemBySellerId(sellerId);
+    public Response get(@PathParam("sellerId") int sellerId) {
+        return Response.ok(itemDao.findItemBySellerId(sellerId)).build();
+
     }
 
     //get all active items
@@ -57,8 +63,8 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public List<Item> get() {
-        return itemDao.findAllActiveItems();
+    public Response get() {
+        return Response.ok(itemDao.findAllActiveItems()).build();
     }
 
     //get item by id
@@ -68,8 +74,8 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Item getById(@PathParam("id") int id) {
-        return itemDao.findItemById(id);
+    public Response getById(@PathParam("id") int id) {
+        return Response.ok(itemDao.findItemById(id)).build();
     }
 
     //Delete an item
@@ -82,12 +88,14 @@ public class ItemResource {
     public Response delete(@PathParam("itemId") int itemId) {
         Item item = itemDao.findItemById(itemId);
         if (item == null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Item not found");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Item not found")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
         itemDao.deleteItem(item);
 
-        return Response.status(204).build();
+        return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
-
-
 }
