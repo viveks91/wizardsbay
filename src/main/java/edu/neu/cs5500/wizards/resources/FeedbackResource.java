@@ -4,13 +4,12 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Feedback;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
-import edu.neu.cs5500.wizards.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Created by susannaedens on 6/23/16.
@@ -36,10 +35,11 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Feedback post(Feedback feedback) {
+    public Response post(Feedback feedback) {
         feedbackDao.create(feedback.getUserid(), feedback.getFeedbackdesc());
         Feedback newfeedback = feedbackDao.retrieveOne(feedback.getId());
-        return newfeedback;
+
+        return Response.ok(newfeedback).build();
     }
 
 
@@ -55,8 +55,8 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public List<Feedback> get(@PathParam("userid") int userid) {
-        return feedbackDao.retrieve(userid);
+    public Response get(@PathParam("userid") int userid) {
+        return Response.ok(feedbackDao.retrieve(userid)).build();
     }
 
     /**
@@ -71,12 +71,16 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Feedback getOne(@PathParam("id") int id) {
+    public Response getOne(@PathParam("id") int id) {
         Feedback feedback = feedbackDao.retrieveOne(id);
         if (feedback == null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "No feedback matches your request");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: No feedback matches your request")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
-        return feedback;
+        return Response.ok(feedback).build();
     }
 
     /**
@@ -93,10 +97,14 @@ public class FeedbackResource {
     public Response delete(Feedback existingfeedback) {
         Feedback feedback = feedbackDao.retrieveOne(existingfeedback.getId());
         if (feedback == null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Feedback not found");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Feedback not found")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
         feedbackDao.delete(feedback);
-        return Response.status(204).build();
+        return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
 
 
