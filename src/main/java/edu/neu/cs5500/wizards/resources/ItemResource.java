@@ -3,9 +3,11 @@ package edu.neu.cs5500.wizards.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Item;
-import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
+import edu.neu.cs5500.wizards.core.User;
+import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.exception.ResponseException;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.*;
@@ -19,10 +21,11 @@ import java.util.List;
 public class ItemResource {
 
     private final ItemDAO itemDao;
+    private final UserDAO userDao;
 
-
-    public ItemResource(ItemDAO itemDao) {
+    public ItemResource(ItemDAO itemDao, UserDAO userDao) {
         this.itemDao = itemDao;
+        this.userDao = userDao;
     }
 
     //Create a listing
@@ -79,8 +82,13 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
-    public Response delete(@PathParam("itemId") int itemId) {
+    public Response delete(@PathParam("itemId") int itemId, @Auth User auth_user) {
         Item item = itemDao.findItemById(itemId);
+        User itemSeller = userDao.retrieveById(item.getSellerId());
+        if(!auth_user.equals(itemSeller)){
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Not Authorized");
+        }
+        
         if (item == null) {
             ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Item not found");
         }

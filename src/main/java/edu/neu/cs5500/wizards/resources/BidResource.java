@@ -4,7 +4,10 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Bid;
 import edu.neu.cs5500.wizards.db.BidDAO;
+import edu.neu.cs5500.wizards.core.User;
+import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.exception.ResponseException;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.*;
@@ -21,9 +24,11 @@ import java.util.List;
 public class BidResource {
 
     private final BidDAO bidDao;
+    private final UserDAO userDao;
 
-    public BidResource(BidDAO bidDao) {
+    public BidResource(BidDAO bidDao, UserDAO userDao) {
         this.bidDao = bidDao;
+        this.userDao = userDao;
     }
 
     /**
@@ -37,9 +42,15 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Bid post(Bid bid) {
-        List<Bid> bidList = get(bid.getItemId());
+    public Bid post(Bid bid, @Auth User auth_user) {
+        User biddingUser = userDao.retrieveById(bid.getBidder());
+        if(!auth_user.equals(biddingUser)){
+            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Not Authorized");
+        }
+        
         Bid newBid = new Bid();
+        List<Bid> bidList = get(bid.getItemId());
+        
         if (bidList.isEmpty()) {
             bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
             newBid = bidDao.retrieve(bid.getId());
