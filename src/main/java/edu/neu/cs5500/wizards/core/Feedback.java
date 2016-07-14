@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -18,11 +19,35 @@ public class Feedback {
 
     @JsonProperty
     @NotEmpty
-    private int userid;
+    private int userId;
 
     @JsonProperty
     @NotEmpty
-    private String feedbackdesc;
+    private int rating;
+
+    @JsonProperty
+    @NotEmpty
+    private String feedbackDescription;
+
+    @JsonProperty
+    @NotEmpty
+    private Timestamp time;
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public Timestamp getTime() {
+        return time;
+    }
+
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
 
     public Feedback() {}
 
@@ -36,27 +61,27 @@ public class Feedback {
     }
 
 
-    public int getUserid() {
-        return userid;
+    public int getUserId() {
+        return userId;
     }
 
 
-    public void setUserid(int userid) {
-        this.userid = userid;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
 
-    public String getFeedbackdesc() {
-        return feedbackdesc;
+    public String getFeedbackDescription() {
+        return feedbackDescription;
     }
 
-    public void setFeedbackdesc(String feedbackdesc) {
-        this.feedbackdesc = feedbackdesc;
+    public void setFeedbackDescription(String feedbackDescription) {
+        this.feedbackDescription = feedbackDescription;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userid, feedbackdesc);
+        return Objects.hash(id, userId, feedbackDescription, time);
     }
 
     @Override
@@ -67,8 +92,10 @@ public class Feedback {
         Feedback feedback = (Feedback) o;
 
         if (id != feedback.id) return false;
-        if (userid != feedback.userid) return false;
-        return feedbackdesc != null ? feedbackdesc.equals(feedback.feedbackdesc) : feedback.feedbackdesc == null;
+        if (userId != feedback.userId) return false;
+        if (!feedbackDescription.equals(feedback.feedbackDescription)) return false;
+        return time.equals(feedback.time);
+
     }
 
     @Override

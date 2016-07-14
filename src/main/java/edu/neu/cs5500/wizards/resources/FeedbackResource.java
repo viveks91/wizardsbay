@@ -36,7 +36,7 @@ public class FeedbackResource {
     @UnitOfWork
     @ExceptionMetered
     public Response post(Feedback feedback) {
-        feedbackDao.create(feedback.getUserid(), feedback.getFeedbackdesc());
+        feedbackDao.create(feedback.getUserId(), feedback.getRating(), feedback.getFeedbackDescription());
         Feedback newfeedback = feedbackDao.retrieveOne(feedback.getId());
 
         return Response.ok(newfeedback).build();

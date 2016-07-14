@@ -20,11 +20,12 @@ public interface FeedbackDAO {
     /**
      * Creates a feedback given the userid of the user to leave feedback for and the description.
      *
-     * @param userid       userId of the user to leave feedback for
-     * @param feedbackdesc the body of the feedback, the description
+     * @param userId       userId of the user to leave feedback for
+     * @param rating       rating for the feedback
+     * @param feedbackDescription the body of the feedback, the description
      */
-    @SqlUpdate("insert into feedback (userid, feedbackdesc) values (:userid, :feedbackdesc)")
-    void create(@Bind("userid") int userid, @Bind("feedbackdesc") String feedbackdesc);
+    @SqlUpdate("insert into feedback (userId, rating, feedbackDescription) values (:userId, :rating, :feedbackDescription)")
+    void create(@Bind("userId") int userId, @Bind("rating") int rating, @Bind("feedbackDescription") String feedbackDescription);
 
     /**
      * Retrieves a single feedback based on the unique id assigned to each feedback.
@@ -32,17 +33,17 @@ public interface FeedbackDAO {
      * @param id an individual feedback id
      * @return the feedback with the id that matches the given id
      */
-    @SqlQuery("select id, userid, feedbackdesc from feedback where id = :id")
+    @SqlQuery("select id, userId, feedbackDescription from feedback where id = :id")
     Feedback retrieveOne(@Bind("id") int id);
 
     /**
      * Retrieves a list of feedback for any given user based on the given userId.
      *
-     * @param userid the id of the user we want feedback for
+     * @param userId the id of the user we want feedback for
      * @return the list of feedback left for a given user
      */
-    @SqlQuery("select * from feedback where userid = :userid")
-    List<Feedback> retrieve(@Bind("userid") int userid);
+    @SqlQuery("select * from feedback where userId = :userId")
+    List<Feedback> retrieve(@Bind("userId") int userId);
 
     /**
      * Given a feedback, delete it from the database.
