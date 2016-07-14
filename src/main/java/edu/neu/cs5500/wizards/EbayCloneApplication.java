@@ -85,7 +85,7 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
 
     @Override
     public void run(EbayCloneConfiguration configuration, Environment environment) throws ClassNotFoundException {
-        final Template template = configuration.buildTemplate();
+//        final Template template = configuration.buildTemplate();
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
