@@ -19,8 +19,8 @@ public interface UserDAO {
     @SqlQuery("select * from users where username = :username")
     User retrieve(@Bind("username") String username);
 
-    @SqlUpdate("update users set password = :password, firstname = :firstname, lastname = :lastname, address = :address where username = :username")
-    void update(@Bind("username") String username, @Bind("password") String password, @Bind("firstname") String firstname, @Bind("lastname") String lastname, @Bind("address") String address);
+    @SqlUpdate("update users set password = :password, first_name = :firstName, last_name = :lastName, address = :address where username = :username")
+    void update(@Bind("username") String username, @Bind("password") String password, @Bind("firstName") String firstName, @Bind("lastName") String lastName, @Bind("address") String address);
 
     @SqlUpdate("delete from users where username = :username")
     void delete(@Bind("username") String username);
