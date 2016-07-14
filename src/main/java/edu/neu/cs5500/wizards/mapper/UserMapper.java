@@ -18,8 +18,8 @@ public class UserMapper implements ResultSetMapper<User> {
         user.setId(r.getInt("id"));
         user.setUsername(r.getString("username"));
         user.setPassword(r.getString("password"));
-        user.setFirstName(r.getString("firstName"));
-        user.setLastName(r.getString("lastName"));
+        user.setFirstName(r.getString("firstname"));
+        user.setLastName(r.getString("lastname"));
         user.setAddress(r.getString("address"));
         return user;
     }

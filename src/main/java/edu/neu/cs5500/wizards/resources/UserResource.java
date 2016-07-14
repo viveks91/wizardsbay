@@ -132,26 +132,27 @@ public class UserResource {
     }
 
     @DELETE
+    @Path("/{username}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
-    public Response delete(User existingUser) {
-        if(existingUser == null || this.userDao.retrieve(existingUser.getUsername()) == null){
+    public Response delete(@PathParam("username") String username) {
+        if(username == "" || this.userDao.retrieve(username) == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        if (existingUser.getUsername().equals("admin")) {
+        if (username.equals("admin")) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Admin cannot be deleted")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        this.userDao.delete(existingUser);
+        this.userDao.delete(username);
 
         return Response.status(204).build();
     }
