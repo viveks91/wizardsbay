@@ -15,10 +15,11 @@ public class UserMapper implements ResultSetMapper<User> {
 
     public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
         User user = new User();
+        user.setId(r.getInt("id"));
         user.setUsername(r.getString("username"));
         user.setPassword(r.getString("password"));
-        user.setFirstname(r.getString("firstname"));
-        user.setLastname(r.getString("lastname"));
+        user.setFirstName(r.getString("firstName"));
+        user.setLastName(r.getString("lastName"));
         user.setAddress(r.getString("address"));
         return user;
     }

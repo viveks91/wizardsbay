@@ -11,9 +11,9 @@ import java.security.Principal;
 
 public class User implements Principal{
 
-//    @JsonProperty
-//    @NotEmpty
-//    private int id;
+    @JsonProperty
+    @NotEmpty
+    private int id;
 
     @JsonProperty
     @NotEmpty
@@ -24,32 +24,32 @@ public class User implements Principal{
     private String password;
 
     @JsonProperty
-    private String firstname;
+    private String firstName;
 
     @JsonProperty
-    private String lastname;
+    private String lastName;
 
     @JsonProperty
     private String address;
 
     public User() { }
 
-    public User(String username, String password, String firstname, String lastname, String address) {
+    public User(String username, String password, String firstName, String lastName, String address) {
         this.username = username;
         this.password = password;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.address = address;
 
     }
 
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -67,20 +67,20 @@ public class User implements Principal{
         this.password = password;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
     public void setAddress(String address) {
@@ -96,27 +96,30 @@ public class User implements Principal{
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(username, password, firstname, lastname, address);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (id != user.id) return false;
+        if (!username.equals(user.username)) return false;
+        if (!password.equals(user.password)) return false;
+        if (!firstName.equals(user.firstName)) return false;
+        if (!lastName.equals(user.lastName)) return false;
+        return address.equals(user.address);
+
     }
 
-
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (o == null || !(o instanceof User)) {
-            return false;
-        }
-
-        User that = (User) o;
-
-        return Objects.equals(username, that.username) &&
-                Objects.equals(password, that.password) &&
-                Objects.equals(firstname, that.firstname) &&
-                Objects.equals(lastname, that.lastname) &&
-                Objects.equals(address, that.address);
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + username.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + address.hashCode();
+        return result;
     }
 
     @Override

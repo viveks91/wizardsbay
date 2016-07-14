@@ -13,20 +13,20 @@ import java.util.Set;
 @RegisterMapper(UserMapper.class)
 public interface UserDAO {
 
-    @SqlQuery("insert into users (username, password, firstname, lastname, address) values (:username, :password, :firstname, :lastname, :address) RETURNING *")
-    public User create(@BindBean User user);
+    @SqlQuery("insert into users (username, password, firstName, lastName, address) values (:username, :password, :firstName, :lastName, :address) RETURNING *")
+    User create(@BindBean User user);
 
-    @SqlQuery("select username, password, firstname, lastname, address from users where username = :username")
-    public User retrieve(@Bind("username") String username);
+    @SqlQuery("select username, password, firstName, lastName, address from users where username = :username")
+    User retrieve(@Bind("username") String username);
 
-    @SqlUpdate("update users set password = :password, firstname = :firstname, lastname = :lastname, address = :address where username = :username")
-    public void update(@Bind("username") String username, @Bind("password") String password, @Bind("firstname") String firstname, @Bind("lastname") String lastname, @Bind("address") String address);
+    @SqlUpdate("update users set password = :password, firstName = :firstName, lastName = :lastName, address = :address where username = :username")
+    void update(@Bind("username") String username, @Bind("password") String password, @Bind("firstName") String firstName, @Bind("lastName") String lastName, @Bind("address") String address);
 
     @SqlUpdate("delete from users where username = :username")
-    public void delete(@BindBean User user);
-
-    @SqlQuery("select username, password, firstname, lastname, address from users limit :limit offset :offset")
-    public Set<User> list(@Bind("limit") int limit, @Bind("offset") int offset);
+    void delete(@BindBean User user);
+//
+//    @SqlQuery("select username, password, firstName, lastName, address from users limit :limit offset :offset")
+//    Set<User> list(@Bind("limit") int limit, @Bind("offset") int offset);
 }
 
 

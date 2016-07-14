@@ -3,6 +3,7 @@ package edu.neu.cs5500.wizards.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.User;
+import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -18,10 +19,12 @@ import javax.ws.rs.core.Response;
 public class UserResource {
 
     private final UserDAO userDao;
+    private final ItemDAO itemDao;
 
 
-    public UserResource(UserDAO userDao) {
+    public UserResource(UserDAO userDao, ItemDAO itemDAO) {
         this.userDao = userDao;
+        this.itemDao = itemDAO;
     }
 
     //Create user
@@ -37,14 +40,14 @@ public class UserResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        else if (userDao.retrieve(user.getUsername()) != null) {
+        else if (this.userDao.retrieve(user.getUsername()) != null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User already exists!")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        User createdUser = userDao.create(user);
+        User createdUser = this.userDao.create(user);
         return Response.ok(createdUser).build();
     }
 
@@ -56,7 +59,7 @@ public class UserResource {
     @Path("/{username}")
     @ExceptionMetered
     public Response put(@PathParam("username") String username, User user) {
-        User existingUser = userDao.retrieve(username);
+        User existingUser = this.userDao.retrieve(username);
         if(existingUser == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -68,11 +71,11 @@ public class UserResource {
             String password = user.getPassword();
             existingUser.setPassword(password);
         }
-        if (user.getFirstname() != null) {
-            existingUser.setFirstname(user.getFirstname());
+        if (user.getFirstName() != null) {
+            existingUser.setFirstName(user.getFirstName());
         }
-        if (user.getLastname() != null) {
-            existingUser.setLastname(user.getLastname());
+        if (user.getLastName() != null) {
+            existingUser.setLastName(user.getLastName());
         }
         if (user.getAddress() != null) {
             existingUser.setAddress(user.getAddress());
@@ -84,7 +87,7 @@ public class UserResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        userDao.update(existingUser.getUsername(), existingUser.getPassword(), existingUser.getFirstname(), existingUser.getLastname(), existingUser.getAddress());
+        this.userDao.update(existingUser.getUsername(), existingUser.getPassword(), existingUser.getFirstName(), existingUser.getLastName(), existingUser.getAddress());
 
         return Response.ok(existingUser).build();
     }
@@ -97,7 +100,7 @@ public class UserResource {
     //Get user by username
     public Response get(@PathParam("username") String username, @Auth User auth_user) {
         System.out.println(auth_user);
-        User user = userDao.retrieve(username);
+        User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -108,13 +111,33 @@ public class UserResource {
         return Response.ok(user).build();
     }
 
+    //get all items listed by a seller
+    @GET
+    @Path("/{username}/items")
+    @Timed
+    @UnitOfWork
+    @ExceptionMetered
+    public Response getItems(@PathParam("username") String username, @Auth User auth_user) {
+        System.out.println(auth_user);
+        User user = this.userDao.retrieve(username);
+        if (user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: User not found")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        return Response.ok(this.itemDao.findItemsBySellerId(user.getId())).build();
+    }
+
     @DELETE
     @Timed
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
     public Response delete(User existingUser) {
-        if(existingUser == null || userDao.retrieve(existingUser.getUsername()) == null){
+        if(existingUser == null || this.userDao.retrieve(existingUser.getUsername()) == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User not found")
@@ -128,7 +151,7 @@ public class UserResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        userDao.delete(existingUser);
+        this.userDao.delete(existingUser);
 
         return Response.status(204).build();
     }
