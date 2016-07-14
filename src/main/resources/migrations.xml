@@ -19,10 +19,10 @@
             <column name="password" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="firstname" type="varchar">
+            <column name="firstName" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="lastname" type="varchar">
+            <column name="lastName" type="varchar">
                 <constraints nullable="false"/>
             </column>
             <column name="address" type="varchar">
@@ -35,23 +35,23 @@
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="itemname" type="varchar">
+            <column name="itemName" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="itemdesc" type="varchar">
+            <column name="itemDescription" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="buyer" type="int" defaultValue="NULL">
+            <column name="buyerId" type="int" defaultValue="NULL">
                 <constraints foreignKeyName="fk_item_buyer" referencedTableName="users" referencedColumnNames="id"/>
             </column>
-            <column name="seller" type="int">
+            <column name="sellerId" type="int">
                 <constraints foreignKeyName="fk_item_seller" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
             </column>
-            <column name="auctionstarttime" type="timestamp" defaultValue="now()">
+            <column name="auctionStartTime" type="timestamp" defaultValue="now()">
                 <constraints nullable="false"/>
             </column>
-            <column name="auctionendtime" type="timestamp" defaultValue="NULL"/>
-            <column name="minprice" type="int">
+            <column name="auctionEndTime" type="timestamp" defaultValue="NULL"/>
+            <column name="minBidAmount" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -61,16 +61,16 @@
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="bidder" type="int">
+            <column name="bidderId" type="int">
                 <constraints foreignKeyName="fk_bids_bidder" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
             </column>
-            <column name="itemid" type="int">
-                <constraints foreignKeyName="fk_bids_itemid" nullable="false" referencedTableName="items" referencedColumnNames="id"/>
+            <column name="itemId" type="int">
+                <constraints foreignKeyName="fk_bids_itemId" nullable="false" referencedTableName="items" referencedColumnNames="id"/>
             </column>
-            <column name="bidtime" type="timestamp" defaultValue="now()">
+            <column name="bidTime" type="timestamp" defaultValue="now()">
                 <constraints nullable="false"/>
             </column>
-            <column name="bidamount" type="int">
+            <column name="bidAmount" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -80,13 +80,13 @@
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="userid" type="int">
-                <constraints foreignKeyName="fk_feedback_userid" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
+            <column name="userId" type="int">
+                <constraints foreignKeyName="fk_feedback_userId" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
             </column>
             <column name="rating" type="smallint">
                 <constraints nullable="false"/>
             </column>
-            <column name="feedbackdesc" type="text">
+            <column name="feedbackDescription" type="text">
                 <constraints nullable="false"/>
             </column>
             <column name="time" type="timestamp" defaultValue="now()">
