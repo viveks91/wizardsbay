@@ -21,11 +21,11 @@ import java.util.Set;
 public interface ItemDAO {
 
     //Create new item
-    @SqlQuery("insert into items (itemName, itemDescription, sellerId, auctionStartTime, auctionEndTime, minDidAmount) values (:itemName, :itemDescription, :sellerId, :auctionStartTime, :auctionEndTime, :minBidAmount) RETURNING *")
+    @SqlQuery("insert into items (item_name, item_description, seller_id, auction_end_time, min_bid_amount) values (:itemName, :itemDescription, :sellerId, :auctionEndTime, :minBidAmount) RETURNING *")
     Item create(@BindBean Item item);
 
     //Items listed by a particular seller
-    @SqlQuery("select * from items where sellerId = :sellerId")
+    @SqlQuery("select * from items where seller_id = :sellerId")
     List<Item> findItemsBySellerId(@Bind("sellerId") int sellerId);
 
     //item by item Id
@@ -33,13 +33,13 @@ public interface ItemDAO {
     Item findItemById(@Bind("itemId") int itemId);
 
     //update item details and auction end time for the item by item Id
-    @SqlUpdate("update items set itemName = :itemName, itemDescription = :itemDescription, auctionEndTime = :auctionEndTime where id = :itemId")
-    void update(@Bind("itemId") String itemId, @Bind("itemName") String itemName, @Bind("itemDescription") String itemDescription, @Bind("auctionEndTime") Timestamp auctionEndTime);
+    @SqlUpdate("update items set item_name = :itemName, item_description = :itemDescription, auction_end_time = :auctionEndTime where id = :itemId")
+    void update(@Bind("itemId") int itemId, @Bind("itemName") String itemName, @Bind("itemDescription") String itemDescription, @Bind("auctionEndTime") Timestamp auctionEndTime);
 
     //delete item by item Id
     //TODO : delete should be possible only by item owners/sellers
-    @SqlUpdate("delete from items where id = :id")
-    void deleteItem(@BindBean Item item);
+    @SqlUpdate("delete from items where id = :itemId")
+    void deleteItem(@Bind("itemId") int itemId);
 
     //select all item active
     @SqlQuery("select * from items where auctionEndTime > localtimestamp")

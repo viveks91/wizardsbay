@@ -89,7 +89,7 @@ public class ItemResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        itemDao.deleteItem(item);
+        itemDao.deleteItem(itemId);
 
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
