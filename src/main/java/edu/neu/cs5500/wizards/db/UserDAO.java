@@ -13,7 +13,7 @@ import java.util.Set;
 @RegisterMapper(UserMapper.class)
 public interface UserDAO {
 
-    @SqlQuery("insert into users (username, password, firstname, lastname, address) values (:username, :password, :firstName, :lastName, :address) RETURNING *")
+    @SqlQuery("insert into users (username, password, first_name, last_name, address) values (:username, :password, :firstName, :lastName, :address) RETURNING *")
     User create(@BindBean User user);
 
     @SqlQuery("select * from users where username = :username")
