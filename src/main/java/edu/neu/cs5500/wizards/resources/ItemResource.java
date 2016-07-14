@@ -37,22 +37,20 @@ public class ItemResource {
                     .build();
         }
 
-        item.setCurrentMaxBid(item.getMinBidAmount());
         Item createdItem = itemDao.create(item);
-
         return Response.ok(createdItem).build();
     }
 
     //get all items listed by a seller
-    @GET
-    @Path("/seller/{sellerId}")
-    @Timed
-    @UnitOfWork
-    @ExceptionMetered
-    public Response get(@PathParam("sellerId") int sellerId) {
-        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
-
-    }
+    // added this to user/{username}/items
+//    @GET
+//    @Path("/seller/{sellerId}")
+//    @Timed
+//    @UnitOfWork
+//    @ExceptionMetered
+//    public Response get(@PathParam("sellerId") int sellerId) {
+//        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
+//    }
 
     //get all active items
     @GET

@@ -21,34 +21,28 @@ import java.util.Set;
 public interface ItemDAO {
 
     //Create new item
-    @SqlQuery("insert into items (itemname, itemdescription, sellerid, auctionstarttime, auctionendtime, minbidamount, currentbid) values (:itemName, :itemDescription, :sellerId, to_timestamp(:auctionStartTime, 'YYYY-MM-DD HH24:MI:SS')\\:\\:timestamp, to_timestamp(:auctionEndTime, 'YYYY-MM-DD HH24:MI:SS')\\:\\:timestamp, :minBidAmount, :currentMaxBid) RETURNING *")
-    public Item create(@BindBean Item item);
+    @SqlQuery("insert into items (itemName, itemDescription, sellerId, auctionStartTime, auctionEndTime, minDidAmount) values (:itemName, :itemDescription, :sellerId, :auctionStartTime, :auctionEndTime, :minBidAmount) RETURNING *")
+    Item create(@BindBean Item item);
 
     //Items listed by a particular seller
-    @SqlQuery("select * from items where sellerid = :sellerid")
-    public List<Item> findItemsBySellerId(@Bind("sellerid") int sellerid);
+    @SqlQuery("select * from items where sellerId = :sellerId")
+    List<Item> findItemsBySellerId(@Bind("sellerId") int sellerId);
 
     //item by item Id
     @SqlQuery("select * from items where id = :itemId")
-    public Item findItemById(@Bind("itemId") int itemId);
+    Item findItemById(@Bind("itemId") int itemId);
 
     //update item details and auction end time for the item by item Id
-    @SqlUpdate("update items set itemname = :itemname, itemdescription = :itemdescription, auctionendtime = :auctionendtime where id = :itemid")
-    public void update(@Bind("itemid") String itemid, @Bind("itemname") String itemname, @Bind("itemdescription") String itemdescription, @Bind("auctionendtime") Timestamp auctionendtime);
+    @SqlUpdate("update items set itemName = :itemName, itemDescription = :itemDescription, auctionEndTime = :auctionEndTime where id = :itemId")
+    void update(@Bind("itemId") String itemId, @Bind("itemName") String itemName, @Bind("itemDescription") String itemDescription, @Bind("auctionEndTime") Timestamp auctionEndTime);
 
     //delete item by item Id
     //TODO : delete should be possible only by item owners/sellers
     @SqlUpdate("delete from items where id = :id")
-    public void deleteItem(@BindBean Item item);
+    void deleteItem(@BindBean Item item);
 
     //select all item active
-    @SqlQuery("select * from items where auctionendtime > localtimestamp")
-    public List<Item> findAllActiveItems();
-
-
-    @SqlQuery("select username, password, firstname, lastname, address from users limit :limit offset :offset")
-    public Set<User> list(@Bind("limit") int limit, @Bind("offset") int offset);
-
-
+    @SqlQuery("select * from items where auctionEndTime > localtimestamp")
+    List<Item> findAllActiveItems();
 
 }

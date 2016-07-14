@@ -3,6 +3,7 @@ package edu.neu.cs5500.wizards.core;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Item {
@@ -24,19 +25,19 @@ public class Item {
     private int sellerId;
 
     @JsonProperty
-    @NotEmpty
-    private String auctionStartTime;
+    private int buyerId;
 
     @JsonProperty
     @NotEmpty
-    private String auctionEndTime;
+    private Timestamp auctionStartTime;
+
+    @JsonProperty
+    @NotEmpty
+    private Timestamp auctionEndTime;
 
     @JsonProperty
     @NotEmpty
     private int minBidAmount;
-
-    @JsonProperty
-    private int currentMaxBid;
 
 
     public Item() {
@@ -79,19 +80,27 @@ public class Item {
         this.sellerId = sellerId;
     }
 
-    public String getAuctionStartTime() {
+    public int getBuyerId() {
+        return buyerId;
+    }
+
+    public void setBuyerId(int buyerId) {
+        this.buyerId = buyerId;
+    }
+
+    public Timestamp getAuctionStartTime() {
         return auctionStartTime;
     }
 
-    public void setAuctionStartTime(String auctionStartTime) {
+    public void setAuctionStartTime(Timestamp auctionStartTime) {
         this.auctionStartTime = auctionStartTime;
     }
 
-    public String getAuctionEndTime() {
+    public Timestamp getAuctionEndTime() {
         return auctionEndTime;
     }
 
-    public void setAuctionEndTime(String auctionEndTime) {
+    public void setAuctionEndTime(Timestamp auctionEndTime) {
         this.auctionEndTime = auctionEndTime;
     }
 
@@ -103,37 +112,34 @@ public class Item {
         this.minBidAmount = minBidAmount;
     }
 
-    public int getCurrentMaxBid() {
-        return currentMaxBid;
-    }
-
-    public void setCurrentMaxBid(int currentMaxBid) {
-        this.currentMaxBid = currentMaxBid;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Item)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        final Item that = (Item) o;
+        Item item = (Item) o;
 
-        return Objects.equals(this.id, that.id) &&
-                Objects.equals(this.itemName, that.itemName) &&
-                Objects.equals(this.itemDescription, that.itemDescription) &&
-                Objects.equals(this.sellerId, that.sellerId) &&
-                Objects.equals(this.auctionStartTime, that.auctionStartTime) &&
-                Objects.equals(this.auctionEndTime, that.auctionEndTime) &&
-                Objects.equals(this.minBidAmount, that.minBidAmount) &&
-                Objects.equals(this.currentMaxBid, that.currentMaxBid);
+        if (id != item.id) return false;
+        if (sellerId != item.sellerId) return false;
+        if (buyerId != item.buyerId) return false;
+        if (minBidAmount != item.minBidAmount) return false;
+        if (!itemName.equals(item.itemName)) return false;
+        if (!itemDescription.equals(item.itemDescription)) return false;
+        if (!auctionStartTime.equals(item.auctionStartTime)) return false;
+        return auctionEndTime.equals(item.auctionEndTime);
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, itemName, itemDescription,sellerId, auctionStartTime, auctionEndTime, minBidAmount, currentMaxBid);
+        int result = id;
+        result = 31 * result + itemName.hashCode();
+        result = 31 * result + itemDescription.hashCode();
+        result = 31 * result + sellerId;
+        result = 31 * result + buyerId;
+        result = 31 * result + auctionStartTime.hashCode();
+        result = 31 * result + auctionEndTime.hashCode();
+        result = 31 * result + minBidAmount;
+        return result;
     }
 }

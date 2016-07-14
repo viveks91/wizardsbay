@@ -90,7 +90,8 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
-        environment.jersey().register(new UserResource(userDao));
+        final ItemDAO itemDaoForUser = jdbi.onDemand(ItemDAO.class);
+        environment.jersey().register(new UserResource(userDao, itemDaoForUser));
 
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));

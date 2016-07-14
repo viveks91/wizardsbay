@@ -14,13 +14,13 @@ public class ItemMapper implements ResultSetMapper<Item> {
     public Item map(int index, ResultSet r, StatementContext ctx) throws SQLException {
         Item item = new Item();
         item.setId(r.getInt("id"));
-        item.setItemName(r.getString("itemname"));
-        item.setItemDescription(r.getString("itemdescription"));
-        item.setSellerId(r.getInt("sellerid"));
-        item.setAuctionStartTime(r.getString("auctionstarttime"));
-        item.setAuctionEndTime(r.getString("auctionendtime"));
-        item.setMinBidAmount(r.getInt("minbidamount"));
-        item.setCurrentMaxBid(r.getInt("currentbid"));
+        item.setItemName(r.getString("itemName"));
+        item.setItemDescription(r.getString("itemDescription"));
+        item.setBuyerId(r.getInt("buyerId"));
+        item.setSellerId(r.getInt("sellerId"));
+        item.setAuctionStartTime(r.getTimestamp("auctionStartTime"));
+        item.setAuctionEndTime(r.getTimestamp("auctionEndTime"));
+        item.setMinBidAmount(r.getInt("minBidAmount"));
 
         return item;
     }
