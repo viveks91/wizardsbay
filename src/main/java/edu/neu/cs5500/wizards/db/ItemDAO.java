@@ -26,7 +26,7 @@ public interface ItemDAO {
 
     //Items listed by a particular seller
     @SqlQuery("select * from items where sellerid = :sellerid")
-    public List<Item> findItemBySellerId(@Bind("sellerid") int sellerid);
+    public List<Item> findItemsBySellerId(@Bind("sellerid") int sellerid);
 
     //item by item Id
     @SqlQuery("select * from items where id = :itemId")

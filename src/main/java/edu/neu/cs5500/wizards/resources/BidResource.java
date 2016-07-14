@@ -3,9 +3,11 @@ package edu.neu.cs5500.wizards.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Bid;
+import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.db.BidDAO;
-import edu.neu.cs5500.wizards.exception.ResponseException;
+import edu.neu.cs5500.wizards.db.ItemDAO;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,45 +17,67 @@ import java.util.List;
 /**
  * Created by susannaedens on 6/21/16.
  */
-@Path("/bids")
+@Path("/item/{itemId}/bids")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BidResource {
 
     private final BidDAO bidDao;
+    private final ItemDAO itemDAO;
 
-    public BidResource(BidDAO bidDao) {
+    private static final int HIGHEST_BID_INDEX = 0;
+
+    public BidResource(BidDAO bidDao, ItemDAO itemDAO) {
         this.bidDao = bidDao;
+        this.itemDAO = itemDAO;
+    }
+
+    private List<Bid> getAllBidsForItemId(int itemId) throws IllegalArgumentException {
+        if (this.itemDAO.findItemById(itemId) == null) {
+            throw new IllegalArgumentException("Item does not exist");
+        }
+        return this.bidDao.findBidsByItemId(itemId);
     }
 
     /**
      * Creates a bid and returns it only if the given bid's bid amount is greater than the current highest bid for
      * the item or if it is the first bid on an item.
      *
-     * @param bid the bid to create and return
-     * @return the new bid.
+     * @param incomingBid the bid to create and return
+     * @return Response containing the new bid.
      */
     @POST
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Bid post(Bid bid) {
-        List<Bid> bidList = get(bid.getItemId());
-        Bid newBid = new Bid();
-        if (bidList.isEmpty()) {
-            bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
-            newBid = bidDao.retrieve(bid.getId());
-        } else {
-            Bid highest = bidDao.retrieveHighestBid(bid.getItemId());
-            if (bid.getBidAmount() > highest.getBidAmount()) {
-                bidDao.create(bid.getItemId(), bid.getBidder(), bid.getBidAmount());
-                newBid = bidDao.retrieve(bid.getId());
-            } else {
-                ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Your bid must be higher than current " +
-                        "highest bid: $" + highest.getBidAmount());
-            }
+    public Response post(@PathParam("itemId") int itemId, Bid incomingBid) {
+
+        Item item = this.itemDAO.findItemById(itemId);
+        if (item == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Item does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
-        return newBid;
+
+        List<Bid> bidList = this.bidDao.findBidsByItemId(itemId);
+
+        int highestBidAmount = bidList.isEmpty()
+                ? item.getMinBidAmount()
+                : bidList.get(HIGHEST_BID_INDEX).getBidAmount();
+
+        if (incomingBid.getBidAmount() > highestBidAmount) {
+            int newBidId = this.bidDao.create(itemId, incomingBid.getBidder(), incomingBid.getBidAmount());
+            incomingBid.setId(newBidId);
+            return Response.ok(incomingBid).build();
+        } else {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Your bid must be higher than current highest bid: $" + highestBidAmount)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
     }
 
 
@@ -61,15 +85,24 @@ public class BidResource {
      * Retrieves the history of bids for an item given the item's id.
      *
      * @param itemId the id of the item
-     * @return all bids for a specific item
+     * @return Response containing all bids for a specific item
      */
     @GET
-    @Path("/history/{itemId}")
+    @Path("/history")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public List<Bid> get(@PathParam("itemId") int itemId) {
-        return bidDao.findBidsByItemId(itemId);
+    public Response get(@PathParam("itemId") int itemId) {
+
+        if (this.itemDAO.findItemById(itemId) == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Item does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        return Response.ok(this.bidDao.findBidsByItemId(itemId)).build();
     }
 
 
@@ -77,15 +110,33 @@ public class BidResource {
      * Retrieve a bid given the bid's id.
      *
      * @param id the id of the bid
-     * @return the bid with the id matching the given id
+     * @return Response containing bid with id matching the given id
      */
     @GET
     @Path("/{id}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Bid getById(@PathParam("id") int id) {
-        return bidDao.retrieve(id);
+    public Response getById(@PathParam("itemId") int itemId, @PathParam("id") int id) {
+
+        if (this.itemDAO.findItemById(itemId) == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Item does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        Bid bid = this.bidDao.retrieve(id);
+        if (bid == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Bid does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        return Response.ok(bid).build();
     }
 
 
@@ -93,19 +144,33 @@ public class BidResource {
      * Retrieve the highest current bid for an item given the item's id.
      *
      * @param itemId
-     * @return
+     * @return Response containing highest bid for a specific item
      */
     @GET
-    @Path("/item/{itemId}")
+    @Path("/highest")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Bid getHighestBid(@PathParam("itemId") int itemId) {
-        Bid highest = bidDao.retrieveHighestBid(itemId);
-        if (highest == null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "There are no bids for this item yet.");
+    public Response getHighestBid(@PathParam("itemId") int itemId) {
+
+        if (this.itemDAO.findItemById(itemId) == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Item does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
-        return highest;
+
+        List<Bid> bids = this.bidDao.findBidsByItemId(itemId);
+        if (bids.isEmpty()) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: There are no bids for this item yet")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        return Response.ok(bids.get(HIGHEST_BID_INDEX)).build();
     }
 
 
@@ -114,17 +179,30 @@ public class BidResource {
      * an exception. If the bid is successfully deleted, return a 204 response code.
      *
      * @param bidId the id of the bid
-     * @return a 204 response code representing successful deletion
+     * @return Response 204 for successful deletion
      */
     @DELETE
     @Path("/{bidId}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response delete(@PathParam("bidId") int bidId) {
+    public Response delete(@PathParam("itemId") int itemId, @PathParam("bidId") int bidId) {
+
+        if (this.itemDAO.findItemById(itemId) == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Item does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         Bid bid = bidDao.retrieve(bidId);
         if (bid == null) {
-            ResponseException.formatAndThrow(Response.Status.BAD_REQUEST, "Bid not found");
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Bid does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
         bidDao.delete(bid);
         return Response.status(204).build();

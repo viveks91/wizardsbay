@@ -2,10 +2,7 @@ package edu.neu.cs5500.wizards.db;
 
 import edu.neu.cs5500.wizards.core.Bid;
 import edu.neu.cs5500.wizards.mapper.BidMapper;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.BindBean;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
+import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
 import java.util.List;
@@ -26,7 +23,8 @@ public interface BidDAO {
      * @param bidAmount the bid amount
      */
     @SqlUpdate("insert into bids (itemId, bidder, bidAmount) values (:itemId, :bidder, :bidAmount)")
-    void create(@Bind("itemId") int itemId, @Bind("bidder") int bidder, @Bind("bidAmount") int bidAmount);
+    @GetGeneratedKeys
+    int create(@Bind("itemId") int itemId, @Bind("bidder") int bidder, @Bind("bidAmount") int bidAmount);
 
     /**
      * Retrieves a single bid based on the bid's id.
@@ -52,7 +50,7 @@ public interface BidDAO {
      * @param itemid the id of the item
      * @return a history of bids for a given item
      */
-    @SqlQuery("select * from bids where itemid = :itemid")
+    @SqlQuery("select * from bids where itemid = :itemid order by bidAmount desc")
     List<Bid> findBidsByItemId(@Bind("itemid") int itemid);
 
 

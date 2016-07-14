@@ -3,16 +3,13 @@ package edu.neu.cs5500.wizards.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Item;
-import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
-import edu.neu.cs5500.wizards.exception.ResponseException;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Path("/item")
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,7 +50,7 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     public Response get(@PathParam("sellerId") int sellerId) {
-        return Response.ok(itemDao.findItemBySellerId(sellerId)).build();
+        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
 
     }
 
