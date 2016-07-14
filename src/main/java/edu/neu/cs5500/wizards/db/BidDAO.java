@@ -19,12 +19,12 @@ public interface BidDAO {
      * not higher than the highest bid amount for the given item, the bid will not be created.
      *
      * @param itemId    the id of the item to bid on
-     * @param bidder    the id of the user bidding on the item
+     * @param bidderId    the id of the user bidding on the item
      * @param bidAmount the bid amount
      */
-    @SqlUpdate("insert into bids (itemId, bidder, bidAmount) values (:itemId, :bidder, :bidAmount)")
+    @SqlUpdate("insert into bids (itemId, bidderId, bidAmount) values (:itemId, :bidderId, :bidAmount)")
     @GetGeneratedKeys
-    int create(@Bind("itemId") int itemId, @Bind("bidder") int bidder, @Bind("bidAmount") int bidAmount);
+    int create(@Bind("itemId") int itemId, @Bind("bidderId") int bidderId, @Bind("bidAmount") int bidAmount);
 
     /**
      * Retrieves a single bid based on the bid's id.
@@ -35,23 +35,23 @@ public interface BidDAO {
     @SqlQuery("select * from bids where id = :id")
     Bid retrieve(@Bind("id") int id);
 
-    /**
-     * Retrieves the highest current bid on an item given the item's id.
-     *
-     * @param itemId the id of the item
-     * @return the current highest bid
-     */
-    @SqlQuery("with items as (select * from bids where itemId = :itemId) select * from items order by bidAmount desc limit 1")
-    Bid retrieveHighestBid(@Bind("itemId") int itemId);
+//    /**
+//     * Retrieves the highest current bid on an item given the item's id.
+//     *
+//     * @param itemId the id of the item
+//     * @return the current highest bid
+//     */
+//    @SqlQuery("with items as (select * from bids where itemId = :itemId) select * from items order by bidAmount desc limit 1")
+//    Bid retrieveHighestBid(@Bind("itemId") int itemId);
 
     /**
      * Retrieve a list of bids representing the bid history for a certain item given the item's id.
      *
-     * @param itemid the id of the item
+     * @param itemId the id of the item
      * @return a history of bids for a given item
      */
-    @SqlQuery("select * from bids where itemid = :itemid order by bidAmount desc")
-    List<Bid> findBidsByItemId(@Bind("itemid") int itemid);
+    @SqlQuery("select * from bids where itemId = :itemId order by bidAmount desc")
+    List<Bid> findBidsByItemId(@Bind("itemId") int itemId);
 
 
     /**

@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -22,7 +23,11 @@ public class Bid {
 
     @JsonProperty
     @NotEmpty
-    private int bidder;
+    private int bidderId;
+
+    @JsonProperty
+    @NotEmpty
+    private Timestamp bidTime;
 
     @JsonProperty
     @NotEmpty
@@ -46,12 +51,20 @@ public class Bid {
         this.itemId = itemId;
     }
 
-    public int getBidder() {
-        return bidder;
+    public int getBidderId() {
+        return bidderId;
     }
 
-    public void setBidder(int bidder) {
-        this.bidder = bidder;
+    public void setBidderId(int bidderId) {
+        this.bidderId = bidderId;
+    }
+
+    public Timestamp getBidTime() {
+        return bidTime;
+    }
+
+    public void setBidTime(Timestamp bidTime) {
+        this.bidTime= bidTime;
     }
 
     public int getBidAmount() {
@@ -63,11 +76,6 @@ public class Bid {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, itemId, bidder, bidAmount);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -76,9 +84,20 @@ public class Bid {
 
         if (id != bid.id) return false;
         if (itemId != bid.itemId) return false;
-        if (bidder != bid.bidder) return false;
-        return bidAmount == bid.bidAmount;
+        if (bidderId != bid.bidderId) return false;
+        if (bidAmount != bid.bidAmount) return false;
+        return bidTime.equals(bid.bidTime);
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + itemId;
+        result = 31 * result + bidderId;
+        result = 31 * result + bidTime.hashCode();
+        result = 31 * result + bidAmount;
+        return result;
     }
 
     @Override

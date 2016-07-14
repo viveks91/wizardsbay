@@ -68,7 +68,7 @@ public class BidResource {
                 : bidList.get(HIGHEST_BID_INDEX).getBidAmount();
 
         if (incomingBid.getBidAmount() > highestBidAmount) {
-            int newBidId = this.bidDao.create(itemId, incomingBid.getBidder(), incomingBid.getBidAmount());
+            int newBidId = this.bidDao.create(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
             incomingBid.setId(newBidId);
             return Response.ok(incomingBid).build();
         } else {
