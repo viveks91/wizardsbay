@@ -50,6 +50,14 @@ public class FeedbackResource {
                     .build();
         }
 
+        if (feedback.getRating() < 1 || feedback.getRating() > 5) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Invalid rating")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         Feedback newFeedback = this.feedbackDao.create(user.getId(), feedback.getRating(), feedback.getFeedbackDescription());
         return Response.ok(newFeedback).build();
     }
