@@ -12,6 +12,7 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,13 +25,10 @@ public class UserResource {
 
     private final UserDAO userDao;
     private final ItemDAO itemDao;
-    private final FeedbackDAO feedbackDao;
 
-
-    public UserResource(UserDAO userDao, ItemDAO itemDao, FeedbackDAO feedbackDao) {
+    public UserResource(UserDAO userDao, ItemDAO itemDao) {
         this.userDao = userDao;
         this.itemDao = itemDao;
-        this.feedbackDao = feedbackDao;
     }
 
     /**
@@ -43,7 +41,7 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(User user) {
+    public Response post(@Valid User user) {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)

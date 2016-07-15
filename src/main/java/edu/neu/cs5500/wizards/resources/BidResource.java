@@ -12,6 +12,7 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -48,9 +49,9 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(@PathParam("itemId") int itemId, Bid incomingBid, @Auth User auth_user) {
+    public Response post(@PathParam("itemId") int itemId, @Valid Bid incomingBid, @Auth User auth_user) {
 
-        User biddingUser = userDao.retrieveById(incomingBid.getBidderId());
+        User biddingUser = userDao.retrieve(incomingBid.getBidderUsername());
         if(biddingUser == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -67,6 +68,7 @@ public class BidResource {
                     .build();
         }
 
+        incomingBid.setBidderId(biddingUser.getId());
         Item item = this.itemDao.findItemById(itemId);
         if (item == null) {
             return Response
@@ -84,6 +86,7 @@ public class BidResource {
 
         if (incomingBid.getBidAmount() > highestBidAmount) {
             Bid newBid = this.bidDao.create(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
+
             // update buyer info for the item record
             this.itemDao.updateBuyerInfo(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
 
@@ -121,8 +124,11 @@ public class BidResource {
 
         List<Bid> bids = this.bidDao.findBidsByItemId(itemId);
 
-        // hide fields
         for (Bid bid : bids) {
+            // set username
+            bid.setBidderUsername(this.userDao.retrieveById(bid.getBidderId()).getUsername());
+
+            // hide unwanted fields
             bid.setId(null);
             bid.setItemId(null);
         }
@@ -169,6 +175,7 @@ public class BidResource {
                     .build();
         }
 
+        bid.setBidderUsername(this.userDao.retrieveById(bid.getBidderId()).getUsername());
         return Response.ok(bid).build();
     }
 
@@ -204,6 +211,7 @@ public class BidResource {
         }
 
         Bid highestBid = bids.get(HIGHEST_BID_INDEX);
+        highestBid.setBidderUsername(this.userDao.retrieveById(highestBid.getBidderId()).getUsername());
         highestBid.setItemId(null);
 
         return Response.ok(highestBid).build();

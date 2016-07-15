@@ -9,6 +9,7 @@ import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -40,20 +41,12 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(@PathParam("username") String username, Feedback feedback) {
+    public Response post(@PathParam("username") String username, @Valid Feedback feedback) {
         User user = this.userDao.retrieve(username);
         if(user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User does not exist")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        }
-
-        if (feedback.getRating() < 1 || feedback.getRating() > 5) {
-            return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: Invalid rating")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -88,7 +81,6 @@ public class FeedbackResource {
 
         // ignore fields
         for (Feedback feedback : feedbacks) {
-            feedback.setUserId(null);
             feedback.setTime(null);
         }
 
@@ -133,7 +125,6 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        feedback.setUserId(null);
 
         return Response.ok(feedback).build();
     }

@@ -10,6 +10,7 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,7 +36,7 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(Item item, @Auth User auth_user) {
+    public Response post(@Valid Item item, @Auth User auth_user) {
         if( item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -44,7 +45,7 @@ public class ItemResource {
                     .build();
         }
 
-        User itemSeller = this.userDao.retrieveById(item.getSellerId());
+        User itemSeller = this.userDao.retrieve(item.getSellerUsername());
         if(itemSeller == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -61,14 +62,6 @@ public class ItemResource {
                     .build();
         }
 
-        if(item.getMinBidAmount() < 1) {
-            return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: Minimum bid amount cannot be less than $1")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        }
-
         Timestamp current = new Timestamp(new Date().getTime());
 
         if(item.getAuctionEndTime().before(item.getAuctionStartTime()) ||
@@ -80,6 +73,7 @@ public class ItemResource {
                     .build();
         }
 
+        item.setSellerId(itemSeller.getId());
         Item createdItem = this.itemDao.create(item);
         return Response.ok(createdItem).build();
     }
@@ -104,10 +98,12 @@ public class ItemResource {
     public Response get() {
         List<Item> activeItems = this.itemDao.findAllActiveItems();
 
-        //hide some details
         for (Item item : activeItems) {
+            //hide some details
             item.setAuctionStartTime(null);
-            item.setBuyerId(null);
+
+            // set seller username
+            item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
         }
 
         return Response.ok(activeItems).build();
@@ -130,8 +126,9 @@ public class ItemResource {
                     .build();
         }
 
-        if (item.getBuyerId() == 0) { // not sold
-            item.setBuyerId(null);
+        item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
+        if (item.getBuyerId() != 0) { // sold
+            item.setBuyerUsername(this.userDao.retrieveById(item.getBuyerId()).getUsername());
         }
         return Response.ok(item).build();
     }
@@ -164,7 +161,6 @@ public class ItemResource {
         }
 
         this.itemDao.deleteItem(itemId);
-
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
 }

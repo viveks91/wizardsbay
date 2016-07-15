@@ -88,17 +88,6 @@ public class ItemResourceTest {
     }
 
     @Test
-    public void testExceptionOnPostingItemWithInvalidMinBidAmount() {
-        when(item.getSellerId()).thenReturn((int)Math.random());
-        when(item.getMinBidAmount()).thenReturn(0);
-        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
-        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
-        Response response = itemResource.post(item, auth_user);
-        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
-        assertEquals(response.getEntity(), "Error: Minimum bid amount cannot be less than $1");
-    }
-
-    @Test
     public void testExceptionOnPostingItemWithInvalidAuctionEndTime() {
         String dummyStartTime = "1990-01-01 11:11:11";
         String dummyEndTime = "2016-01-01 11:11:11";
