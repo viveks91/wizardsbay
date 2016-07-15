@@ -42,7 +42,7 @@ public interface ItemDAO {
     void deleteItem(@Bind("itemId") int itemId);
 
     //select all active items
-    @SqlQuery("select * from items where auctionEndTime > localtimestamp")
+    @SqlQuery("select * from items where auction_end_time > localtimestamp")
     List<Item> findAllActiveItems();
 
 }
