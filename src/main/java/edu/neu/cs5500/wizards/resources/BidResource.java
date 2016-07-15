@@ -224,7 +224,7 @@ public class BidResource {
                     .build();
         }
 
-        Bid bid = bidDao.retrieve(bidId);
+        Bid bid = this.bidDao.retrieve(bidId);
         if (bid == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -233,7 +233,7 @@ public class BidResource {
                     .build();
         }
 
-        User biddingUser = userDao.retrieveById(bid.getBidderId());
+        User biddingUser = this.userDao.retrieveById(bid.getBidderId());
         if(!auth_user.equals(biddingUser)){
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)

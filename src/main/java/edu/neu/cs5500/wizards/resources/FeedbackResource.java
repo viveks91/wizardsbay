@@ -40,7 +40,7 @@ public class FeedbackResource {
     @UnitOfWork
     @ExceptionMetered
     public Response post(Feedback feedback) {
-        User user = userDao.retrieveById(feedback.getUserId());
+        User user = this.userDao.retrieveById(feedback.getUserId());
         if(user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -49,7 +49,7 @@ public class FeedbackResource {
                     .build();
         }
 
-        Feedback newFeedback = feedbackDao.create(feedback.getUserId(), feedback.getRating(), feedback.getFeedbackDescription());
+        Feedback newFeedback = this.feedbackDao.create(feedback.getUserId(), feedback.getRating(), feedback.getFeedbackDescription());
         return Response.ok(newFeedback).build();
     }
 
@@ -83,7 +83,7 @@ public class FeedbackResource {
     @UnitOfWork
     @ExceptionMetered
     public Response getOne(@PathParam("id") int id) {
-        Feedback feedback = feedbackDao.retrieveOne(id);
+        Feedback feedback = this.feedbackDao.retrieveOne(id);
         if (feedback == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -106,7 +106,7 @@ public class FeedbackResource {
     @UnitOfWork
     @ExceptionMetered
     public Response delete(Feedback existingFeedback) {
-        Feedback feedback = feedbackDao.retrieveOne(existingFeedback.getId());
+        Feedback feedback = this.feedbackDao.retrieveOne(existingFeedback.getId());
         if (feedback == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -114,7 +114,7 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        feedbackDao.delete(feedback);
+        this.feedbackDao.delete(feedback);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
 }

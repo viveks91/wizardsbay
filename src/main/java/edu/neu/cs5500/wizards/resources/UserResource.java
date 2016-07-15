@@ -71,7 +71,7 @@ public class UserResource {
     @Path("/{username}")
     @ExceptionMetered
     public Response put(@PathParam("username") String username, User user, @Auth User auth_user) {
-        User existingUser = userDao.retrieve(username);
+        User existingUser = this.userDao.retrieve(username);
 
         if(existingUser == null){
             return Response

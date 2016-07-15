@@ -44,7 +44,7 @@ public class ItemResource {
                     .build();
         }
 
-        User itemSeller = userDao.retrieveById(item.getSellerId());
+        User itemSeller = this.userDao.retrieveById(item.getSellerId());
         if(itemSeller == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -80,7 +80,7 @@ public class ItemResource {
                     .build();
         }
 
-        Item createdItem = itemDao.create(item);
+        Item createdItem = this.itemDao.create(item);
         return Response.ok(createdItem).build();
     }
 
@@ -102,7 +102,7 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     public Response get() {
-        List<Item> activeItems = itemDao.findAllActiveItems();
+        List<Item> activeItems = this.itemDao.findAllActiveItems();
 
         //hide some details
         for (Item item : activeItems) {
@@ -121,7 +121,7 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     public Response getById(@PathParam("id") int id) {
-        Item item = itemDao.findItemById(id);
+        Item item = this.itemDao.findItemById(id);
         if (item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -144,7 +144,7 @@ public class ItemResource {
     @ExceptionMetered
     /* delete user by username*/
     public Response delete(@PathParam("itemId") int itemId, @Auth User auth_user) {
-        Item item = itemDao.findItemById(itemId);
+        Item item = this.itemDao.findItemById(itemId);
 
         if (item == null) {
             return Response
@@ -154,7 +154,7 @@ public class ItemResource {
                     .build();
         }
 
-        User itemSeller = userDao.retrieveById(item.getSellerId());
+        User itemSeller = this.userDao.retrieveById(item.getSellerId());
         if(!auth_user.equals(itemSeller)){
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)
@@ -163,7 +163,7 @@ public class ItemResource {
                     .build();
         }
 
-        itemDao.deleteItem(itemId);
+        this.itemDao.deleteItem(itemId);
 
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
