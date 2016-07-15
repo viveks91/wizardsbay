@@ -1,10 +1,5 @@
-template: Hello, %s!
-
 swagger:
   resourcePackage: com.example.helloworld
-
-defaultName: ${DW_DEFAULT_NAME:-Stranger}
-
 
 database:
   driverClass: org.postgresql.Driver
@@ -15,50 +10,20 @@ database:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
-# use the simple server factory if you only want to run on a single port
 server:
   type: simple
+  applicationContextPath: /wizardsbay
   connector:
     type: http
     port: 8100
 
 # Logging settings.
 logging:
-
   # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
   level: INFO
-
   # Logger-specific levels.
   loggers:
-
-    # Sets the level for 'com.example.app' to DEBUG.
-    com.example.app: DEBUG
-
-    # Redirects SQL logs to a separate file
-    org.hibernate.SQL:
-      level: DEBUG
-
-# Logback's Time Based Rolling Policy - archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}.log.gz
-# Logback's Size and Time Based Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
-# Logback's Fixed Window Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%i.log.gz
-
+    edu.neu.cs5500: DEBUG
+    org.hibernate.SQL: DEBUG
   appenders:
     - type: console
-    - type: file
-      threshold: INFO
-      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-      currentLogFilename: /tmp/application.log
-      archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
-      archivedFileCount: 7
-      timeZone: UTC
-      maxFileSize: 10MB
-
-# the key needs to match the suffix of the renderer
-viewRendererConfiguration:
-    .ftl:
-        strict_syntax: yes
-        whitespace_stripping: yes
-
-metrics:
-  type: graphite
-  frequency: 10s

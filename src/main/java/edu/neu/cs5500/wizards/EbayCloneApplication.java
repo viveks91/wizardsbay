@@ -1,7 +1,6 @@
 package edu.neu.cs5500.wizards;
 
 import edu.neu.cs5500.wizards.auth.ExampleAuthenticator;
-import edu.neu.cs5500.wizards.cli.RenderCommand;
 import edu.neu.cs5500.wizards.core.Template;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.BidDAO;
@@ -36,14 +35,6 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         new EbayCloneApplication().run(args);
     }
 
-//    private final HibernateBundle<EbayCloneConfiguration> hibernateBundle =
-//        new HibernateBundle<EbayCloneConfiguration>(User.class) {
-//            @Override
-//            public DataSourceFactory getDataSourceFactory(EbayCloneConfiguration configuration) {
-//                return configuration.getDataSourceFactory();
-//            }
-//        };
-
     @Override
     public String getName() {
         return "hello-world";
@@ -59,7 +50,7 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
                 )
         );
 
-        //
+        // Swagger
         bootstrap.addBundle(new SwaggerBundle<EbayCloneConfiguration>() {
             @Override
             protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(EbayCloneConfiguration configuration) {
@@ -67,18 +58,11 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
             }
         });
 
-        bootstrap.addCommand(new RenderCommand());
-        bootstrap.addBundle(new AssetsBundle());
+        // Migrations
         bootstrap.addBundle(new MigrationsBundle<EbayCloneConfiguration>() {
             @Override
             public DataSourceFactory getDataSourceFactory(EbayCloneConfiguration configuration) {
                 return configuration.getDataSourceFactory();
-            }
-        });
-        bootstrap.addBundle(new ViewBundle<EbayCloneConfiguration>() {
-            @Override
-            public Map<String, Map<String, String>> getViewConfiguration(EbayCloneConfiguration configuration) {
-                return configuration.getViewRendererConfiguration();
             }
         });
     }
@@ -89,18 +73,22 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
+        // User endpoints
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
         final ItemDAO itemDaoForUser = jdbi.onDemand(ItemDAO.class);
         final FeedbackDAO feedbackDaoForUser = jdbi.onDemand(FeedbackDAO.class);
         environment.jersey().register(new UserResource(userDao, itemDaoForUser, feedbackDaoForUser));
 
+        // Item endpoints
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));
 
+        // Bids endpoints
         final BidDAO bidDao = jdbi.onDemand(BidDAO.class);
         final ItemDAO itemDaoForBids = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new BidResource(bidDao, itemDaoForBids));
 
+        // Feedback endpoints
         final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
         environment.jersey().register(new FeedbackResource(feedbackDao));
         
