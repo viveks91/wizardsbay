@@ -10,6 +10,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/item")
 @Produces(MediaType.APPLICATION_JSON)
@@ -59,7 +60,15 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     public Response get() {
-        return Response.ok(itemDao.findAllActiveItems()).build();
+        List<Item> activeItems = itemDao.findAllActiveItems();
+
+        //hide some details
+        for (Item item : activeItems) {
+            item.setAuctionStartTime(null);
+            item.setBuyerId(null);
+        }
+
+        return Response.ok(activeItems).build();
     }
 
     //get item by id
@@ -70,7 +79,19 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     public Response getById(@PathParam("id") int id) {
-        return Response.ok(itemDao.findItemById(id)).build();
+        Item item = itemDao.findItemById(id);
+        if (item == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Item not found")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if (item.getBuyerId() == 0) { // not sold
+            item.setBuyerId(null);
+        }
+        return Response.ok(item).build();
     }
 
     //Delete an item

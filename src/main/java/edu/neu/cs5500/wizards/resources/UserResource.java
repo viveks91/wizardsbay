@@ -2,6 +2,8 @@ package edu.neu.cs5500.wizards.resources;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
+import edu.neu.cs5500.wizards.core.Feedback;
+import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
@@ -13,6 +15,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +59,7 @@ public class UserResource {
                     .build();
         }
         User createdUser = this.userDao.create(user);
+
         return Response.ok(createdUser).build();
     }
 
@@ -136,7 +140,17 @@ public class UserResource {
                     .build();
         }
 
-        return Response.ok(this.itemDao.findItemsBySellerId(user.getId())).build();
+        List<Item> items = this.itemDao.findItemsBySellerId(user.getId());
+
+        // ignore fields
+        for (Item item : items) {
+            item.setSellerId(null);
+            if (item.getBuyerId() == 0) { // not sold
+                item.setBuyerId(null);
+            }
+        }
+
+        return Response.ok(items).build();
     }
 
     /**
@@ -162,7 +176,15 @@ public class UserResource {
                     .build();
         }
 
-        return Response.ok(this.feedbackDao.retrieve(user.getId())).build();
+        List<Feedback> feedbacks = this.feedbackDao.retrieve(user.getId());
+
+        // ignore fields
+        for (Feedback feedback : feedbacks) {
+            feedback.setUserId(null);
+            feedback.setTime(null);
+        }
+
+        return Response.ok(feedbacks).build();
     }
 
     @DELETE

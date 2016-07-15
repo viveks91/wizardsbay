@@ -94,7 +94,15 @@ public class BidResource {
                     .build();
         }
 
-        return Response.ok(this.bidDao.findBidsByItemId(itemId)).build();
+        List<Bid> bids = this.bidDao.findBidsByItemId(itemId);
+
+        // hide fields
+        for (Bid bid : bids) {
+            bid.setId(null);
+            bid.setItemId(null);
+        }
+
+        return Response.ok(bids).build();
     }
 
 
@@ -123,7 +131,7 @@ public class BidResource {
         if (bid == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: Bid does not exist")
+                    .entity("Error: Bid not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -162,7 +170,10 @@ public class BidResource {
                     .build();
         }
 
-        return Response.ok(bids.get(HIGHEST_BID_INDEX)).build();
+        Bid highestBid = bids.get(HIGHEST_BID_INDEX);
+        highestBid.setItemId(null);
+
+        return Response.ok(highestBid).build();
     }
 
 
