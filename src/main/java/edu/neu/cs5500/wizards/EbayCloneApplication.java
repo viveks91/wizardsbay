@@ -1,6 +1,6 @@
 package edu.neu.cs5500.wizards;
 
-import edu.neu.cs5500.wizards.auth.ExampleAuthenticator;
+import edu.neu.cs5500.wizards.auth.ServiceAuthenticator;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.BidDAO;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
@@ -25,7 +25,7 @@ import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import org.skife.jdbi.v2.DBI;
 
-public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
+public class EbayCloneApplication extends Application<ServiceConfiguration> {
     public static void main(String[] args) throws Exception {
         new EbayCloneApplication().run(args);
     }
@@ -36,7 +36,7 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
     }
 
     @Override
-    public void initialize(Bootstrap<EbayCloneConfiguration> bootstrap) {
+    public void initialize(Bootstrap<ServiceConfiguration> bootstrap) {
         // Enable variable substitution with environment variables
         bootstrap.setConfigurationSourceProvider(
                 new SubstitutingSourceProvider(
@@ -46,24 +46,24 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         );
 
         // Swagger
-        bootstrap.addBundle(new SwaggerBundle<EbayCloneConfiguration>() {
+        bootstrap.addBundle(new SwaggerBundle<ServiceConfiguration>() {
             @Override
-            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(EbayCloneConfiguration configuration) {
+            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(ServiceConfiguration configuration) {
                 return configuration.swaggerBundleConfiguration;
             }
         });
 
         // Migrations
-        bootstrap.addBundle(new MigrationsBundle<EbayCloneConfiguration>() {
+        bootstrap.addBundle(new MigrationsBundle<ServiceConfiguration>() {
             @Override
-            public DataSourceFactory getDataSourceFactory(EbayCloneConfiguration configuration) {
+            public DataSourceFactory getDataSourceFactory(ServiceConfiguration configuration) {
                 return configuration.getDataSourceFactory();
             }
         });
     }
 
     @Override
-    public void run(EbayCloneConfiguration configuration, Environment environment) throws ClassNotFoundException {
+    public void run(ServiceConfiguration configuration, Environment environment) throws ClassNotFoundException {
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
@@ -91,7 +91,7 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         // authentication
         environment.jersey().register(new AuthDynamicFeature(
                 new BasicCredentialAuthFilter.Builder<User>()
-                        .setAuthenticator(new ExampleAuthenticator(userDao))
+                        .setAuthenticator(new ServiceAuthenticator(userDao))
                         .setRealm("Needs Authentication")
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));

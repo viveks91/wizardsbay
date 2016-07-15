@@ -7,11 +7,11 @@ import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 
-public class ExampleAuthenticator implements Authenticator<BasicCredentials, User> {
+public class ServiceAuthenticator implements Authenticator<BasicCredentials, User> {
 
     private final UserDAO userDao;
 
-    public ExampleAuthenticator(UserDAO userDao){
+    public ServiceAuthenticator(UserDAO userDao){
         this.userDao =userDao;
     }
 
