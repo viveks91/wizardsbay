@@ -22,9 +22,8 @@ public interface BidDAO {
      * @param bidderId    the id of the user bidding on the item
      * @param bidAmount the bid amount
      */
-    @SqlUpdate("insert into bids (itemId, bidderId, bidAmount) values (:itemId, :bidderId, :bidAmount)")
-    @GetGeneratedKeys
-    int create(@Bind("itemId") int itemId, @Bind("bidderId") int bidderId, @Bind("bidAmount") int bidAmount);
+    @SqlUpdate("insert into bids (item_id, bidder_id, bid_amount) values (:itemId, :bidderId, :bidAmount) RETURNING *")
+    Bid create(@Bind("itemId") int itemId, @Bind("bidderId") int bidderId, @Bind("bidAmount") int bidAmount);
 
     /**
      * Retrieves a single bid based on the bid's id.
@@ -50,7 +49,7 @@ public interface BidDAO {
      * @param itemId the id of the item
      * @return a history of bids for a given item
      */
-    @SqlQuery("select * from bids where itemId = :itemId order by bidAmount desc")
+    @SqlQuery("select * from bids where item_id = :itemId order by bid_amount desc")
     List<Bid> findBidsByItemId(@Bind("itemId") int itemId);
 
 

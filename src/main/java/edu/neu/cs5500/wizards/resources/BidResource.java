@@ -32,13 +32,6 @@ public class BidResource {
         this.itemDAO = itemDAO;
     }
 
-    private List<Bid> getAllBidsForItemId(int itemId) throws IllegalArgumentException {
-        if (this.itemDAO.findItemById(itemId) == null) {
-            throw new IllegalArgumentException("Item does not exist");
-        }
-        return this.bidDao.findBidsByItemId(itemId);
-    }
-
     /**
      * Creates a bid and returns it only if the given bid's bid amount is greater than the current highest bid for
      * the item or if it is the first bid on an item.
@@ -68,9 +61,8 @@ public class BidResource {
                 : bidList.get(HIGHEST_BID_INDEX).getBidAmount();
 
         if (incomingBid.getBidAmount() > highestBidAmount) {
-            int newBidId = this.bidDao.create(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
-            incomingBid.setId(newBidId);
-            return Response.ok(incomingBid).build();
+            Bid newBid = this.bidDao.create(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
+            return Response.ok(newBid).build();
         } else {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
