@@ -27,10 +27,10 @@ public class UserResource {
     private final FeedbackDAO feedbackDao;
 
 
-    public UserResource(UserDAO userDao, ItemDAO itemDAO, FeedbackDAO feedbackDAO) {
+    public UserResource(UserDAO userDao, ItemDAO itemDao, FeedbackDAO feedbackDao) {
         this.userDao = userDao;
-        this.itemDao = itemDAO;
-        this.feedbackDao = feedbackDAO;
+        this.itemDao = itemDao;
+        this.feedbackDao = feedbackDao;
     }
 
     /**
