@@ -6,6 +6,9 @@ import edu.neu.cs5500.wizards.core.Bid;
 import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.db.BidDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
+import edu.neu.cs5500.wizards.core.User;
+import edu.neu.cs5500.wizards.db.UserDAO;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -23,13 +26,15 @@ import java.util.List;
 public class BidResource {
 
     private final BidDAO bidDao;
-    private final ItemDAO itemDAO;
+    private final ItemDAO itemDao;
+    private final UserDAO userDao;
 
     private static final int HIGHEST_BID_INDEX = 0;
 
-    public BidResource(BidDAO bidDao, ItemDAO itemDAO) {
+    public BidResource(BidDAO bidDao, UserDAO userDao, ItemDAO itemDao) {
         this.bidDao = bidDao;
-        this.itemDAO = itemDAO;
+        this.itemDao = itemDao;
+        this.userDao = userDao;
     }
 
     /**
@@ -43,9 +48,18 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(@PathParam("itemId") int itemId, Bid incomingBid) {
+    public Response post(@PathParam("itemId") int itemId, Bid incomingBid, @Auth User auth_user) {
 
-        Item item = this.itemDAO.findItemById(itemId);
+        User biddingUser = userDao.retrieveById(incomingBid.getBidderId());
+        if(!auth_user.equals(biddingUser)){
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        Item item = this.itemDao.findItemById(itemId);
         if (item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -86,7 +100,7 @@ public class BidResource {
     @ExceptionMetered
     public Response get(@PathParam("itemId") int itemId) {
 
-        if (this.itemDAO.findItemById(itemId) == null) {
+        if (this.itemDao.findItemById(itemId) == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Item does not exist")
@@ -119,7 +133,7 @@ public class BidResource {
     @ExceptionMetered
     public Response getById(@PathParam("itemId") int itemId, @PathParam("id") int id) {
 
-        if (this.itemDAO.findItemById(itemId) == null) {
+        if (this.itemDao.findItemById(itemId) == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Item does not exist")
@@ -153,7 +167,7 @@ public class BidResource {
     @ExceptionMetered
     public Response getHighestBid(@PathParam("itemId") int itemId) {
 
-        if (this.itemDAO.findItemById(itemId) == null) {
+        if (this.itemDao.findItemById(itemId) == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Item does not exist")
@@ -189,9 +203,9 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response delete(@PathParam("itemId") int itemId, @PathParam("bidId") int bidId) {
+    public Response delete(@PathParam("itemId") int itemId, @PathParam("bidId") int bidId, @Auth User auth_user) {
 
-        if (this.itemDAO.findItemById(itemId) == null) {
+        if (this.itemDao.findItemById(itemId) == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Item does not exist")
@@ -207,6 +221,16 @@ public class BidResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
+        User biddingUser = userDao.retrieveById(bid.getBidderId());
+        if(!auth_user.equals(biddingUser)){
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         bidDao.delete(bid);
         return Response.status(204).build();
     }

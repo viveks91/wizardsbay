@@ -70,8 +70,9 @@ public class UserResource {
     @UnitOfWork
     @Path("/{username}")
     @ExceptionMetered
-    public Response put(@PathParam("username") String username, User user) {
-        User existingUser = this.userDao.retrieve(username);
+    public Response put(@PathParam("username") String username, User user, @Auth User auth_user) {
+        User existingUser = userDao.retrieve(username);
+
         if(existingUser == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -79,6 +80,15 @@ public class UserResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
+        if(!auth_user.equals(existingUser)){
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         if (user.getPassword() != null) {
             String password = user.getPassword();
             existingUser.setPassword(password);
@@ -110,8 +120,7 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     //Get user by username
-    public Response get(@PathParam("username") String username, @Auth User auth_user) {
-        System.out.println(auth_user);
+    public Response get(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -129,8 +138,7 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response getItems(@PathParam("username") String username, @Auth User auth_user) {
-        System.out.println(auth_user);
+    public Response getItems(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -165,8 +173,7 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response getFeedback(@PathParam("username") String username, @Auth User auth_user) {
-
+    public Response getFeedback(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -193,14 +200,24 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
-    public Response delete(@PathParam("username") String username) {
-        if(username.isEmpty() || this.userDao.retrieve(username) == null){
+    public Response delete(@PathParam("username") String username, @Auth User auth_user) {
+        User existingUser = this.userDao.retrieve(username);
+        if(existingUser == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
+        if(!auth_user.equals(existingUser)){
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         if (username.equals("admin")) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)

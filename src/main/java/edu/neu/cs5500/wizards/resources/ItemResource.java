@@ -4,6 +4,9 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.db.ItemDAO;
+import edu.neu.cs5500.wizards.core.User;
+import edu.neu.cs5500.wizards.db.UserDAO;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -18,10 +21,11 @@ import java.util.List;
 public class ItemResource {
 
     private final ItemDAO itemDao;
+    private final UserDAO userDao;
 
-
-    public ItemResource(ItemDAO itemDao) {
+    public ItemResource(ItemDAO itemDao, UserDAO userDao) {
         this.itemDao = itemDao;
+        this.userDao = userDao;
     }
 
     //Create a listing
@@ -101,8 +105,9 @@ public class ItemResource {
     @UnitOfWork
     @ExceptionMetered
     /* delete user by username*/
-    public Response delete(@PathParam("itemId") int itemId) {
+    public Response delete(@PathParam("itemId") int itemId, @Auth User auth_user) {
         Item item = itemDao.findItemById(itemId);
+
         if (item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -110,6 +115,16 @@ public class ItemResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
+        User itemSeller = userDao.retrieveById(item.getSellerId());
+        if(!auth_user.equals(itemSeller)){
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         itemDao.deleteItem(itemId);
 
         return Response.status(HttpStatus.NO_CONTENT_204).build();
