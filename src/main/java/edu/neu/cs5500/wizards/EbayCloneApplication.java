@@ -32,7 +32,7 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
 
     @Override
     public String getName() {
-        return "hello-world";
+        return "ebay-clone";
     }
 
     @Override
@@ -64,7 +64,6 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
 
     @Override
     public void run(EbayCloneConfiguration configuration, Environment environment) throws ClassNotFoundException {
-//        final Template template = configuration.buildTemplate();
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
@@ -81,7 +80,6 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         // Bids endpoints
         final BidDAO bidDao = jdbi.onDemand(BidDAO.class);
         final UserDAO userDaoForBids = jdbi.onDemand(UserDAO.class);
-
         final ItemDAO itemDaoForBids = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new BidResource(bidDao, userDaoForBids, itemDaoForBids));
 
@@ -89,7 +87,8 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
         final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
         final UserDAO userDaoForFeedback = jdbi.onDemand(UserDAO.class);
         environment.jersey().register(new FeedbackResource(feedbackDao, userDaoForFeedback));
-        
+
+        // authentication
         environment.jersey().register(new AuthDynamicFeature(
                 new BasicCredentialAuthFilter.Builder<User>()
                         .setAuthenticator(new ExampleAuthenticator(userDao))
