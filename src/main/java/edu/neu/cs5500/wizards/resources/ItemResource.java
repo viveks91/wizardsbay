@@ -13,6 +13,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Path("/item")
@@ -33,11 +35,47 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(Item item) {
+    public Response post(Item item, @Auth User auth_user) {
         if( item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Invalid item")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        User itemSeller = userDao.retrieveById(item.getSellerId());
+        if(itemSeller == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Seller does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if(!auth_user.equals(itemSeller)){
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if(item.getMinBidAmount() < 1) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Minimum bid amount cannot be less than $1")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        Timestamp current = new Timestamp(new Date().getTime());
+
+        if(item.getAuctionEndTime().before(item.getAuctionStartTime()) ||
+                item.getAuctionEndTime().before(current)) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Invalid auction end time")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }

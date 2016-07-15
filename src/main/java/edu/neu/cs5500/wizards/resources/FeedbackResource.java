@@ -3,7 +3,9 @@ package edu.neu.cs5500.wizards.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.Feedback;
+import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
+import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -20,9 +22,11 @@ import javax.ws.rs.core.Response;
 public class FeedbackResource {
 
     private final FeedbackDAO feedbackDao;
+    private final UserDAO userDao;
 
-    public FeedbackResource(FeedbackDAO feedbackDao) {
+    public FeedbackResource(FeedbackDAO feedbackDao, UserDAO userDao) {
         this.feedbackDao = feedbackDao;
+        this.userDao = userDao;
     }
 
     /**
@@ -36,6 +40,15 @@ public class FeedbackResource {
     @UnitOfWork
     @ExceptionMetered
     public Response post(Feedback feedback) {
+        User user = userDao.retrieveById(feedback.getUserId());
+        if(user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: User does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         Feedback newFeedback = feedbackDao.create(feedback.getUserId(), feedback.getRating(), feedback.getFeedbackDescription());
         return Response.ok(newFeedback).build();
     }
@@ -104,6 +117,4 @@ public class FeedbackResource {
         feedbackDao.delete(feedback);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
-
-
 }

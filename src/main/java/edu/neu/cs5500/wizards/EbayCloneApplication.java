@@ -87,7 +87,8 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
 
         // Feedback endpoints
         final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
-        environment.jersey().register(new FeedbackResource(feedbackDao));
+        final UserDAO userDaoForFeedback = jdbi.onDemand(UserDAO.class);
+        environment.jersey().register(new FeedbackResource(feedbackDao, userDaoForFeedback));
         
         environment.jersey().register(new AuthDynamicFeature(
                 new BasicCredentialAuthFilter.Builder<User>()

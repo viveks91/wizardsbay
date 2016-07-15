@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.ws.rs.core.Response;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,20 +45,75 @@ public class ItemResourceTest {
 
     @Test
     public void testItemCreation() {
+        String dummyStartTime = "1990-01-01 11:11:11";
+        String dummyEndTime = "2100-01-01 11:11:11";
+        int numberMoreThanZero = (int)Math.random() + 1 ;
+        when(item.getSellerId()).thenReturn((int)Math.random());
+        when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
+        when(item.getAuctionStartTime()).thenReturn(Timestamp.valueOf(dummyStartTime));
+        when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));
+        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         when(itemDAO.create(any(Item.class))).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Item randomItem = new Item();
-        Response response = itemResource.post(randomItem);
+        Response response = itemResource.post(item, auth_user);
         assertEquals(response.getEntity(), item);
     }
 
     @Test
     public void testExceptionOnPostingItemWhenContentIsNull() {
+        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
-        Response response = itemResource.post(null);
+        Response response = itemResource.post(null, auth_user);
         assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
         assertEquals(response.getEntity(), "Error: Invalid item");
+    }
+
+    @Test
+    public void testExceptionOnPostingItemWithInvalidCredentials() {
+        when(userDAO.retrieveById(anyInt())).thenReturn(Mockito.mock(User.class));
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+        Response response = itemResource.post(item, auth_user);
+        assertEquals(response.getStatus(), HttpStatus.UNAUTHORIZED_401);
+        assertEquals(response.getEntity(), "Error: Invalid credentials");
+    }
+
+    @Test
+    public void testExceptionOnPostingItemWithInvalidSellerId() {
+        when(userDAO.retrieveById(anyInt())).thenReturn(null);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+        Response response = itemResource.post(item, auth_user);
+        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
+        assertEquals(response.getEntity(), "Error: Seller does not exist");
+    }
+
+    @Test
+    public void testExceptionOnPostingItemWithInvalidMinBidAmount() {
+        when(item.getSellerId()).thenReturn((int)Math.random());
+        when(item.getMinBidAmount()).thenReturn(0);
+        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+        Response response = itemResource.post(item, auth_user);
+        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
+        assertEquals(response.getEntity(), "Error: Minimum bid amount cannot be less than $1");
+    }
+
+    @Test
+    public void testExceptionOnPostingItemWithInvalidAuctionEndTime() {
+        String dummyStartTime = "1990-01-01 11:11:11";
+        String dummyEndTime = "2016-01-01 11:11:11";
+        int numberMoreThanZero = (int)Math.random() + 1 ;
+        when(item.getSellerId()).thenReturn((int)Math.random());
+        when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
+        when(item.getAuctionStartTime()).thenReturn(Timestamp.valueOf(dummyStartTime));
+        when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));
+        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
+        when(itemDAO.create(any(Item.class))).thenReturn(item);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+
+        Response response = itemResource.post(item, auth_user);
+        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
+        assertEquals(response.getEntity(), "Error: Invalid auction end time");
     }
 
 //    @Test
