@@ -161,39 +161,6 @@ public class UserResource {
         return Response.ok(items).build();
     }
 
-    /**
-     * Given a username, retrieve the list of feedback for that user. If the user does not exist, no feedback
-     * will be returned.
-     *
-     * @param username of a user
-     * @return a list of feedback for a given user
-     */
-    @GET
-    @Path("/{username}/feedback")
-    @Timed
-    @UnitOfWork
-    @ExceptionMetered
-    public Response getFeedback(@PathParam("username") String username) {
-        User user = this.userDao.retrieve(username);
-        if (user == null) {
-            return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: User not found")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        }
-
-        List<Feedback> feedbacks = this.feedbackDao.retrieve(user.getId());
-
-        // ignore fields
-        for (Feedback feedback : feedbacks) {
-            feedback.setUserId(null);
-            feedback.setTime(null);
-        }
-
-        return Response.ok(feedbacks).build();
-    }
-
     @DELETE
     @Path("/{username}")
     @Timed

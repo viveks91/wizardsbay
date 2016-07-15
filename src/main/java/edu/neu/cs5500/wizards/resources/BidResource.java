@@ -161,6 +161,14 @@ public class BidResource {
                     .build();
         }
 
+        if (!bid.getItemId().equals(itemId)) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: The bid requested does not belong to the item")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         return Response.ok(bid).build();
     }
 
@@ -229,6 +237,14 @@ public class BidResource {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Bid does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if (!bid.getItemId().equals(itemId)) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: The bid requested does not belong to the item")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }

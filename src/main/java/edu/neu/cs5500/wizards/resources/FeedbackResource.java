@@ -12,11 +12,12 @@ import org.eclipse.jetty.http.HttpStatus;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Created by susannaedens on 6/23/16.
  */
-@Path("/feedback")
+@Path("/user/{username}/feedback")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeedbackResource {
@@ -39,8 +40,8 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(Feedback feedback) {
-        User user = this.userDao.retrieveById(feedback.getUserId());
+    public Response post(@PathParam("username") String username, Feedback feedback) {
+        User user = this.userDao.retrieve(username);
         if(user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -49,26 +50,42 @@ public class FeedbackResource {
                     .build();
         }
 
-        Feedback newFeedback = this.feedbackDao.create(feedback.getUserId(), feedback.getRating(), feedback.getFeedbackDescription());
+        Feedback newFeedback = this.feedbackDao.create(user.getId(), feedback.getRating(), feedback.getFeedbackDescription());
         return Response.ok(newFeedback).build();
     }
 
+    /**
+     * Given a username, retrieve the list of feedback for that user. If the user does not exist, no feedback
+     * will be returned.
+     *
+     * @param username of a user
+     * @return a list of feedback for a given user
+     */
+    @GET
+    @Path("/all")
+    @Timed
+    @UnitOfWork
+    @ExceptionMetered
+    public Response getFeedback(@PathParam("username") String username) {
+        User user = this.userDao.retrieve(username);
+        if (user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: User not found")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
 
-//    /**
-//     * Given an id for a user, retrieve the list of feedback for that user. If the user does not exist, no feedback
-//     * will be returned.
-//     *
-//     * @param userid the id of the user
-//     * @return a list of feedback for a given user
-//     */
-//    @GET
-//    @Path("/user/{userid}")
-//    @Timed
-//    @UnitOfWork
-//    @ExceptionMetered
-//    public Response get(@PathParam("userid") int userid) {
-//        return Response.ok(feedbackDao.retrieve(userid)).build();
-//    }
+        List<Feedback> feedbacks = this.feedbackDao.retrieve(user.getId());
+
+        // ignore fields
+        for (Feedback feedback : feedbacks) {
+            feedback.setUserId(null);
+            feedback.setTime(null);
+        }
+
+        return Response.ok(feedbacks).build();
+    }
 
     /**
      * Given an id, retrieve feedback with the matching id. If there is no such feedback in the database, throw
@@ -82,7 +99,16 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response getOne(@PathParam("id") int id) {
+    public Response getOne(@PathParam("username") String username, @PathParam("id") int id) {
+        User user = this.userDao.retrieve(username);
+        if (user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: User not found")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         Feedback feedback = this.feedbackDao.retrieveOne(id);
         if (feedback == null) {
             return Response
@@ -91,6 +117,16 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
+        if (!feedback.getUserId().equals(user.getId())) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: The feedback requested does not belong to this user")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        feedback.setUserId(null);
+
         return Response.ok(feedback).build();
     }
 
@@ -98,15 +134,25 @@ public class FeedbackResource {
      * Given a feedback, delete that feedback from the database. If the feedback is not found, throw an exception.
      * If the feedback is successfully deleted, return a 204 response code.
      *
-     * @param existingFeedback the feedback to delete
+     * @param feedbackId the feedbackId to delete
      * @return a 204 response code representing successful deletion
      */
     @DELETE
+    @Path("/{feedbackId}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response delete(Feedback existingFeedback) {
-        Feedback feedback = this.feedbackDao.retrieveOne(existingFeedback.getId());
+    public Response delete(@PathParam("username") String username, @PathParam("feedbackId") int feedbackId) {
+        User user = this.userDao.retrieve(username);
+        if (user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: User does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        Feedback feedback = this.feedbackDao.retrieveOne(feedbackId);
         if (feedback == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -114,6 +160,15 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
+        if (!feedback.getUserId().equals(user.getId())) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: The feedback requested does not belong to this user")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         this.feedbackDao.delete(feedback);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
