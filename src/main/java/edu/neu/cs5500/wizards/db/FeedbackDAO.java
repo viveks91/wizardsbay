@@ -24,7 +24,7 @@ public interface FeedbackDAO {
      * @param rating       rating for the feedback
      * @param feedbackDescription the body of the feedback, the description
      */
-    @SqlUpdate("insert into feedback (user_id, rating, feedback_description) values (:userId, :rating, :feedbackDescription) RETURNING *")
+    @SqlQuery("insert into feedback (user_id, rating, feedback_description) values (:userId, :rating, :feedbackDescription) RETURNING *")
     Feedback create(@Bind("userId") int userId, @Bind("rating") int rating, @Bind("feedbackDescription") String feedbackDescription);
 
     /**

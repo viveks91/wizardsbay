@@ -25,7 +25,7 @@ public interface BidDAO {
      * @param bidderId    the id of the user bidding on the item
      * @param bidAmount the bid amount
      */
-    @SqlUpdate("insert into bids (item_id, bidder_id, bid_amount) values (:itemId, :bidderId, :bidAmount) RETURNING *")
+    @SqlQuery("insert into bids (item_id, bidder_id, bid_amount) values (:itemId, :bidderId, :bidAmount) RETURNING *")
     Bid create(@Bind("itemId") int itemId, @Bind("bidderId") int bidderId, @Bind("bidAmount") int bidAmount);
 
     /**

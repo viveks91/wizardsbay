@@ -51,6 +51,14 @@ public class BidResource {
     public Response post(@PathParam("itemId") int itemId, Bid incomingBid, @Auth User auth_user) {
 
         User biddingUser = userDao.retrieveById(incomingBid.getBidderId());
+        if(biddingUser == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Bidder does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
         if(!auth_user.equals(biddingUser)){
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)
@@ -76,6 +84,9 @@ public class BidResource {
 
         if (incomingBid.getBidAmount() > highestBidAmount) {
             Bid newBid = this.bidDao.create(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
+            // update buyer info for the item record
+            this.itemDao.updateBuyerInfo(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
+
             return Response.ok(newBid).build();
         } else {
             return Response

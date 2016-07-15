@@ -34,6 +34,10 @@ public interface ItemDAO {
     @SqlUpdate("update items set item_name = :itemName, item_description = :itemDescription, auction_end_time = :auctionEndTime where id = :itemId")
     void update(@Bind("itemId") int itemId, @Bind("itemName") String itemName, @Bind("itemDescription") String itemDescription, @Bind("auctionEndTime") Timestamp auctionEndTime);
 
+    //update when a new bid is made for the item
+    @SqlUpdate("update items set buyer_id = :bidderId, min_bid_amount = :minBidAmount where id = :itemId")
+    void updateBuyerInfo(@Bind("itemId") int itemId, @Bind("bidderId") int bidderId, @Bind("minBidAmount") int minBidAmount);
+
     //delete item by item Id
     //TODO : delete should be possible only by item owners/sellers
     @SqlUpdate("delete from items where id = :itemId")
