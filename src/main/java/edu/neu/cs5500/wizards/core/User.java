@@ -7,9 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
-import com.google.common.base.Optional;
 
-import java.util.Objects;
 import java.security.Principal;
 
 @JsonIgnoreProperties(value = { "id" })

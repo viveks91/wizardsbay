@@ -2,7 +2,10 @@ package edu.neu.cs5500.wizards.db;
 
 import edu.neu.cs5500.wizards.core.Bid;
 import edu.neu.cs5500.wizards.mapper.BidMapper;
-import org.skife.jdbi.v2.sqlobject.*;
+import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.BindBean;
+import org.skife.jdbi.v2.sqlobject.SqlQuery;
+import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
 import java.util.List;

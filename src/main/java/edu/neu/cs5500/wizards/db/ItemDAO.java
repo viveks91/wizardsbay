@@ -5,7 +5,6 @@
 package edu.neu.cs5500.wizards.db;
 
 import edu.neu.cs5500.wizards.core.Item;
-import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.mapper.ItemMapper;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
@@ -15,7 +14,6 @@ import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 
 @RegisterMapper(ItemMapper.class)
 public interface ItemDAO {

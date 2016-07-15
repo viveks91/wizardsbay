@@ -9,7 +9,6 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 /**
  * Created by susannaedens on 6/20/16.

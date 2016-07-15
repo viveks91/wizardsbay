@@ -1,10 +1,12 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "itemName", "itemDescription", "minBidAmount", "auctionStartTime", "auctionEndTime", "sellerId", "buyerId", "itemId"})
