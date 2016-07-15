@@ -1,13 +1,13 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -16,19 +16,23 @@ import java.util.Objects;
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "rating", "feedbackDescription", "userId", "time", "feedbackId"})
+@JsonIgnoreProperties(value = { "userId" })
+@JsonPropertyOrder({ "rating", "feedbackDescription", "username", "time", "feedbackId"})
 public class Feedback {
 
-    @JsonProperty
-    @NotEmpty
     private Integer id;
 
     @JsonProperty
-    @NotEmpty
     private Integer userId;
 
     @JsonProperty
     @NotEmpty
+    private String username;
+
+    @JsonProperty
+    @NotNull
+    @Min(1)
+    @Max(5)
     private Integer rating;
 
     @JsonProperty
@@ -36,7 +40,6 @@ public class Feedback {
     private String feedbackDescription;
 
     @JsonProperty
-    @NotEmpty
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
     private Timestamp time;
 
@@ -46,6 +49,14 @@ public class Feedback {
 
     public void setRating(Integer rating) {
         this.rating = rating;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Timestamp getTime() {

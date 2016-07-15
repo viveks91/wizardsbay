@@ -1,19 +1,17 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "itemName", "itemDescription", "minBidAmount", "auctionStartTime", "auctionEndTime", "sellerId", "buyerId", "itemId"})
+@JsonIgnoreProperties(value = { "sellerId", "buyerId" })
+@JsonPropertyOrder({ "itemName", "itemDescription", "minBidAmount", "auctionStartTime", "auctionEndTime", "sellerUsername", "buyerUsername", "itemId"})
 public class Item {
 
-    @JsonProperty
-    @NotEmpty
     private Integer id;
 
     @JsonProperty
@@ -25,14 +23,19 @@ public class Item {
     private String itemDescription;
 
     @JsonProperty
-    @NotEmpty
     private Integer sellerId;
 
     @JsonProperty
-    private Integer buyerId = null;
+    @NotEmpty
+    private String sellerUsername;
 
     @JsonProperty
-    @NotEmpty
+    private Integer buyerId;
+
+    @JsonProperty
+    private String buyerUsername;
+
+    @JsonProperty
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
     private Timestamp auctionStartTime;
 
@@ -42,16 +45,32 @@ public class Item {
     private Timestamp auctionEndTime;
 
     @JsonProperty
-    @NotEmpty
+    @NotNull
+    @Min(1)
     private Integer minBidAmount;
 
 
     public Item() {
     }
 
+    public String getBuyerUsername() {
+        return buyerUsername;
+    }
+
+    public void setBuyerUsername(String buyerUsername) {
+        this.buyerUsername = buyerUsername;
+    }
+
+    public String getSellerUsername() {
+        return sellerUsername;
+    }
+
+    public void setSellerUsername(String sellerUsername) {
+        this.sellerUsername = sellerUsername;
+    }
+
     public Item(String itemName) {
         this.itemName = itemName;
-
     }
 
     @JsonProperty("itemId")

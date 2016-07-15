@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Size;
 import java.security.Principal;
 
 @JsonIgnoreProperties(value = { "id" })
@@ -15,15 +16,16 @@ import java.security.Principal;
 public class User implements Principal{
 
     @JsonProperty
-    @NotEmpty
     private Integer id;
 
     @JsonProperty
     @NotEmpty
+    @Size(min=3)
     private String username;
 
     @JsonProperty
     @NotEmpty
+    @Size(min=3)
     private String password;
 
     @JsonProperty

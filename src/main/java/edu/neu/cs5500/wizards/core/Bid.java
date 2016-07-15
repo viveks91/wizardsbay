@@ -1,13 +1,12 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 /**
@@ -15,28 +14,29 @@ import java.sql.Timestamp;
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "itemId", "bidAmount", "bidderId", "bidTime", "bidId"})
+@JsonIgnoreProperties(value = { "bidderId" })
+@JsonPropertyOrder({ "itemId", "bidAmount", "bidderUsername", "bidTime", "bidId"})
 public class Bid {
 
-    @JsonProperty
-    @NotEmpty
     private Integer id;
 
     @JsonProperty
-    @NotEmpty
     private Integer itemId;
 
     @JsonProperty
-    @NotEmpty
     private Integer bidderId;
 
     @JsonProperty
     @NotEmpty
+    private String bidderUsername;
+
+    @JsonProperty
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
     private Timestamp bidTime;
 
     @JsonProperty
-    @NotEmpty
+    @NotNull
+    @Min(1)
     private Integer bidAmount;
 
     public Bid(){}
@@ -48,6 +48,14 @@ public class Bid {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getBidderUsername() {
+        return bidderUsername;
+    }
+
+    public void setBidderUsername(String bidderUsername) {
+        this.bidderUsername = bidderUsername;
     }
 
     public Integer getItemId() {
