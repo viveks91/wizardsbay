@@ -40,7 +40,6 @@ public class Item {
     private Timestamp auctionStartTime;
 
     @JsonProperty
-    @NotEmpty
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
     private Timestamp auctionEndTime;
 
@@ -145,27 +144,31 @@ public class Item {
 
         Item item = (Item) o;
 
-        if (id != item.id) return false;
-        if (sellerId != item.sellerId) return false;
-        if (buyerId != item.buyerId) return false;
-        if (minBidAmount != item.minBidAmount) return false;
+        if (!id.equals(item.id)) return false;
         if (!itemName.equals(item.itemName)) return false;
         if (!itemDescription.equals(item.itemDescription)) return false;
+        if (!sellerId.equals(item.sellerId)) return false;
+        if (!sellerUsername.equals(item.sellerUsername)) return false;
+        if (!buyerId.equals(item.buyerId)) return false;
+        if (!buyerUsername.equals(item.buyerUsername)) return false;
         if (!auctionStartTime.equals(item.auctionStartTime)) return false;
-        return auctionEndTime.equals(item.auctionEndTime);
+        if (!auctionEndTime.equals(item.auctionEndTime)) return false;
+        return minBidAmount.equals(item.minBidAmount);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id.hashCode();
         result = 31 * result + itemName.hashCode();
         result = 31 * result + itemDescription.hashCode();
-        result = 31 * result + sellerId;
-        result = 31 * result + buyerId;
+        result = 31 * result + sellerId.hashCode();
+        result = 31 * result + sellerUsername.hashCode();
+        result = 31 * result + buyerId.hashCode();
+        result = 31 * result + buyerUsername.hashCode();
         result = 31 * result + auctionStartTime.hashCode();
         result = 31 * result + auctionEndTime.hashCode();
-        result = 31 * result + minBidAmount;
+        result = 31 * result + minBidAmount.hashCode();
         return result;
     }
 }

@@ -97,21 +97,23 @@ public class Bid {
 
         Bid bid = (Bid) o;
 
-        if (id != bid.id) return false;
-        if (itemId != bid.itemId) return false;
-        if (bidderId != bid.bidderId) return false;
-        if (bidAmount != bid.bidAmount) return false;
-        return bidTime.equals(bid.bidTime);
+        if (!id.equals(bid.id)) return false;
+        if (!itemId.equals(bid.itemId)) return false;
+        if (!bidderId.equals(bid.bidderId)) return false;
+        if (!bidderUsername.equals(bid.bidderUsername)) return false;
+        if (!bidTime.equals(bid.bidTime)) return false;
+        return bidAmount.equals(bid.bidAmount);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + itemId;
-        result = 31 * result + bidderId;
+        int result = id.hashCode();
+        result = 31 * result + itemId.hashCode();
+        result = 31 * result + bidderId.hashCode();
+        result = 31 * result + bidderUsername.hashCode();
         result = 31 * result + bidTime.hashCode();
-        result = 31 * result + bidAmount;
+        result = 31 * result + bidAmount.hashCode();
         return result;
     }
 

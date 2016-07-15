@@ -99,22 +99,30 @@ public class Feedback {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, userId, feedbackDescription, time);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Feedback feedback = (Feedback) o;
 
-        if (id != feedback.id) return false;
-        if (userId != feedback.userId) return false;
+        if (!id.equals(feedback.id)) return false;
+        if (!userId.equals(feedback.userId)) return false;
+        if (!username.equals(feedback.username)) return false;
+        if (!rating.equals(feedback.rating)) return false;
         if (!feedbackDescription.equals(feedback.feedbackDescription)) return false;
         return time.equals(feedback.time);
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + userId.hashCode();
+        result = 31 * result + username.hashCode();
+        result = 31 * result + rating.hashCode();
+        result = 31 * result + feedbackDescription.hashCode();
+        result = 31 * result + time.hashCode();
+        return result;
     }
 
     @Override
