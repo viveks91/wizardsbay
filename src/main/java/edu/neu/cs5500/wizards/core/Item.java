@@ -1,9 +1,6 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.sql.Timestamp;
@@ -34,10 +31,12 @@ public class Item {
 
     @JsonProperty
     @NotEmpty
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
     private Timestamp auctionStartTime;
 
     @JsonProperty
     @NotEmpty
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
     private Timestamp auctionEndTime;
 
     @JsonProperty
