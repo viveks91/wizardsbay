@@ -25,7 +25,7 @@ public interface ItemDAO {
     Item create(@BindBean Item item);
 
     //Items listed by a particular seller
-    @SqlQuery("select * from items where seller_id = :sellerId")
+    @SqlQuery("select id, item_name, item_description, auction_end_time, min_bid_amount from items where seller_id = :sellerId")
     List<Item> findItemsBySellerId(@Bind("sellerId") int sellerId);
 
     //item by item Id
@@ -41,7 +41,7 @@ public interface ItemDAO {
     @SqlUpdate("delete from items where id = :itemId")
     void deleteItem(@Bind("itemId") int itemId);
 
-    //select all item active
+    //select all active items
     @SqlQuery("select * from items where auctionEndTime > localtimestamp")
     List<Item> findAllActiveItems();
 

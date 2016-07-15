@@ -49,7 +49,7 @@ public interface BidDAO {
      * @param itemId the id of the item
      * @return a history of bids for a given item
      */
-    @SqlQuery("select * from bids where item_id = :itemId order by bid_amount desc")
+    @SqlQuery("select id, bidder_id, bid_amount from bids where item_id = :itemId order by bid_amount desc")
     List<Bid> findBidsByItemId(@Bind("itemId") int itemId);
 
 

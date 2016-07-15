@@ -33,7 +33,7 @@ public interface FeedbackDAO {
      * @param id an individual feedback id
      * @return the feedback with the id that matches the given id
      */
-    @SqlQuery("select id, userId, feedbackDescription from feedback where id = :id")
+    @SqlQuery("select * from feedback where id = :id")
     Feedback retrieveOne(@Bind("id") int id);
 
     /**
@@ -42,7 +42,7 @@ public interface FeedbackDAO {
      * @param userId the id of the user we want feedback for
      * @return the list of feedback left for a given user
      */
-    @SqlQuery("select * from feedback where user_id = :userId")
+    @SqlQuery("select id, rating, feedback_description, time from feedback where user_id = :userId order by time desc")
     List<Feedback> retrieve(@Bind("userId") int userId);
 
     /**
