@@ -91,7 +91,8 @@ public class EbayCloneApplication extends Application<EbayCloneConfiguration> {
 
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
         final ItemDAO itemDaoForUser = jdbi.onDemand(ItemDAO.class);
-        environment.jersey().register(new UserResource(userDao, itemDaoForUser));
+        final FeedbackDAO feedbackDaoForUser = jdbi.onDemand(FeedbackDAO.class);
+        environment.jersey().register(new UserResource(userDao, itemDaoForUser, feedbackDaoForUser));
 
         final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao));

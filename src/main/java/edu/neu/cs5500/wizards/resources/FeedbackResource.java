@@ -36,28 +36,26 @@ public class FeedbackResource {
     @UnitOfWork
     @ExceptionMetered
     public Response post(Feedback feedback) {
-        feedbackDao.create(feedback.getUserId(), feedback.getRating(), feedback.getFeedbackDescription());
-        Feedback newfeedback = feedbackDao.retrieveOne(feedback.getId());
-
-        return Response.ok(newfeedback).build();
+        Feedback newFeedback = feedbackDao.create(feedback.getUserId(), feedback.getRating(), feedback.getFeedbackDescription());
+        return Response.ok(newFeedback).build();
     }
 
 
-    /**
-     * Given an id for a user, retrieve the list of feedback for that user. If the user does not exist, no feedback
-     * will be returned.
-     *
-     * @param userid the id of the user
-     * @return a list of feedback for a given user
-     */
-    @GET
-    @Path("/user/{userid}")
-    @Timed
-    @UnitOfWork
-    @ExceptionMetered
-    public Response get(@PathParam("userid") int userid) {
-        return Response.ok(feedbackDao.retrieve(userid)).build();
-    }
+//    /**
+//     * Given an id for a user, retrieve the list of feedback for that user. If the user does not exist, no feedback
+//     * will be returned.
+//     *
+//     * @param userid the id of the user
+//     * @return a list of feedback for a given user
+//     */
+//    @GET
+//    @Path("/user/{userid}")
+//    @Timed
+//    @UnitOfWork
+//    @ExceptionMetered
+//    public Response get(@PathParam("userid") int userid) {
+//        return Response.ok(feedbackDao.retrieve(userid)).build();
+//    }
 
     /**
      * Given an id, retrieve feedback with the matching id. If there is no such feedback in the database, throw
@@ -87,15 +85,15 @@ public class FeedbackResource {
      * Given a feedback, delete that feedback from the database. If the feedback is not found, throw an exception.
      * If the feedback is successfully deleted, return a 204 response code.
      *
-     * @param existingfeedback the feedback to delete
+     * @param existingFeedback the feedback to delete
      * @return a 204 response code representing successful deletion
      */
     @DELETE
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response delete(Feedback existingfeedback) {
-        Feedback feedback = feedbackDao.retrieveOne(existingfeedback.getId());
+    public Response delete(Feedback existingFeedback) {
+        Feedback feedback = feedbackDao.retrieveOne(existingFeedback.getId());
         if (feedback == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)

@@ -3,6 +3,7 @@ package edu.neu.cs5500.wizards.resources;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import edu.neu.cs5500.wizards.core.User;
+import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
@@ -20,14 +21,21 @@ public class UserResource {
 
     private final UserDAO userDao;
     private final ItemDAO itemDao;
+    private final FeedbackDAO feedbackDao;
 
 
-    public UserResource(UserDAO userDao, ItemDAO itemDAO) {
+    public UserResource(UserDAO userDao, ItemDAO itemDAO, FeedbackDAO feedbackDAO) {
         this.userDao = userDao;
         this.itemDao = itemDAO;
+        this.feedbackDao = feedbackDAO;
     }
 
-    //Create user
+    /**
+     *
+     * @param user
+     * @return
+     */
+
     @POST
     @Timed
     @UnitOfWork
@@ -131,6 +139,32 @@ public class UserResource {
         return Response.ok(this.itemDao.findItemsBySellerId(user.getId())).build();
     }
 
+    /**
+     * Given a username, retrieve the list of feedback for that user. If the user does not exist, no feedback
+     * will be returned.
+     *
+     * @param username of a user
+     * @return a list of feedback for a given user
+     */
+    @GET
+    @Path("/{username}/feedback")
+    @Timed
+    @UnitOfWork
+    @ExceptionMetered
+    public Response getFeedback(@PathParam("username") String username, @Auth User auth_user) {
+
+        User user = this.userDao.retrieve(username);
+        if (user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: User not found")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        return Response.ok(this.feedbackDao.retrieve(user.getId())).build();
+    }
+
     @DELETE
     @Path("/{username}")
     @Timed
@@ -138,7 +172,7 @@ public class UserResource {
     @ExceptionMetered
     /* delete user by username*/
     public Response delete(@PathParam("username") String username) {
-        if(username == "" || this.userDao.retrieve(username) == null){
+        if(username.isEmpty() || this.userDao.retrieve(username) == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User not found")

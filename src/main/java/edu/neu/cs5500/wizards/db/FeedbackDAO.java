@@ -18,14 +18,14 @@ import java.util.List;
 public interface FeedbackDAO {
 
     /**
-     * Creates a feedback given the userid of the user to leave feedback for and the description.
+     * Creates a feedback given the userId of the user to leave feedback for and the description.
      *
      * @param userId       userId of the user to leave feedback for
      * @param rating       rating for the feedback
      * @param feedbackDescription the body of the feedback, the description
      */
-    @SqlUpdate("insert into feedback (userId, rating, feedbackDescription) values (:userId, :rating, :feedbackDescription)")
-    void create(@Bind("userId") int userId, @Bind("rating") int rating, @Bind("feedbackDescription") String feedbackDescription);
+    @SqlUpdate("insert into feedback (user_id, rating, feedback_description) values (:userId, :rating, :feedbackDescription) RETURNING *")
+    Feedback create(@Bind("userId") int userId, @Bind("rating") int rating, @Bind("feedbackDescription") String feedbackDescription);
 
     /**
      * Retrieves a single feedback based on the unique id assigned to each feedback.
@@ -42,7 +42,7 @@ public interface FeedbackDAO {
      * @param userId the id of the user we want feedback for
      * @return the list of feedback left for a given user
      */
-    @SqlQuery("select * from feedback where userId = :userId")
+    @SqlQuery("select * from feedback where user_id = :userId")
     List<Feedback> retrieve(@Bind("userId") int userId);
 
     /**
