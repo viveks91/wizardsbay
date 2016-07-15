@@ -1,6 +1,8 @@
 package edu.neu.cs5500.wizards.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -11,19 +13,22 @@ import java.util.Objects;
 /**
  * Created by susannaedens on 6/20/16.
  */
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "rating", "feedbackDescription", "userId", "time", "feedbackId"})
 public class Feedback {
 
     @JsonProperty
     @NotEmpty
-    private int id;
+    private Integer id;
 
     @JsonProperty
     @NotEmpty
-    private int userId;
+    private Integer userId;
 
     @JsonProperty
     @NotEmpty
-    private int rating;
+    private Integer rating;
 
     @JsonProperty
     @NotEmpty
@@ -33,11 +38,11 @@ public class Feedback {
     @NotEmpty
     private Timestamp time;
 
-    public int getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 
@@ -51,22 +56,23 @@ public class Feedback {
 
     public Feedback() {}
 
-    public int getId() {
+    @JsonProperty("feedbackId")
+    public Integer getId() {
         return id;
     }
 
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

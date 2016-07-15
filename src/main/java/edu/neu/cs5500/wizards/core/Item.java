@@ -1,16 +1,21 @@
 package edu.neu.cs5500.wizards.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "itemName", "itemDescription", "minBidAmount", "auctionStartTime", "auctionEndTime", "sellerId", "buyerId", "itemId"})
 public class Item {
 
     @JsonProperty
     @NotEmpty
-    private int id;
+    private Integer id;
 
     @JsonProperty
     @NotEmpty
@@ -22,10 +27,10 @@ public class Item {
 
     @JsonProperty
     @NotEmpty
-    private int sellerId;
+    private Integer sellerId;
 
     @JsonProperty
-    private int buyerId;
+    private Integer buyerId = null;
 
     @JsonProperty
     @NotEmpty
@@ -37,7 +42,7 @@ public class Item {
 
     @JsonProperty
     @NotEmpty
-    private int minBidAmount;
+    private Integer minBidAmount;
 
 
     public Item() {
@@ -48,11 +53,12 @@ public class Item {
 
     }
 
-    public int getId() {
+    @JsonProperty("itemId")
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -72,19 +78,19 @@ public class Item {
         this.itemDescription = itemDescription;
     }
 
-    public int getSellerId() {
+    public Integer getSellerId() {
         return sellerId;
     }
 
-    public void setSellerId(int sellerId) {
+    public void setSellerId(Integer sellerId) {
         this.sellerId = sellerId;
     }
 
-    public int getBuyerId() {
+    public Integer getBuyerId() {
         return buyerId;
     }
 
-    public void setBuyerId(int buyerId) {
+    public void setBuyerId(Integer buyerId) {
         this.buyerId = buyerId;
     }
 
@@ -104,11 +110,11 @@ public class Item {
         this.auctionEndTime = auctionEndTime;
     }
 
-    public int getMinBidAmount() {
+    public Integer getMinBidAmount() {
         return minBidAmount;
     }
 
-    public void setMinBidAmount(int minBidAmount) {
+    public void setMinBidAmount(Integer minBidAmount) {
         this.minBidAmount = minBidAmount;
     }
 

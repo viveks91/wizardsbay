@@ -1,6 +1,8 @@
 package edu.neu.cs5500.wizards.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -11,19 +13,22 @@ import java.util.Objects;
 /**
  * Created by susannaedens on 6/20/16.
  */
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "itemId", "bidAmount", "bidderId", "bidTime", "bidId"})
 public class Bid {
 
     @JsonProperty
     @NotEmpty
-    private int id;
+    private Integer id;
 
     @JsonProperty
     @NotEmpty
-    private int itemId;
+    private Integer itemId;
 
     @JsonProperty
     @NotEmpty
-    private int bidderId;
+    private Integer bidderId;
 
     @JsonProperty
     @NotEmpty
@@ -31,31 +36,32 @@ public class Bid {
 
     @JsonProperty
     @NotEmpty
-    private int bidAmount;
+    private Integer bidAmount;
 
     public Bid(){}
 
-    public int getId() {
+    @JsonProperty("bidId")
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getItemId() {
+    public Integer getItemId() {
         return itemId;
     }
 
-    public void setItemId(int itemId) {
+    public void setItemId(Integer itemId) {
         this.itemId = itemId;
     }
 
-    public int getBidderId() {
+    public Integer getBidderId() {
         return bidderId;
     }
 
-    public void setBidderId(int bidderId) {
+    public void setBidderId(Integer bidderId) {
         this.bidderId = bidderId;
     }
 
@@ -67,11 +73,11 @@ public class Bid {
         this.bidTime= bidTime;
     }
 
-    public int getBidAmount() {
+    public Integer getBidAmount() {
         return bidAmount;
     }
 
-    public void setBidAmount(int bidAmount) {
+    public void setBidAmount(Integer bidAmount) {
         this.bidAmount = bidAmount;
     }
 

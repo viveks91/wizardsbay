@@ -1,6 +1,9 @@
 package edu.neu.cs5500.wizards.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -9,11 +12,13 @@ import com.google.common.base.Optional;
 import java.util.Objects;
 import java.security.Principal;
 
+@JsonIgnoreProperties(value = { "id" })
+@JsonPropertyOrder({ "firstName", "lastName", "username", "password", "address" })
 public class User implements Principal{
 
     @JsonProperty
     @NotEmpty
-    private int id;
+    private Integer id;
 
     @JsonProperty
     @NotEmpty
@@ -43,11 +48,12 @@ public class User implements Principal{
 
     }
 
-    public int getId() {
+    @JsonIgnore
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
