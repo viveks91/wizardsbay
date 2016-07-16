@@ -124,9 +124,4 @@ public class Feedback {
         result = 31 * result + (time != null ? time.hashCode() : 0);
         return result;
     }
-
-    @Override
-    public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
-    }
 }

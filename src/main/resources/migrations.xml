@@ -25,8 +25,9 @@
             <column name="last_name" type="varchar">
                 <constraints nullable="false"/>
             </column>
-            <column name="address" type="varchar">
-              <constraints nullable="false"/>
+            <column name="address" type="varchar"/>
+            <column name="email" type="varchar">
+                <constraints nullable="false"/>
             </column>
         </createTable>
 

@@ -117,10 +117,4 @@ public class Bid {
         result = 31 * result + bidAmount.hashCode();
         return result;
     }
-
-    @Override
-    public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
-    }
-
 }

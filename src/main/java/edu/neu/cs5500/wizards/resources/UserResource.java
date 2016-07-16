@@ -87,6 +87,13 @@ public class UserResource {
                     .build();
         }
 
+        if (user.getUsername() != null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Username cannot be changed")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
         if (user.getPassword() != null) {
             String password = user.getPassword();
             existingUser.setPassword(password);
@@ -100,14 +107,11 @@ public class UserResource {
         if (user.getAddress() != null) {
             existingUser.setAddress(user.getAddress());
         }
-        if (user.getUsername() != null) {
-            return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: Username cannot be changed")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
+        if (user.getEmail() != null) {
+            existingUser.setEmail(user.getEmail());
         }
-        this.userDao.update(existingUser.getUsername(), existingUser.getPassword(), existingUser.getFirstName(), existingUser.getLastName(), existingUser.getAddress());
+
+        this.userDao.update(existingUser.getUsername(), existingUser.getPassword(), existingUser.getFirstName(), existingUser.getLastName(), existingUser.getAddress(), existingUser.getEmail());
 
         return Response.ok(existingUser).build();
     }

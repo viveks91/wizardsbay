@@ -11,7 +11,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 @RegisterMapper(UserMapper.class)
 public interface UserDAO {
 
-    @SqlQuery("insert into users (username, password, first_name, last_name, address) values (:username, :password, :firstName, :lastName, :address) RETURNING *")
+    @SqlQuery("insert into users (username, password, first_name, last_name, address, email) values (:username, :password, :firstName, :lastName, :address, :email) RETURNING *")
     User create(@BindBean User user);
 
     @SqlQuery("select * from users where username = :username")
@@ -20,8 +20,8 @@ public interface UserDAO {
     @SqlQuery("select * from users where id = :id")
     User retrieveById(@Bind("id") int id);
 
-    @SqlUpdate("update users set password = :password, first_name = :firstName, last_name = :lastName, address = :address where username = :username")
-    void update(@Bind("username") String username, @Bind("password") String password, @Bind("firstName") String firstName, @Bind("lastName") String lastName, @Bind("address") String address);
+    @SqlUpdate("update users set password = :password, first_name = :firstName, last_name = :lastName, address = :address, email = :email where username = :username")
+    void update(@Bind("username") String username, @Bind("password") String password, @Bind("firstName") String firstName, @Bind("lastName") String lastName, @Bind("address") String address, @Bind("email") String email);
 
     @SqlUpdate("delete from users where username = :username")
     void delete(@Bind("username") String username);

@@ -88,7 +88,7 @@ public class ItemResourceTest {
     public void testExceptionOnPostingItemWithInvalidSellerId() {
         when(userDAO.retrieve(anyString())).thenReturn(null);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
-        
+
         Response response = itemResource.post(item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Seller does not exist", response.getEntity());

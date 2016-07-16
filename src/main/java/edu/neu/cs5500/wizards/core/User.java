@@ -1,16 +1,15 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
+import javax.ws.rs.DefaultValue;
 import java.security.Principal;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(value = { "id" })
 @JsonPropertyOrder({ "firstName", "lastName", "username", "password", "email", "address" })
 public class User implements Principal{
@@ -29,22 +28,29 @@ public class User implements Principal{
     private String password;
 
     @JsonProperty
+    @NotEmpty
     private String firstName;
 
     @JsonProperty
+    @NotEmpty
     private String lastName;
 
     @JsonProperty
     private String address;
 
+    @JsonProperty
+    @NotEmpty
+    private String email;
+
     public User() { }
 
-    public User(String username, String password, String firstName, String lastName, String address) {
+    public User(String username, String password, String firstName, String lastName, String address, String email) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
+        this.email = email;
     }
 
     @JsonIgnore
@@ -54,6 +60,14 @@ public class User implements Principal{
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUsername() {
@@ -107,28 +121,25 @@ public class User implements Principal{
 
         User user = (User) o;
 
-        if (id != user.id) return false;
+        if (id != null ? !id.equals(user.id) : user.id != null) return false;
         if (!username.equals(user.username)) return false;
         if (!password.equals(user.password)) return false;
         if (!firstName.equals(user.firstName)) return false;
         if (!lastName.equals(user.lastName)) return false;
-        return address.equals(user.address);
+        if (address != null ? !address.equals(user.address) : user.address != null) return false;
+        return email.equals(user.email);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + username.hashCode();
         result = 31 * result + password.hashCode();
         result = 31 * result + firstName.hashCode();
         result = 31 * result + lastName.hashCode();
-        result = 31 * result + address.hashCode();
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + email.hashCode();
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
     }
 }
