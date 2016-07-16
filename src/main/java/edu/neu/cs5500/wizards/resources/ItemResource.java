@@ -87,7 +87,7 @@ public class ItemResource {
 //        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
 //    }
 
-    //Create a listing
+    //update the listing
     @PUT
     @Path("/{id}")
     @Timed
@@ -180,7 +180,7 @@ public class ItemResource {
         return Response.ok(existingItem).build();
     }
 
-    //getActive all active items
+    //get all active items
     @GET
     @Path("/active")
     @Timed
@@ -200,8 +200,7 @@ public class ItemResource {
         return Response.ok(activeItems).build();
     }
 
-    //getActive item by id
-
+    //get item by id
     @GET
     @Path("/{id}")
     @Timed

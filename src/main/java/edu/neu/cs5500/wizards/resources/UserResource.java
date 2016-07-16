@@ -139,7 +139,7 @@ public class UserResource {
         return Response.ok(user).build();
     }
 
-    //getActive all items listed by a seller
+    //get all items listed by a seller
     @GET
     @Path("/{username}/items")
     @Timed
