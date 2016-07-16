@@ -31,8 +31,8 @@ public interface ItemDAO {
     Item findItemById(@Bind("itemId") int itemId);
 
     //update item details and auction end time for the item by item Id
-    @SqlUpdate("update items set item_name = :itemName, item_description = :itemDescription, auction_end_time = :auctionEndTime where id = :itemId")
-    void update(@Bind("itemId") int itemId, @Bind("itemName") String itemName, @Bind("itemDescription") String itemDescription, @Bind("auctionEndTime") Timestamp auctionEndTime);
+    @SqlUpdate("update items set item_name = :itemName, item_description = :itemDescription, auction_end_time = :auctionEndTime, min_bid_amount = :minBidAmount where id = :itemId")
+    void update(@Bind("itemId") int itemId, @Bind("itemName") String itemName, @Bind("itemDescription") String itemDescription, @Bind("auctionEndTime") Timestamp auctionEndTime, @Bind("minBidAmount") int minBidAmount);
 
     //update when a new bid is made for the item
     @SqlUpdate("update items set buyer_id = :bidderId, min_bid_amount = :minBidAmount where id = :itemId")

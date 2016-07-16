@@ -67,8 +67,15 @@ public class UserResource {
     @Path("/{username}")
     @ExceptionMetered
     public Response put(@PathParam("username") String username, User user, @Auth User auth_user) {
-        User existingUser = this.userDao.retrieve(username);
+        if(user == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Invalid user")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
 
+        User existingUser = this.userDao.retrieve(username);
         if(existingUser == null){
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -85,16 +92,16 @@ public class UserResource {
                     .build();
         }
 
-        if (user.getUsername() != null) {
+        if(user.getUsername() != null && !existingUser.getUsername().equals(user.getUsername())) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Username cannot be changed")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
         if (user.getPassword() != null) {
-            String password = user.getPassword();
-            existingUser.setPassword(password);
+            existingUser.setPassword(user.getPassword());
         }
         if (user.getFirstName() != null) {
             existingUser.setFirstName(user.getFirstName());

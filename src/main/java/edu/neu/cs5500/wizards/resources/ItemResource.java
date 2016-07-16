@@ -87,6 +87,99 @@ public class ItemResource {
 //        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
 //    }
 
+    //Create a listing
+    @PUT
+    @Path("/{id}")
+    @Timed
+    @UnitOfWork
+    @ExceptionMetered
+    public Response put(@PathParam("id") int id, Item item, @Auth User auth_user) {
+
+        if(item == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Invalid item")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        Item existingItem = this.itemDao.findItemById(id);
+        if(existingItem == null) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: Invalid item, update failed")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        User itemSeller = this.userDao.retrieveById(existingItem.getSellerId());
+        if(item.getSellerUsername() != null) {
+            if(!item.getSellerUsername().equals(itemSeller.getUsername())) {
+                return Response
+                        .status(HttpStatus.BAD_REQUEST_400)
+                        .entity("Error: Seller cannot be changed")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+        }
+
+        if(!auth_user.equals(itemSeller)) {
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if(item.getId() != null) {
+            if(!existingItem.getId().equals(item.getId())) {
+                return Response
+                        .status(HttpStatus.BAD_REQUEST_400)
+                        .entity("Error: item id cannot be changed")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+        }
+
+        if(item.getAuctionEndTime() != null) {
+
+            Timestamp now = new Timestamp(new Date().getTime());
+            if(!item.getAuctionEndTime().equals(existingItem.getAuctionEndTime())
+                    && existingItem.getAuctionEndTime().before(now)) {
+                return Response
+                        .status(HttpStatus.BAD_REQUEST_400)
+                        .entity("Error: Auction end time cannot be changed, since it has already passed")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            } else {
+                existingItem.setAuctionEndTime(item.getAuctionEndTime());
+            }
+        }
+
+        if(item.getMinBidAmount() != null) {
+            if(item.getMinBidAmount() < 1) {
+                return Response
+                        .status(HttpStatus.BAD_REQUEST_400)
+                        .entity("Error: Minimum bid amount cannot be less than $1")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            } else {
+                existingItem.setMinBidAmount(item.getMinBidAmount());
+            }
+        }
+
+        if(item.getItemName() != null) {
+            existingItem.setItemName(item.getItemName());
+        }
+        if(item.getItemDescription() != null) {
+            existingItem.setItemDescription(item.getItemDescription());
+        }
+
+        this.itemDao.update(existingItem.getId(), existingItem.getItemName(), existingItem.getItemDescription(), existingItem.getAuctionEndTime(), existingItem.getMinBidAmount());
+
+        return Response.ok(existingItem).build();
+    }
+
     //get all active items
     @GET
     @Path("/active")
