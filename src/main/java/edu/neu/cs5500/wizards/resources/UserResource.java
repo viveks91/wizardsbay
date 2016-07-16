@@ -39,7 +39,7 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(@Valid User user) {
+    public Response create(@Valid User user) {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -66,7 +66,7 @@ public class UserResource {
     @UnitOfWork
     @Path("/{username}")
     @ExceptionMetered
-    public Response put(@PathParam("username") String username, User user, @Auth User auth_user) {
+    public Response update(@PathParam("username") String username, User user, @Auth User auth_user) {
         if(user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -127,7 +127,7 @@ public class UserResource {
     @UnitOfWork
     @ExceptionMetered
     //Get user by username
-    public Response get(@PathParam("username") String username) {
+    public Response getOne(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -139,7 +139,7 @@ public class UserResource {
         return Response.ok(user).build();
     }
 
-    //get all items listed by a seller
+    //getActive all items listed by a seller
     @GET
     @Path("/{username}/items")
     @Timed

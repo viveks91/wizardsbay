@@ -36,7 +36,7 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(@Valid Item item, @Auth User auth_user) {
+    public Response create(@Valid Item item, @Auth User auth_user) {
         if( item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -76,14 +76,14 @@ public class ItemResource {
         return Response.ok(createdItem).build();
     }
 
-    //get all items listed by a seller
+    //getActive all items listed by a seller
     // added this to user/{username}/items
 //    @GET
 //    @Path("/seller/{sellerId}")
 //    @Timed
 //    @UnitOfWork
 //    @ExceptionMetered
-//    public Response get(@PathParam("sellerId") int sellerId) {
+//    public Response getActive(@PathParam("sellerId") int sellerId) {
 //        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
 //    }
 
@@ -93,7 +93,7 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response put(@PathParam("id") int id, Item item, @Auth User auth_user) {
+    public Response update(@PathParam("id") int id, Item item, @Auth User auth_user) {
 
         if(item == null) {
             return Response
@@ -180,13 +180,13 @@ public class ItemResource {
         return Response.ok(existingItem).build();
     }
 
-    //get all active items
+    //getActive all active items
     @GET
     @Path("/active")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response get() {
+    public Response getActive() {
         List<Item> activeItems = this.itemDao.findAllActiveItems();
 
         for (Item item : activeItems) {
@@ -200,14 +200,14 @@ public class ItemResource {
         return Response.ok(activeItems).build();
     }
 
-    //get item by id
+    //getActive item by id
 
     @GET
     @Path("/{id}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response getById(@PathParam("id") int id) {
+    public Response getOne(@PathParam("id") int id) {
         Item item = this.itemDao.findItemById(id);
         if (item == null) {
             return Response

@@ -66,7 +66,7 @@ public class ItemResourceTest {
         when(itemDAO.create(any(Item.class))).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Response response = itemResource.post(item, auth_user);
+        Response response = itemResource.create(item, auth_user);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         assertEquals(item, response.getEntity());
     }
@@ -75,7 +75,7 @@ public class ItemResourceTest {
     public void testExceptionOnPostingItemWhenContentIsNull() {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Response response = itemResource.post(null, auth_user);
+        Response response = itemResource.create(null, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Invalid item", response.getEntity());
     }
@@ -85,7 +85,7 @@ public class ItemResourceTest {
         when(userDAO.retrieve(anyString())).thenReturn(Mockito.mock(User.class));
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Response response = itemResource.post(item, auth_user);
+        Response response = itemResource.create(item, auth_user);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
         assertEquals("Error: Invalid credentials", response.getEntity());
     }
@@ -95,7 +95,7 @@ public class ItemResourceTest {
         when(userDAO.retrieve(anyString())).thenReturn(null);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Response response = itemResource.post(item, auth_user);
+        Response response = itemResource.create(item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Seller does not exist", response.getEntity());
     }
@@ -110,7 +110,7 @@ public class ItemResourceTest {
         when(itemDAO.create(any(Item.class))).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Response response = itemResource.post(item, auth_user);
+        Response response = itemResource.create(item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Invalid auction end time", response.getEntity());
     }
@@ -122,7 +122,7 @@ public class ItemResourceTest {
 //        when(itemDAO.findItemsBySellerId(anyInt())).thenReturn(mockResult);
 //        ItemResource itemResource = new ItemResource(itemDAO);
 //
-//        Response response = itemResource.get((int) Math.random());
+//        Response response = itemResource.getActive((int) Math.random());
 //        assertEquals(response.getEntity(), mockResult);
 //    }
 
@@ -133,7 +133,7 @@ public class ItemResourceTest {
         when(itemDAO.findAllActiveItems()).thenReturn(mockResult);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Response response = itemResource.get();
+        Response response = itemResource.getActive();
         assertEquals(mockResult, response.getEntity());
     }
 
@@ -142,7 +142,7 @@ public class ItemResourceTest {
         when(itemDAO.findItemById(anyInt())).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
-        Response response = itemResource.getById(rand.nextInt());
+        Response response = itemResource.getOne(rand.nextInt());
         assertEquals(item, response.getEntity());
     }
 
@@ -181,7 +181,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
 
-        Response response = itemResource.put(randomInt, null, auth_user);
+        Response response = itemResource.update(randomInt, null, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Invalid item", response.getEntity());
     }
@@ -192,7 +192,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
 
-        Response response = itemResource.put(randomInt, item, auth_user);
+        Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Invalid item, update failed", response.getEntity());
     }
@@ -205,7 +205,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
 
-        Response response = itemResource.put(randomInt, item, auth_user);
+        Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Seller cannot be changed", response.getEntity());
     }
@@ -217,7 +217,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
 
-        Response response = itemResource.put(randomInt, item, auth_user);
+        Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
         assertEquals("Error: Invalid credentials", response.getEntity());
     }
@@ -230,7 +230,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
 
-        Response response = itemResource.put(randomInt, item, auth_user);
+        Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: item id cannot be changed", response.getEntity());
     }
@@ -245,7 +245,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
 
-        Response response = itemResource.put(randomInt, item, auth_user);
+        Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Auction end time cannot be changed, since it has already passed", response.getEntity());
     }
@@ -257,7 +257,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
 
-        Response response = itemResource.put(randomInt, item, auth_user);
+        Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Minimum bid amount cannot be less than $1", response.getEntity());
     }
@@ -269,7 +269,7 @@ public class ItemResourceTest {
         int randomInt = rand.nextInt();
         Item randItem = new Item();
 
-        Response response = itemResource.put(randomInt, randItem, auth_user);
+        Response response = itemResource.update(randomInt, randItem, auth_user);
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 }

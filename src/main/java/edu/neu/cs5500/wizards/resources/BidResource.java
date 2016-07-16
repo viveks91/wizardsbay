@@ -49,7 +49,7 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(@PathParam("itemId") int itemId, @Valid Bid incomingBid, @Auth User auth_user) {
+    public Response create(@PathParam("itemId") int itemId, @Valid Bid incomingBid, @Auth User auth_user) {
 
         User biddingUser = userDao.retrieve(incomingBid.getBidderUsername());
         if(biddingUser == null) {
@@ -112,7 +112,7 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response get(@PathParam("itemId") int itemId) {
+    public Response getAll(@PathParam("itemId") int itemId) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
@@ -148,7 +148,7 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response getById(@PathParam("itemId") int itemId, @PathParam("id") int id) {
+    public Response getOne(@PathParam("itemId") int itemId, @PathParam("id") int id) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
@@ -191,7 +191,7 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response getHighestBid(@PathParam("itemId") int itemId) {
+    public Response getHighest(@PathParam("itemId") int itemId) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response

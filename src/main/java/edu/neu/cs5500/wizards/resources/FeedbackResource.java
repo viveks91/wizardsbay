@@ -41,7 +41,7 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response post(@PathParam("username") String username, @Valid Feedback feedback) {
+    public Response create(@PathParam("username") String username, @Valid Feedback feedback) {
         User user = this.userDao.retrieve(username);
         if(user == null) {
             return Response
@@ -67,7 +67,7 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response getFeedback(@PathParam("username") String username) {
+    public Response getAll(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
