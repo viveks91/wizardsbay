@@ -1,8 +1,6 @@
 package edu.neu.cs5500.wizards.core;
 
 import com.fasterxml.jackson.annotation.*;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Min;

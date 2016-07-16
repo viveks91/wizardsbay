@@ -2,10 +2,8 @@ package edu.neu.cs5500.wizards.resources;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import edu.neu.cs5500.wizards.core.Feedback;
 import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
-import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
