@@ -1,55 +1,71 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.validator.constraints.NotEmpty;
-import com.google.common.base.Optional;
 
-import java.util.Objects;
+import javax.validation.constraints.Size;
 import java.security.Principal;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(value = { "id" })
+@JsonPropertyOrder({ "firstName", "lastName", "username", "password", "email", "address" })
 public class User implements Principal{
 
-//    @JsonProperty
-//    @NotEmpty
-//    private int id;
+    @JsonProperty
+    private Integer id;
 
     @JsonProperty
     @NotEmpty
+    @Size(min=3)
     private String username;
 
     @JsonProperty
     @NotEmpty
+    @Size(min=3)
     private String password;
 
     @JsonProperty
-    private String firstname;
+    @NotEmpty
+    private String firstName;
 
     @JsonProperty
-    private String lastname;
+    @NotEmpty
+    private String lastName;
 
     @JsonProperty
     private String address;
 
+    @JsonProperty
+    @NotEmpty
+    private String email;
+
     public User() { }
 
-    public User(String username, String password, String firstname, String lastname, String address) {
+    public User(String username, String password, String firstName, String lastName, String address, String email) {
         this.username = username;
         this.password = password;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.address = address;
-
+        this.email = email;
     }
 
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
+    @JsonIgnore
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getUsername() {
         return username;
@@ -67,20 +83,20 @@ public class User implements Principal{
         this.password = password;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
     public void setAddress(String address) {
@@ -96,31 +112,31 @@ public class User implements Principal{
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(username, password, firstname, lastname, address);
-    }
-
-
-    @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (o == null || !(o instanceof User)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        User that = (User) o;
+        User user = (User) o;
 
-        return Objects.equals(username, that.username) &&
-                Objects.equals(password, that.password) &&
-                Objects.equals(firstname, that.firstname) &&
-                Objects.equals(lastname, that.lastname) &&
-                Objects.equals(address, that.address);
+        if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (!username.equals(user.username)) return false;
+        if (!password.equals(user.password)) return false;
+        if (!firstName.equals(user.firstName)) return false;
+        if (!lastName.equals(user.lastName)) return false;
+        if (address != null ? !address.equals(user.address) : user.address != null) return false;
+        return email.equals(user.email);
+
     }
 
     @Override
-    public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + username.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + email.hashCode();
+        return result;
     }
 }
