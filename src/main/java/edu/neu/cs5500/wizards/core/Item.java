@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.DefaultValue;
 import java.sql.Timestamp;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -12,6 +13,7 @@ import java.sql.Timestamp;
 @JsonPropertyOrder({ "itemName", "itemDescription", "minBidAmount", "auctionStartTime", "auctionEndTime", "sellerUsername", "buyerUsername", "itemId"})
 public class Item {
 
+    @JsonProperty
     private Integer id;
 
     @JsonProperty
@@ -40,6 +42,7 @@ public class Item {
     private Timestamp auctionStartTime;
 
     @JsonProperty
+    @NotNull
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
     private Timestamp auctionEndTime;
 
@@ -144,14 +147,16 @@ public class Item {
 
         Item item = (Item) o;
 
-        if (!id.equals(item.id)) return false;
+        if (id != null ? !id.equals(item.id) : item.id != null) return false;
         if (!itemName.equals(item.itemName)) return false;
         if (!itemDescription.equals(item.itemDescription)) return false;
-        if (!sellerId.equals(item.sellerId)) return false;
+        if (sellerId != null ? !sellerId.equals(item.sellerId) : item.sellerId != null) return false;
         if (!sellerUsername.equals(item.sellerUsername)) return false;
-        if (!buyerId.equals(item.buyerId)) return false;
-        if (!buyerUsername.equals(item.buyerUsername)) return false;
-        if (!auctionStartTime.equals(item.auctionStartTime)) return false;
+        if (buyerId != null ? !buyerId.equals(item.buyerId) : item.buyerId != null) return false;
+        if (buyerUsername != null ? !buyerUsername.equals(item.buyerUsername) : item.buyerUsername != null)
+            return false;
+        if (auctionStartTime != null ? !auctionStartTime.equals(item.auctionStartTime) : item.auctionStartTime != null)
+            return false;
         if (!auctionEndTime.equals(item.auctionEndTime)) return false;
         return minBidAmount.equals(item.minBidAmount);
 
@@ -159,14 +164,14 @@ public class Item {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + itemName.hashCode();
         result = 31 * result + itemDescription.hashCode();
-        result = 31 * result + sellerId.hashCode();
+        result = 31 * result + (sellerId != null ? sellerId.hashCode() : 0);
         result = 31 * result + sellerUsername.hashCode();
-        result = 31 * result + buyerId.hashCode();
-        result = 31 * result + buyerUsername.hashCode();
-        result = 31 * result + auctionStartTime.hashCode();
+        result = 31 * result + (buyerId != null ? buyerId.hashCode() : 0);
+        result = 31 * result + (buyerUsername != null ? buyerUsername.hashCode() : 0);
+        result = 31 * result + (auctionStartTime != null ? auctionStartTime.hashCode() : 0);
         result = 31 * result + auctionEndTime.hashCode();
         result = 31 * result + minBidAmount.hashCode();
         return result;

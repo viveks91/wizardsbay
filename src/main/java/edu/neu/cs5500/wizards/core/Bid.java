@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 @JsonPropertyOrder({ "itemId", "bidAmount", "bidderUsername", "bidTime", "bidId"})
 public class Bid {
 
+    @JsonProperty
     private Integer id;
 
     @JsonProperty
@@ -97,22 +98,22 @@ public class Bid {
 
         Bid bid = (Bid) o;
 
-        if (!id.equals(bid.id)) return false;
-        if (!itemId.equals(bid.itemId)) return false;
-        if (!bidderId.equals(bid.bidderId)) return false;
+        if (id != null ? !id.equals(bid.id) : bid.id != null) return false;
+        if (itemId != null ? !itemId.equals(bid.itemId) : bid.itemId != null) return false;
+        if (bidderId != null ? !bidderId.equals(bid.bidderId) : bid.bidderId != null) return false;
         if (!bidderUsername.equals(bid.bidderUsername)) return false;
-        if (!bidTime.equals(bid.bidTime)) return false;
+        if (bidTime != null ? !bidTime.equals(bid.bidTime) : bid.bidTime != null) return false;
         return bidAmount.equals(bid.bidAmount);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + itemId.hashCode();
-        result = 31 * result + bidderId.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (itemId != null ? itemId.hashCode() : 0);
+        result = 31 * result + (bidderId != null ? bidderId.hashCode() : 0);
         result = 31 * result + bidderUsername.hashCode();
-        result = 31 * result + bidTime.hashCode();
+        result = 31 * result + (bidTime != null ? bidTime.hashCode() : 0);
         result = 31 * result + bidAmount.hashCode();
         return result;
     }

@@ -62,10 +62,8 @@ public class ItemResource {
                     .build();
         }
 
-        Timestamp current = new Timestamp(new Date().getTime());
-
-        if(item.getAuctionEndTime().before(item.getAuctionStartTime()) ||
-                item.getAuctionEndTime().before(current)) {
+        Timestamp now = new Timestamp(new Date().getTime());
+        if(item.getAuctionEndTime().before(now)) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Invalid auction end time")

@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 import java.security.Principal;
 
 @JsonIgnoreProperties(value = { "id" })
-@JsonPropertyOrder({ "firstName", "lastName", "username", "password", "address" })
+@JsonPropertyOrder({ "firstName", "lastName", "username", "password", "email", "address" })
 public class User implements Principal{
 
     @JsonProperty
@@ -45,7 +45,6 @@ public class User implements Principal{
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
-
     }
 
     @JsonIgnore

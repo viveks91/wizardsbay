@@ -4,6 +4,7 @@ import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class ItemResourceTest {
@@ -41,6 +43,10 @@ public class ItemResourceTest {
         itemDAO = Mockito.mock(ItemDAO.class);
         item = Mockito.mock(Item.class);
         auth_user = Mockito.mock(User.class);
+
+        when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
+        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
+        when(userDAO.retrieve(anyString())).thenReturn(auth_user);
     }
 
     @Test
@@ -52,7 +58,6 @@ public class ItemResourceTest {
         when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
         when(item.getAuctionStartTime()).thenReturn(Timestamp.valueOf(dummyStartTime));
         when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));
-        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         when(itemDAO.create(any(Item.class))).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
@@ -62,47 +67,46 @@ public class ItemResourceTest {
 
     @Test
     public void testExceptionOnPostingItemWhenContentIsNull() {
-        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+
         Response response = itemResource.post(null, auth_user);
-        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
-        assertEquals(response.getEntity(), "Error: Invalid item");
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Invalid item", response.getEntity());
     }
 
     @Test
     public void testExceptionOnPostingItemWithInvalidCredentials() {
-        when(userDAO.retrieveById(anyInt())).thenReturn(Mockito.mock(User.class));
+        when(userDAO.retrieve(anyString())).thenReturn(Mockito.mock(User.class));
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+
         Response response = itemResource.post(item, auth_user);
-        assertEquals(response.getStatus(), HttpStatus.UNAUTHORIZED_401);
-        assertEquals(response.getEntity(), "Error: Invalid credentials");
+        assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
+        assertEquals("Error: Invalid credentials", response.getEntity());
     }
 
     @Test
     public void testExceptionOnPostingItemWithInvalidSellerId() {
-        when(userDAO.retrieveById(anyInt())).thenReturn(null);
+        when(userDAO.retrieve(anyString())).thenReturn(null);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+        
         Response response = itemResource.post(item, auth_user);
-        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
-        assertEquals(response.getEntity(), "Error: Seller does not exist");
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Seller does not exist", response.getEntity());
     }
 
     @Test
     public void testExceptionOnPostingItemWithInvalidAuctionEndTime() {
-        String dummyStartTime = "1990-01-01 11:11:11";
         String dummyEndTime = "2016-01-01 11:11:11";
         int numberMoreThanZero = (int)Math.random() + 1 ;
         when(item.getSellerId()).thenReturn((int)Math.random());
         when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
-        when(item.getAuctionStartTime()).thenReturn(Timestamp.valueOf(dummyStartTime));
         when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));
-        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         when(itemDAO.create(any(Item.class))).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.post(item, auth_user);
-        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
-        assertEquals(response.getEntity(), "Error: Invalid auction end time");
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Invalid auction end time", response.getEntity());
     }
 
 //    @Test
@@ -124,7 +128,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.get();
-        assertEquals(response.getEntity(), mockResult);
+        assertEquals(mockResult, response.getEntity());
     }
 
     @Test
@@ -133,28 +137,26 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.getById((int) Math.random());
-        assertEquals(response.getEntity(), item);
+        assertEquals(item, response.getEntity());
     }
 
     @Test
     public void testDeletingItemWithValidId() {
-        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         when(itemDAO.findItemById(anyInt())).thenReturn(item);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.delete((int) Math.random(), auth_user);
-        assertEquals(response.getStatus(), HttpStatus.NO_CONTENT_204);
+        assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
     }
 
     @Test
-    public void testDeletingItemWithInvalidId() {
-        when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
+    public void testDeletingItemWithInvalidItemId() {
         when(itemDAO.findItemById(anyInt())).thenReturn(null);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.delete((int) Math.random(), auth_user);
-        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST_400);
-        assertEquals(response.getEntity(), "Error: Item not found");
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Item not found", response.getEntity());
     }
 
     @Test
@@ -164,7 +166,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.delete((int) Math.random(), auth_user);
-        assertEquals(response.getStatus(), HttpStatus.UNAUTHORIZED_401);
-        assertEquals(response.getEntity(), "Error: Invalid credentials");
+        assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
+        assertEquals("Error: Invalid credentials", response.getEntity());
     }
 }

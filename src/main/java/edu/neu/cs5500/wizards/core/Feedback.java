@@ -20,13 +20,13 @@ import java.util.Objects;
 @JsonPropertyOrder({ "rating", "feedbackDescription", "username", "time", "feedbackId"})
 public class Feedback {
 
+    @JsonProperty
     private Integer id;
 
     @JsonProperty
     private Integer userId;
 
     @JsonProperty
-    @NotEmpty
     private String username;
 
     @JsonProperty
@@ -105,23 +105,23 @@ public class Feedback {
 
         Feedback feedback = (Feedback) o;
 
-        if (!id.equals(feedback.id)) return false;
-        if (!userId.equals(feedback.userId)) return false;
-        if (!username.equals(feedback.username)) return false;
+        if (id != null ? !id.equals(feedback.id) : feedback.id != null) return false;
+        if (userId != null ? !userId.equals(feedback.userId) : feedback.userId != null) return false;
+        if (username != null ? !username.equals(feedback.username) : feedback.username != null) return false;
         if (!rating.equals(feedback.rating)) return false;
         if (!feedbackDescription.equals(feedback.feedbackDescription)) return false;
-        return time.equals(feedback.time);
+        return time != null ? time.equals(feedback.time) : feedback.time == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + userId.hashCode();
-        result = 31 * result + username.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (userId != null ? userId.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + rating.hashCode();
         result = 31 * result + feedbackDescription.hashCode();
-        result = 31 * result + time.hashCode();
+        result = 31 * result + (time != null ? time.hashCode() : 0);
         return result;
     }
 

@@ -126,6 +126,7 @@ public class FeedbackResource {
                     .build();
         }
 
+        feedback.setUsername(username);
         return Response.ok(feedback).build();
     }
 
