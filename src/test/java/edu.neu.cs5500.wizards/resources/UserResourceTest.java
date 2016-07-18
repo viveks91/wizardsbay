@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -169,4 +167,54 @@ public class UserResourceTest {
         testUser.setUsername("admin");
         Response response = userResource.delete(RandomStringUtils.random(8), auth_user);
     }
+
+    @Test
+    public void testUpdateWithInvalidUsername() {
+        when(userDAO.retrieve(anyString())).thenReturn(null);
+        UserResource userResource = new UserResource(userDAO, itemDAO);
+
+        Response response = userResource.update(RandomStringUtils.random(8), user, auth_user);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Invalid username, update failed", response.getEntity());
+    }
+
+    @Test
+    public void testUpdateWithInvalidUserDetails() {
+
+        UserResource userResource = new UserResource(userDAO, itemDAO);
+
+        Response response = userResource.update(RandomStringUtils.random(8), null, auth_user);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Invalid user", response.getEntity());
+    }
+
+    @Test
+    public void testUpdateWithInvalidCredentials() {
+        when(userDAO.retrieve(anyString())).thenReturn(Mockito.mock(User.class));
+        UserResource userResource = new UserResource(userDAO, itemDAO);
+
+        Response response = userResource.update(RandomStringUtils.random(8), user, auth_user);
+        assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
+        assertEquals("Error: Invalid credentials", response.getEntity());
+    }
+
+    @Test
+    public void testUpdateWithChangeInUsername() {
+        when(user.getUsername()).thenReturn(RandomStringUtils.random(5));
+        when(userDAO.retrieve(anyString())).thenReturn(user);
+        UserResource userResource = new UserResource(userDAO, itemDAO);
+        user.setUsername(RandomStringUtils.random(10));
+
+        Response response = userResource.update(RandomStringUtils.random(5), user, user);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Username cannot be changed", response.getEntity());
+    }
+
+//    @Test
+//    public void testSuccessfulUpdate() {
+//        UserResource userResource = new UserResource(userDAO, itemDAO);
+//
+//        Response response = userResource.update(RandomStringUtils.random(5), user, user);
+//        assertEquals(HttpStatus.OK_200, response.getStatus());
+//    }
 }

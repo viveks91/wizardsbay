@@ -92,7 +92,7 @@ public class UserResource {
                     .build();
         }
 
-        if(user.getUsername() != null && !existingUser.getUsername().equals(user.getUsername())) {
+        if(user.getUsername() != null && !existingUser.getUsername().equals(username)) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Username cannot be changed")
