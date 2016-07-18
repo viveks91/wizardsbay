@@ -17,18 +17,41 @@ import java.util.List;
 @RegisterMapper(FeedbackMapper.class)
 public interface FeedbackDAO {
 
-    @SqlUpdate("insert into feedback (userid, feedbackdesc) values (:userid, :feedbackdesc)")
-    public void create(@Bind("userid") int userid, @Bind("feedbackdesc") String feedbackdesc);
+    /**
+     * Creates a feedback given the userId of the user to leave feedback for and the description.
+     *
+     * @param userId       userId of the user to leave feedback for
+     * @param rating       rating for the feedback
+     * @param feedbackDescription the body of the feedback, the description
+     */
+    @SqlQuery("insert into feedback (user_id, rating, feedback_description) values (:userId, :rating, :feedbackDescription) RETURNING *")
+    Feedback create(@Bind("userId") int userId, @Bind("rating") int rating, @Bind("feedbackDescription") String feedbackDescription);
 
-    @SqlQuery("select id, userid, feedbackdesc from feedback where id = :id")
-    public Feedback retrieveOne(@Bind("id") int id);
+    /**
+     * Retrieves a single feedback based on the unique id assigned to each feedback.
+     *
+     * @param id an individual feedback id
+     * @return the feedback with the id that matches the given id
+     */
+    @SqlQuery("select * from feedback where id = :id")
+    Feedback retrieveOne(@Bind("id") int id);
 
-    @SqlQuery("select * from feedback where userid = :userid")
-    public List<Feedback> retrieve(@Bind("userid") int userid);
+    /**
+     * Retrieves a list of feedback for any given user based on the given userId.
+     *
+     * @param userId the id of the user we want feedback for
+     * @return the list of feedback left for a given user
+     */
+    @SqlQuery("select * from feedback where user_id = :userId order by time desc")
+    List<Feedback> retrieve(@Bind("userId") int userId);
 
-    //> Delete feedback by unique id
+    /**
+     * Given a feedback, delete it from the database.
+     *
+     * @param feedback the feedback to delete
+     */
     @SqlUpdate("delete from feedback where id = :id")
-    public void delete(@BindBean Feedback feedback);
+    void delete(@BindBean Feedback feedback);
 
 
 }

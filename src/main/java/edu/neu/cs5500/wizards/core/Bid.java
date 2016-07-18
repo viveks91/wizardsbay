@@ -1,70 +1,92 @@
 package edu.neu.cs5500.wizards.core;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import java.util.Objects;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 
 /**
  * Created by susannaedens on 6/20/16.
  */
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(value = { "bidderId" })
+@JsonPropertyOrder({ "itemId", "bidAmount", "bidderUsername", "bidTime", "bidId"})
 public class Bid {
 
     @JsonProperty
-    @NotEmpty
-    private int id;
+    private Integer id;
+
+    @JsonProperty
+    private Integer itemId;
+
+    @JsonProperty
+    private Integer bidderId;
 
     @JsonProperty
     @NotEmpty
-    private int itemId;
+    private String bidderUsername;
 
     @JsonProperty
-    @NotEmpty
-    private int bidder;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
+    private Timestamp bidTime;
 
     @JsonProperty
-    @NotEmpty
-    private int bidAmount;
+    @NotNull
+    @Min(1)
+    private Integer bidAmount;
 
     public Bid(){}
 
-    public int getId() {
+    @JsonProperty("bidId")
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getItemId() {
+    public String getBidderUsername() {
+        return bidderUsername;
+    }
+
+    public void setBidderUsername(String bidderUsername) {
+        this.bidderUsername = bidderUsername;
+    }
+
+    public Integer getItemId() {
         return itemId;
     }
 
-    public void setItemId(int itemId) {
+    public void setItemId(Integer itemId) {
         this.itemId = itemId;
     }
 
-    public int getBidder() {
-        return bidder;
+    public Integer getBidderId() {
+        return bidderId;
     }
 
-    public void setBidder(int bidder) {
-        this.bidder = bidder;
+    public void setBidderId(Integer bidderId) {
+        this.bidderId = bidderId;
     }
 
-    public int getBidAmount() {
+    public Timestamp getBidTime() {
+        return bidTime;
+    }
+
+    public void setBidTime(Timestamp bidTime) {
+        this.bidTime= bidTime;
+    }
+
+    public Integer getBidAmount() {
         return bidAmount;
     }
 
-    public void setBidAmount(int bidAmount) {
+    public void setBidAmount(Integer bidAmount) {
         this.bidAmount = bidAmount;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, itemId, bidder, bidAmount);
     }
 
     @Override
@@ -74,16 +96,23 @@ public class Bid {
 
         Bid bid = (Bid) o;
 
-        if (id != bid.id) return false;
-        if (itemId != bid.itemId) return false;
-        if (bidder != bid.bidder) return false;
-        return bidAmount == bid.bidAmount;
+        if (id != null ? !id.equals(bid.id) : bid.id != null) return false;
+        if (itemId != null ? !itemId.equals(bid.itemId) : bid.itemId != null) return false;
+        if (bidderId != null ? !bidderId.equals(bid.bidderId) : bid.bidderId != null) return false;
+        if (!bidderUsername.equals(bid.bidderUsername)) return false;
+        if (bidTime != null ? !bidTime.equals(bid.bidTime) : bid.bidTime != null) return false;
+        return bidAmount.equals(bid.bidAmount);
 
     }
 
     @Override
-    public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (itemId != null ? itemId.hashCode() : 0);
+        result = 31 * result + (bidderId != null ? bidderId.hashCode() : 0);
+        result = 31 * result + bidderUsername.hashCode();
+        result = 31 * result + (bidTime != null ? bidTime.hashCode() : 0);
+        result = 31 * result + bidAmount.hashCode();
+        return result;
     }
-
 }
