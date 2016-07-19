@@ -7,18 +7,18 @@ import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 
-public class ExampleAuthenticator implements Authenticator<BasicCredentials, User> {
+public class ServiceAuthenticator implements Authenticator<BasicCredentials, User> {
 
     private final UserDAO userDao;
 
-    public ExampleAuthenticator(UserDAO userDao){
+    public ServiceAuthenticator(UserDAO userDao){
         this.userDao =userDao;
     }
 
     @Override
     public Optional<User> authenticate(BasicCredentials credentials) throws AuthenticationException {
 
-        User user = userDao.retrieve(credentials.getUsername());
+        User user = this.userDao.retrieve(credentials.getUsername());
         if(user != null && user.getPassword().equals(credentials.getPassword())){
             return Optional.of(user);
         }
