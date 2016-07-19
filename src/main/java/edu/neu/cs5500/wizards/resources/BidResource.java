@@ -89,7 +89,6 @@ public class BidResource {
 
         if (incomingBid.getBidAmount() > highestBidAmount) {
             Bid newBid = this.bidDao.create(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
-
             // update buyer info for the item record
             this.itemDao.updateBuyerInfo(itemId, incomingBid.getBidderId(), incomingBid.getBidAmount());
 
@@ -223,7 +222,7 @@ public class BidResource {
 
     /**
      * Given the id of a bid, delete the bid with the matching id from the database. If the bid is not found, throw
-     * an exception. If the bid is successfully deleted, return a 204 response code.
+     * an exception. If the bid is successfully deleted, return a response indicating success.
      *
      * @param bidId the id of the bid
      * @return Response 204 for successful deletion

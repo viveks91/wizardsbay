@@ -39,7 +39,6 @@ public interface ItemDAO {
     void updateBuyerInfo(@Bind("itemId") int itemId, @Bind("bidderId") int bidderId, @Bind("minBidAmount") int minBidAmount);
 
     //delete item by item Id
-    //TODO : delete should be possible only by item owners/sellers
     @SqlUpdate("delete from items where id = :itemId")
     void deleteItem(@Bind("itemId") int itemId);
 
