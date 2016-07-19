@@ -29,12 +29,14 @@ public class UserResource {
         this.itemDao = itemDao;
     }
 
-    /**
-     *
-     * @param user
-     * @return
-     */
 
+    /**
+     * Given a user, if the user is valid, creates the given user in the database. Send an error response if: (1) the
+     * given user is null; (2) the username already exists in the database.
+     *
+     * @param user the user to create in the database
+     * @return a response indicating success or failure of creating this user
+     */
     @POST
     @Timed
     @UnitOfWork
@@ -43,14 +45,13 @@ public class UserResource {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: User is empty")
+                    .entity("Error: Given user is empty")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
-        }
-        else if (this.userDao.retrieve(user.getUsername()) != null) {
+        } else if (this.userDao.retrieve(user.getUsername()) != null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: User already exists!")
+                    .entity("Error: Username is already taken!")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -60,23 +61,35 @@ public class UserResource {
     }
 
 
-    //Update an existing user
+    /**
+     * Updates a given user in the database. The user must be the same as the account they are trying to update. An
+     * error response will be sent in the following cases: (1) The passed in user is null; (2) if the passed in
+     * username does not correspond to an existing user; (3) if the user is not the same person as the user they are
+     * trying to update; (4) if the user is attempting to change their username; (5) if the user's new password is less
+     * than 3 characters. Else, the user will be updated in the database with all non-null fields included in the
+     * given user.
+     *
+     * @param username  the username of the user to update
+     * @param user      the user object containing new information to replace the old
+     * @param auth_user the user attempting to update the database
+     * @return a response code indicating success or failure of the update and containing a meaningful message
+     */
     @PUT
     @Timed
     @UnitOfWork
     @Path("/{username}")
     @ExceptionMetered
     public Response update(@PathParam("username") String username, User user, @Auth User auth_user) {
-        if(user == null) {
+        if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: Invalid user")
+                    .entity("Error: Given user is empty")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
 
         User existingUser = this.userDao.retrieve(username);
-        if(existingUser == null){
+        if (existingUser == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Invalid username, update failed")
@@ -84,7 +97,7 @@ public class UserResource {
                     .build();
         }
 
-        if(!auth_user.equals(existingUser)){
+        if (!auth_user.equals(existingUser)) {
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)
                     .entity("Error: Invalid credentials")
@@ -92,10 +105,18 @@ public class UserResource {
                     .build();
         }
 
-        if(user.getUsername() != null && !existingUser.getUsername().equals(user.getUsername())) {
+        if (user.getUsername() != null && !existingUser.getUsername().equals(user.getUsername())) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Username cannot be changed")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if (user.getPassword() != null && user.getPassword().length() < 3) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: New password must be at least 3 characters")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -120,13 +141,19 @@ public class UserResource {
 
         return Response.ok(existingUser).build();
     }
-	
+
+    /**
+     * Given a username, return the user in the database with the matching username. If the user does not exist,
+     * return a response error.
+     *
+     * @param username the username of the user to retrieve
+     * @return a response code indicating failure or success and the desired user
+     */
     @GET
     @Path("/{username}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    //Get user by username
     public Response getOne(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
@@ -139,7 +166,15 @@ public class UserResource {
         return Response.ok(user).build();
     }
 
-    //get all items listed by a seller
+
+    /**
+     * Given a username, return all items linked to that user. If the username does not correspond with an existing
+     * user, send an error response.
+     *
+     * @param username the username of the user which owns the items
+     * @return a response indicating success or failure and if success, all the items for that user
+     */
+    //TODO: Should this be getting all items or only active items?
     @GET
     @Path("/{username}/items")
     @Timed
@@ -157,10 +192,10 @@ public class UserResource {
 
         List<Item> items = this.itemDao.findItemsBySellerId(user.getId());
 
-        // ignore fields
+        //fields to ignore in the json response
         for (Item item : items) {
             item.setSellerId(null);
-            if (item.getBuyerId() == 0) { // not sold
+            if (item.getBuyerId() == 0) { //if the item does not have a buyer or has yet to be sold
                 item.setBuyerId(null);
             }
         }
@@ -168,30 +203,36 @@ public class UserResource {
         return Response.ok(items).build();
     }
 
+    /**
+     * Given a username, find the user in the database corresponding to that username and delete the user altogether.
+     * Send an error response if: (1) the username does not correspond to an existing user; (2) If the user making this
+     * request and the user in the database are not the same; (3) if the user is attempting to delete an admin.
+     *
+     * @param username  the username corresponding to the user to delete
+     * @param auth_user the user making this request
+     * @return a response indicating success or failure
+     */
     @DELETE
     @Path("/{username}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    /* delete user by username*/
     public Response delete(@PathParam("username") String username, @Auth User auth_user) {
         User existingUser = this.userDao.retrieve(username);
-        if(existingUser == null) {
+        if (existingUser == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-
-        if(!auth_user.equals(existingUser)){
+        if (!auth_user.equals(existingUser)) {
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)
                     .entity("Error: Invalid credentials")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-
         if (username.equals("admin")) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -204,9 +245,4 @@ public class UserResource {
         return Response.status(204).build();
     }
 
-    @OPTIONS
-    @Timed
-    @UnitOfWork
-    @ExceptionMetered
-    public void options() { }
 }

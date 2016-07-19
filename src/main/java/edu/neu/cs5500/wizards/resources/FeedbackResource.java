@@ -6,6 +6,7 @@ import edu.neu.cs5500.wizards.core.Feedback;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -32,10 +33,11 @@ public class FeedbackResource {
     }
 
     /**
-     * Creates a feedback for a user.
+     * Given a username and a valid feedback, create the feedback in the database for that user. If the user does not
+     * exist, send a response error.
      *
-     * @param feedback the feedback to create
-     * @return the created feedback
+     * @param feedback the feedback to create in the database
+     * @return a response indicating the success or failure of creating this feedback
      */
     @POST
     @Timed
@@ -43,7 +45,7 @@ public class FeedbackResource {
     @ExceptionMetered
     public Response create(@PathParam("username") String username, @Valid Feedback feedback) {
         User user = this.userDao.retrieve(username);
-        if(user == null) {
+        if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: User does not exist")
@@ -142,7 +144,8 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
-    public Response delete(@PathParam("username") String username, @PathParam("feedbackId") int feedbackId) {
+    public Response delete(@PathParam("username") String username, @PathParam("feedbackId") int feedbackId,
+                           @Auth User auth_user) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -161,6 +164,7 @@ public class FeedbackResource {
                     .build();
         }
 
+
         if (!feedback.getUserId().equals(user.getId())) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -168,6 +172,7 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
 
         this.feedbackDao.delete(feedback);
         return Response.status(HttpStatus.NO_CONTENT_204).build();

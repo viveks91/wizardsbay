@@ -39,11 +39,14 @@ public class BidResource {
     }
 
     /**
-     * Creates a bid and returns it only if the given bid's bid amount is greater than the current highest bid for
-     * the item or if it is the first bid on an item.
+     * Given a bid, if the bid is valid, creates the bid in the database. only if the given bid's bid amount is
+     * greater than the current highest bid for the item or if it is the first bid on an item. An error response will
+     * sent if: (1) the bidder indicated in the Bid object does not exist; (2) if the bidder indicated in the Bid is
+     * not the user attempting to post the bid; (3) if the item to be bid on does not exist; (4) if the bid amount
+     * is not higher than the current highest bid for this item.
      *
-     * @param incomingBid the bid to create and return
-     * @return Response containing the new bid.
+     * @param incomingBid the bid to create in the database
+     * @return a response indicating the success of failure of the creation of this bid
      */
     @POST
     @Timed
@@ -52,7 +55,7 @@ public class BidResource {
     public Response create(@PathParam("itemId") int itemId, @Valid Bid incomingBid, @Auth User auth_user) {
 
         User biddingUser = userDao.retrieve(incomingBid.getBidderUsername());
-        if(biddingUser == null) {
+        if (biddingUser == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
                     .entity("Error: Bidder does not exist")
@@ -60,7 +63,7 @@ public class BidResource {
                     .build();
         }
 
-        if(!auth_user.equals(biddingUser)){
+        if (!auth_user.equals(biddingUser)) {
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)
                     .entity("Error: Invalid credentials")
@@ -258,7 +261,7 @@ public class BidResource {
         }
 
         User biddingUser = this.userDao.retrieveById(bid.getBidderId());
-        if(!auth_user.equals(biddingUser)){
+        if (!auth_user.equals(biddingUser)) {
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)
                     .entity("Error: Invalid credentials")
