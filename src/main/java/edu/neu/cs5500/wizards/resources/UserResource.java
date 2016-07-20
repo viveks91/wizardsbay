@@ -158,12 +158,14 @@ public class UserResource {
         List<Item> items = this.itemDao.findItemsBySellerId(user.getId());
 
         // ignore fields
-//        for (Item item : items) {
-//            item.setSellerId(null);
-//            if (item.getBuyerId() == 0) { // not sold
-//                item.setBuyerId(null);
-//            }
-//        }
+        for (Item item : items) {
+            if (item != null) {
+                item.setSellerId(null);
+                if (item.getBuyerId() == 0) { // not sold
+                    item.setBuyerId(null);
+                }
+            }
+        }
 
         return Response.ok(items).build();
     }

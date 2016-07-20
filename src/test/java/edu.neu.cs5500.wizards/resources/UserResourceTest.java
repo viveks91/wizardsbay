@@ -210,11 +210,12 @@ public class UserResourceTest {
         assertEquals("Error: Username cannot be changed", response.getEntity());
     }
 
-//    @Test
-//    public void testSuccessfulUpdate() {
-//        UserResource userResource = new UserResource(userDAO, itemDAO);
-//
-//        Response response = userResource.update(RandomStringUtils.random(5), user, user);
-//        assertEquals(HttpStatus.OK_200, response.getStatus());
-//    }
+    @Test
+    public void testSuccessfulUpdate() {
+        when(user.getUsername()).thenReturn("testuser");
+        UserResource userResource = new UserResource(userDAO, itemDAO);
+
+        Response response = userResource.update("testuser", user, user);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+    }
 }
