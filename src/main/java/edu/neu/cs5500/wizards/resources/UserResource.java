@@ -9,6 +9,7 @@ import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.eclipse.jetty.http.HttpStatus;
@@ -24,7 +25,6 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
-    //TODO: Added Swagger response tags but not for success responses.
 
     private final UserDAO userDao;
     private final ItemDAO itemDao;
@@ -46,11 +46,10 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Creates a user in the database given the user", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: Given user is empty"),
-            @ApiResponse(code = 400, message = "Error: Username is already taken!"),
-            @ApiResponse(code = 204, message = "The recently created user")
-    })
+            @ApiResponse(code = 400, message = "Error: Username is already taken!")})
     public Response create(@Valid User user) {
         if (user == null) {
             return Response
@@ -89,13 +88,15 @@ public class UserResource {
     @UnitOfWork
     @Path("/{username}")
     @ExceptionMetered
+    @ApiOperation(value = "Updates a certain user with new information given the user with updated information",
+            notes = "Must provide the username of the user and a user object containing new information",
+            response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: Given user is empty"),
             @ApiResponse(code = 400, message = "Error: Invalid username, update failed"),
             @ApiResponse(code = 401, message = "Error: Invalid credentials"),
             @ApiResponse(code = 400, message = "Error: Username cannot be changed"),
-            @ApiResponse(code = 400, message = "Error: New password must be at least 3 characters"),
-            @ApiResponse(code = 200, message = "The updated user")
+            @ApiResponse(code = 400, message = "Error: New password must be at least 3 characters")
     })
     public Response update(@PathParam("username") String username, User user, @Auth User auth_user) {
         if (user == null) {
@@ -172,9 +173,9 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Finds and returns a user from the database by username", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found"),
-            @ApiResponse(code = 200, message = "The user matching the given username")
+            @ApiResponse(code = 400, message = "Error: User not found")
     })
     public Response getOne(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
@@ -196,15 +197,16 @@ public class UserResource {
      * @param username the username of the user which owns the items
      * @return a response indicating success or failure and if success, all the items for that user
      */
-    //TODO: Should this be getting all items or only active items?
     @GET
     @Path("/{username}/items")
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Finds all items linked to the specified user by username",
+            response = Item.class,
+            responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found"),
-            @ApiResponse(code = 200, message = "An array of items for the given user")
+            @ApiResponse(code = 400, message = "Error: User not found")
     })
     public Response getItems(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
@@ -243,6 +245,7 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Deletes a specified user from the database by username")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: User not found"),
             @ApiResponse(code = 401, message = "Error: Invalid credentials"),

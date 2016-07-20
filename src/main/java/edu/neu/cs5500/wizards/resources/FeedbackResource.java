@@ -9,6 +9,7 @@ import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.eclipse.jetty.http.HttpStatus;
@@ -27,7 +28,6 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeedbackResource {
-    //TODO: Added Swagger response tags but not for success responses.
 
     private final FeedbackDAO feedbackDao;
     private final UserDAO userDao;
@@ -48,9 +48,10 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Creates a feedback in the database for specified user given the feedback",
+            response = Feedback.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: The user you are trying to create feedback for does not exist"),
-            @ApiResponse(code = 204, message = "The user that has been created")
+            @ApiResponse(code = 400, message = "Error: The user you are trying to create feedback for does not exist")
     })
     public Response create(@PathParam("username") String username, @Valid Feedback feedback) {
         User user = this.userDao.retrieve(username);
@@ -77,9 +78,11 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Finds all feedback for a user by username",
+            response = Feedback.class,
+            responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found"),
-            @ApiResponse(code = 200, message = "An array of feedback for a given user")
+            @ApiResponse(code = 400, message = "Error: User not found")
     })
     public Response getAll(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
@@ -92,7 +95,7 @@ public class FeedbackResource {
         }
         List<Feedback> feedbacks = this.feedbackDao.retrieve(user.getId());
 
-        // ignore fields
+        // field to ignore in response
         for (Feedback feedback : feedbacks) {
             feedback.setTime(null);
         }
@@ -112,11 +115,11 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Finds feedback by it's id", response = Feedback.class)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: User not found"),
             @ApiResponse(code = 400, message = "Error: No feedback matches your request"),
-            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user"),
-            @ApiResponse(code = 204, message = "A piece of feedback matching the id")
+            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user")
     })
     public Response getOne(@PathParam("username") String username, @PathParam("id") int id) {
         User user = this.userDao.retrieve(username);
@@ -161,11 +164,11 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiOperation(value = "Deletes a feedback from the database by id")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: User does not exist"),
             @ApiResponse(code = 400, message = "Error: Feedback not found"),
-            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user"),
-            @ApiResponse(code = 204, message = "")
+            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user")
     })
     public Response delete(@PathParam("username") String username, @PathParam("feedbackId") int feedbackId,
                            @Auth User auth_user) {
