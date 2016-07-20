@@ -1,114 +1,134 @@
 package edu.neu.cs5500.wizards.core;
 
+import io.swagger.models.auth.In;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Timestamp;
+
 import static org.junit.Assert.*;
 
 /**
- * Created by susannaedens on 7/8/16.
+ * Created by susannaedens on 7/19/16.
  */
 public class FeedbackTest {
 
     Feedback f1, f2, f3, f4, f5;
+    Timestamp t1;
 
     @Before
-    public void setUp() throws Exception {
+    public void testSetUp() throws Exception {
+        t1 = new Timestamp(324234434343444L);
         f1 = new Feedback();
-        f1.setId(4);
-        f1.setUserid(9);
-        f1.setFeedbackdesc("Great seller. Would buy from again.");
+        f1.setId(1);
+        f1.setUserId(2);
+        f1.setRating(5);
+        f1.setUsername("Susanna9");
+        f1.setFeedbackDescription("Great seller!");
+        f1.setTime(t1);
+
         f2 = new Feedback();
+        f2.setId(2);
+        f2.setUserId(3);
+        f2.setRating(1);
+        f2.setUsername("Vivek");
+        f2.setFeedbackDescription("Terrible seller, do not buy from");
+        f2.setTime(t1);
+
         f3 = new Feedback();
-        f2.setId(4);
-        f2.setUserid(9);
-        f2.setFeedbackdesc("Great seller. Would buy from again.");
-        f3.setId(4);
-        f3.setUserid(9);
-        f3.setFeedbackdesc("Great seller. Would buy from again.");
-        f4 = new Feedback();
-        f4.setId(5);
-        f4.setUserid(10);
-        f4.setFeedbackdesc("Pleasant transaction.");
-        f5 = new Feedback();
+        f3.setId(3);
+        f3.setUserId(2);
+        f3.setRating(5);
+        f3.setUsername("Amala");
+        f3.setFeedbackDescription("Fantastic transaction");
+        f3.setTime(t1);
+
+        f4 = f3;
+        f5 = f3;
     }
 
     @Test
-    public void getId() throws Exception {
-        Assert.assertEquals(f1.getId(), 4);
-        Assert.assertEquals(f4.getId(), 5);
-        Assert.assertEquals(f1.getId(), f3.getId());
+    public void testGetRating() throws Exception {
+        Assert.assertEquals(f1.getRating(), (Integer) 5);
     }
 
     @Test
-    public void setId() throws Exception {
-        f1.setId(6);
-        Assert.assertEquals(f1.getId(), 6);
-        Assert.assertNotEquals(f2.getId(), f1.getId());
-    }
-    
-
-    @Test
-    public void getUserid() throws Exception {
-        Assert.assertEquals(f2.getUserid(), 9);
-        Assert.assertEquals(f2.getUserid(), f3.getUserid());
+    public void testSetRating() throws Exception {
+        f1.setRating(4);
+        Assert.assertEquals(f1.getRating(), (Integer) 4);
     }
 
     @Test
-    public void setUserid() throws Exception {
-        f3.setUserid(12);
-        Assert.assertEquals(f3.getUserid(), 12);
-        Assert.assertNotEquals(f2.getUserid(), f3.getUserid());
+    public void testGetUsername() throws Exception {
+        Assert.assertEquals(f1.getUsername(), "Susanna9");
     }
 
     @Test
-    public void getFeedbackdesc() throws Exception {
-        Assert.assertEquals(f2.getFeedbackdesc(), "Great seller. Would buy from again.");
-        Assert.assertEquals(f3.getFeedbackdesc(), f2.getFeedbackdesc());
-        Assert.assertEquals(f4.getFeedbackdesc(), "Pleasant transaction.");
+    public void testSetUsername() throws Exception {
+        f1.setUsername("Susanna92");
+        Assert.assertEquals(f1.getUsername(), "Susanna92");
     }
 
     @Test
-    public void setFeedbackdesc() throws Exception {
-        f3.setFeedbackdesc("Horrible seller");
-        Assert.assertEquals(f3.getFeedbackdesc(), "Horrible seller");
-        Assert.assertNotEquals(f3.getFeedbackdesc(), f2.getFeedbackdesc());
-        Assert.assertNotEquals(f3.getFeedbackdesc(), f4.getFeedbackdesc());
+    public void testGetTime() throws Exception {
+        Assert.assertEquals(f1.getTime(), t1);
     }
 
     @Test
-    public void hashCodeTest() throws Exception {
-        Assert.assertEquals(f1.hashCode(), f1.hashCode());
-        Assert.assertEquals(f1.hashCode(), f2.hashCode());
-        Assert.assertTrue(f1.hashCode() == f2.hashCode() && f2.hashCode() == f3.hashCode());
-        Assert.assertFalse(f1.hashCode() == f4.hashCode() && f1.hashCode() == f5.hashCode());
-        Feedback test = new Feedback();
-        Assert.assertEquals(f5.hashCode(), test.hashCode());
+    public void testSetTime() throws Exception {
+        f1.setTime(new Timestamp(4));
+        Assert.assertEquals(f1.getTime(), new Timestamp(4));
     }
 
     @Test
-    public void equals() throws Exception {
+    public void testGetId() throws Exception {
+        Assert.assertEquals(f1.getId(), (Integer) 1);
+    }
+
+    @Test
+    public void testSetId() throws Exception {
+        f1.setId(2);
+        Assert.assertEquals(f1.getId(), (Integer) 2);
+    }
+
+    @Test
+    public void testGetUserId() throws Exception {
+        Assert.assertEquals(f1.getUserId(), (Integer) 2);
+    }
+
+    @Test
+    public void testSetUserId() throws Exception {
+        f1.setUserId(5);
+        Assert.assertEquals(f1.getUserId(), (Integer) 5);
+    }
+
+    @Test
+    public void testGetFeedbackDescription() throws Exception {
+        Assert.assertEquals(f1.getFeedbackDescription(), "Great seller!");
+    }
+
+    @Test
+    public void testSetFeedbackDescription() throws Exception {
+        f1.setFeedbackDescription("Changed my mind, this seller is fantastic!");
+        Assert.assertEquals(f1.getFeedbackDescription(), "Changed my mind, this seller is fantastic!");
+    }
+
+    @Test
+    public void testEquals() throws Exception {
         Assert.assertEquals(f1, f1);
-        Assert.assertTrue(f1.equals(f3) && f2.equals(f3));
-        Assert.assertNotEquals(f1, f4);
-        Assert.assertNotEquals(f4, f5);
-        Assert.assertNotEquals(f1, null);
-        Feedback test = new Feedback();
-        Assert.assertEquals(f5, test);
-        f3.setId(5);
-        Assert.assertNotEquals(f3, f4);
-        f3.setUserid(10);
-        Assert.assertNotEquals(f3, f4);
-        Bid test2 = new Bid();
-        Assert.assertFalse(f1.equals(test2));
+        Assert.assertNotEquals(f1, f2);
+        Assert.assertTrue(f3.equals(f4) && f4.equals(f5));
+        Assert.assertNotEquals(null, f1);
     }
 
     @Test
-    public void toStringTest() throws Exception {
-        Assert.assertEquals(f1.toString(), "Feedback[id=4,userid=9,feedbackdesc=Great seller. Would buy from again.]");
-        Assert.assertEquals(f4.toString(), "Feedback[id=5,userid=10,feedbackdesc=Pleasant transaction.]");
-        Assert.assertEquals(f5.toString(), "Feedback[id=0,userid=0,feedbackdesc=<null>]");
+    public void testHashCode() throws Exception {
+        Assert.assertEquals(f1.hashCode(), f1.hashCode());
+        Assert.assertEquals(f3.hashCode(), f5.hashCode());
+        Assert.assertEquals(f4.hashCode(), f5.hashCode());
+        Assert.assertEquals(f3.hashCode(), f4.hashCode());
+        Assert.assertNotEquals(f1.hashCode(), f2.hashCode());
     }
     
 }
