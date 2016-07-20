@@ -7,21 +7,22 @@ import javax.validation.constraints.Size;
 import java.security.Principal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(value = { "id" })
-@JsonPropertyOrder({ "firstName", "lastName", "username", "password", "email", "address" })
-public class User implements Principal{
+@JsonIgnoreProperties(value = {"id"})
+@JsonPropertyOrder({"firstName", "lastName", "username", "password", "email", "address"})
+public class User implements Principal {
+    //TODO: why does User implement Principal?? purpose?
 
     @JsonProperty
     private Integer id;
 
     @JsonProperty
     @NotEmpty
-    @Size(min=3)
+    @Size(min = 3)
     private String username;
 
     @JsonProperty
     @NotEmpty
-    @Size(min=3)
+    @Size(min = 3)
     private String password;
 
     @JsonProperty
@@ -39,7 +40,8 @@ public class User implements Principal{
     @NotEmpty
     private String email;
 
-    public User() { }
+    public User() {
+    }
 
     public User(String username, String password, String firstName, String lastName, String address, String email) {
         this.username = username;
