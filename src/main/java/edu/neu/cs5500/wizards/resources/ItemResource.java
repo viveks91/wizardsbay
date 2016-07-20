@@ -243,7 +243,6 @@ public class ItemResource {
         return Response.ok(item).build();
     }
 
-    //Delete an item
 
     /**
      * Given the id of an item, delete that item from the database. The item will not be deleted and an error response
