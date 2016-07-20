@@ -10,6 +10,9 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -22,9 +25,11 @@ import java.util.List;
  * Created by susannaedens on 6/21/16.
  */
 @Path("/item/{itemId}/bids")
+@Api(value = "/user", description = "Operations involving users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BidResource {
+    //TODO: Added Swagger response tags but not for success responses.
 
     private final BidDAO bidDao;
     private final ItemDAO itemDao;
@@ -52,8 +57,15 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Bidder does not exist"),
+            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = 400, message = "Error: Item does not exist"),
+            @ApiResponse(code = 400, message = "Error: Your bid must be higher than current highest bid: $$"),
+            //TODO: Don't know if message above is correctly formatter
+            @ApiResponse(code = 200, message = "The recently created bid")
+    })
     public Response create(@PathParam("itemId") int itemId, @Valid Bid incomingBid, @Auth User auth_user) {
-
         User biddingUser = userDao.retrieve(incomingBid.getBidderUsername());
         if (biddingUser == null) {
             return Response
@@ -114,6 +126,10 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Item does not exist"),
+            @ApiResponse(code = 200, message = "An array of all existing bid for a given item")
+    })
     public Response getAll(@PathParam("itemId") int itemId) {
 
         if (this.itemDao.findItemById(itemId) == null) {
@@ -150,6 +166,12 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Item does not exist"),
+            @ApiResponse(code = 400, message = "Error: Bid not found"),
+            @ApiResponse(code = 400, message = "Error: The bid requested does not belong to the item"),
+            @ApiResponse(code = 200, message = "The bid matching the given id")
+    })
     public Response getOne(@PathParam("itemId") int itemId, @PathParam("id") int id) {
 
         if (this.itemDao.findItemById(itemId) == null) {
@@ -193,6 +215,11 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Item does not exist"),
+            @ApiResponse(code = 400, message = "Error: There are no bids for this item yet"),
+            @ApiResponse(code = 200, message = "The highest current bid for a given item")
+    })
     public Response getHighest(@PathParam("itemId") int itemId) {
 
         if (this.itemDao.findItemById(itemId) == null) {
@@ -232,6 +259,13 @@ public class BidResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Item does not exist"),
+            @ApiResponse(code = 400, message = "Error: Bid does not exist"),
+            @ApiResponse(code = 400, message = "Error: The bid requested does not belong to the item"),
+            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = 204, message = "")
+    })
     public Response delete(@PathParam("itemId") int itemId, @PathParam("bidId") int bidId, @Auth User auth_user) {
 
         if (this.itemDao.findItemById(itemId) == null) {

@@ -60,7 +60,7 @@ public interface UserDAO {
      */
     @SqlUpdate("delete from users where username = :username")
     void delete(@Bind("username") String username);
-    
+
 }
 
 

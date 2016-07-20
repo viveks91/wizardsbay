@@ -8,6 +8,9 @@ import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -20,9 +23,11 @@ import java.util.List;
  * Created by susannaedens on 6/23/16.
  */
 @Path("/user/{username}/feedback")
+@Api(value = "/user/{username}/feedback", description = "Operations involving feedback for a specific user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeedbackResource {
+    //TODO: Added Swagger response tags but not for success responses.
 
     private final FeedbackDAO feedbackDao;
     private final UserDAO userDao;
@@ -43,16 +48,19 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: The user you are trying to create feedback for does not exist"),
+            @ApiResponse(code = 204, message = "The user that has been created")
+    })
     public Response create(@PathParam("username") String username, @Valid Feedback feedback) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: User does not exist")
+                    .entity("Error: The user you are trying to create feedback for does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-
         Feedback newFeedback = this.feedbackDao.create(user.getId(), feedback.getRating(), feedback.getFeedbackDescription());
         return Response.ok(newFeedback).build();
     }
@@ -69,6 +77,10 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: User not found"),
+            @ApiResponse(code = 200, message = "An array of feedback for a given user")
+    })
     public Response getAll(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
@@ -78,7 +90,6 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-
         List<Feedback> feedbacks = this.feedbackDao.retrieve(user.getId());
 
         // ignore fields
@@ -101,6 +112,12 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: User not found"),
+            @ApiResponse(code = 400, message = "Error: No feedback matches your request"),
+            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user"),
+            @ApiResponse(code = 204, message = "A piece of feedback matching the id")
+    })
     public Response getOne(@PathParam("username") String username, @PathParam("id") int id) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
@@ -144,6 +161,12 @@ public class FeedbackResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: User does not exist"),
+            @ApiResponse(code = 400, message = "Error: Feedback not found"),
+            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user"),
+            @ApiResponse(code = 204, message = "")
+    })
     public Response delete(@PathParam("username") String username, @PathParam("feedbackId") int feedbackId,
                            @Auth User auth_user) {
         User user = this.userDao.retrieve(username);
@@ -172,7 +195,6 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-
 
         this.feedbackDao.delete(feedback);
         return Response.status(HttpStatus.NO_CONTENT_204).build();

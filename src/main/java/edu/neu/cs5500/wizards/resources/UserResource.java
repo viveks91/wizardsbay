@@ -8,6 +8,9 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -17,9 +20,11 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/user")
+@Api(value = "/user", description = "Operations involving users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
+    //TODO: Added Swagger response tags but not for success responses.
 
     private final UserDAO userDao;
     private final ItemDAO itemDao;
@@ -41,6 +46,11 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Given user is empty"),
+            @ApiResponse(code = 400, message = "Error: Username is already taken!"),
+            @ApiResponse(code = 204, message = "The recently created user")
+    })
     public Response create(@Valid User user) {
         if (user == null) {
             return Response
@@ -79,6 +89,14 @@ public class UserResource {
     @UnitOfWork
     @Path("/{username}")
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Given user is empty"),
+            @ApiResponse(code = 400, message = "Error: Invalid username, update failed"),
+            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = 400, message = "Error: Username cannot be changed"),
+            @ApiResponse(code = 400, message = "Error: New password must be at least 3 characters"),
+            @ApiResponse(code = 200, message = "The updated user")
+    })
     public Response update(@PathParam("username") String username, User user, @Auth User auth_user) {
         if (user == null) {
             return Response
@@ -154,6 +172,10 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: User not found"),
+            @ApiResponse(code = 200, message = "The user matching the given username")
+    })
     public Response getOne(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
@@ -180,6 +202,10 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: User not found"),
+            @ApiResponse(code = 200, message = "An array of items for the given user")
+    })
     public Response getItems(@PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
@@ -217,6 +243,12 @@ public class UserResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: User not found"),
+            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = 400, message = "Error: Admin cannot be deleted"),
+            @ApiResponse(code = 204, message = "")
+    })
     public Response delete(@PathParam("username") String username, @Auth User auth_user) {
         User existingUser = this.userDao.retrieve(username);
         if (existingUser == null) {
@@ -241,7 +273,6 @@ public class UserResource {
                     .build();
         }
         this.userDao.delete(username);
-
         return Response.status(204).build();
     }
 

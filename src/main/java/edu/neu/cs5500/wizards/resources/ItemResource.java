@@ -8,6 +8,9 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -19,9 +22,11 @@ import java.util.Date;
 import java.util.List;
 
 @Path("/item")
+@Api(value = "/item", description = "Operations involving items")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ItemResource {
+    //TODO: Added Swagger response tags but not for success responses.
 
     private final ItemDAO itemDao;
     private final UserDAO userDao;
@@ -47,6 +52,13 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Invalid item"),
+            @ApiResponse(code = 400, message = "Error: Seller does not exist"),
+            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = 400, message = "Error: Invalid auction end time"),
+            @ApiResponse(code = 200, message = "The recently created item")
+    })
     public Response create(@Valid Item item, @Auth User auth_user) {
         if (item == null) {
             return Response
@@ -108,13 +120,23 @@ public class ItemResource {
      * @param id        the id of the item to update
      * @param item      the object containing the new information
      * @param auth_user the user attempting to update the object
-     * @return a reponse indicating success or failure of the update and return the updated object
+     * @return a response indicating success or failure of the update and return the updated object
      */
     @PUT
     @Path("/{id}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Invalid item"),
+            @ApiResponse(code = 400, message = "Error: Item not found, update failed"),
+            @ApiResponse(code = 400, message = "Error: Seller cannot be changed"),
+            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = 400, message = "Error: Item id cannot be changed"),
+            @ApiResponse(code = 400, message = "Error: Auction end time cannot be changed, since it has already passed"),
+            @ApiResponse(code = 400, message = "Error: Minimum bid amount cannot be less than $1"),
+            @ApiResponse(code = 200, message = "The updated item")
+    })
     public Response update(@PathParam("id") int id, Item item, @Auth User auth_user) {
         if (item == null) {
             return Response
@@ -127,7 +149,7 @@ public class ItemResource {
         if (existingItem == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: Invalid item, update failed")
+                    .entity("Error: Item not found, update failed")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -152,7 +174,7 @@ public class ItemResource {
             if (!existingItem.getId().equals(item.getId())) {
                 return Response
                         .status(HttpStatus.BAD_REQUEST_400)
-                        .entity("Error: item id cannot be changed")
+                        .entity("Error: Item id cannot be changed")
                         .type(MediaType.TEXT_PLAIN)
                         .build();
             }
@@ -203,6 +225,9 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "An array of all active items")
+    })
     public Response getActive() {
         List<Item> activeItems = this.itemDao.findAllActiveItems();
         for (Item item : activeItems) {
@@ -227,6 +252,10 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Item not found"),
+            @ApiResponse(code = 200, message = "The item matching the given id")
+    })
     public Response getOne(@PathParam("id") int id) {
         Item item = this.itemDao.findItemById(id);
         if (item == null) {
@@ -258,6 +287,11 @@ public class ItemResource {
     @Timed
     @UnitOfWork
     @ExceptionMetered
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Error: Invalid item"),
+            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = 204, message = "")
+    })
     public Response delete(@PathParam("itemId") int itemId, @Auth User auth_user) {
         Item item = this.itemDao.findItemById(itemId);
 
