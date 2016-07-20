@@ -28,11 +28,10 @@ public class UserResource {
         this.userDao = userDao;
         this.itemDao = itemDao;
     }
-
     /**
-     *
+     * Creates a user
      * @param user
-     * @return
+     * @return the created user
      */
 
     @POST
@@ -59,6 +58,12 @@ public class UserResource {
         return Response.ok(createdUser).build();
     }
 
+    /**
+     * Creates a feedback for a user.
+     *
+     * @param username , user to update the user.
+     * @return the updated user.
+     */
 
     //Update an existing user
     @PUT
