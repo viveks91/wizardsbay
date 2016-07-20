@@ -213,10 +213,10 @@ public class UserResourceTest {
     @Test
     public void testSuccessfulUpdate() {
         String randomString = RandomStringUtils.random(5);
-        when(user.getUsername()).thenReturn("randomString");
+        when(user.getUsername()).thenReturn(randomString);
         UserResource userResource = new UserResource(userDAO, itemDAO);
 
-        Response response = userResource.update("randomString", user, user);
+        Response response = userResource.update(randomString, user, user);
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 }
