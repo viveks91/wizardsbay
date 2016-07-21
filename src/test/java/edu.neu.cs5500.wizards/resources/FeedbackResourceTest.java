@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -30,6 +29,8 @@ public class FeedbackResourceTest {
 
     @Mock
     UserDAO userDAO;
+
+    @Mock
     FeedbackDAO feedbackDAO;
 
     @Mock
@@ -48,21 +49,17 @@ public class FeedbackResourceTest {
         user = Mockito.mock(User.class);
         feedback = Mockito.mock(Feedback.class);
 
-        //when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
-
-        when(user.getUsername()).thenReturn(RandomStringUtils.random(5));
-        when(userDAO.retrieveById(anyInt())).thenReturn(user);
         when(userDAO.retrieve(anyString())).thenReturn(user);
     }
 
     @Test
     public void testCreateFeedback(){
-        when(userDAO.create(any(User.class))).thenReturn(user);
+        when(feedbackDAO.create(anyInt(), anyInt(), anyString())).thenReturn(feedback);
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
-        Response response = feedbackResource.create(user.getUsername(),feedback);
+        Response response = feedbackResource.create(RandomStringUtils.random(6),Mockito.mock(Feedback.class));
         assertEquals(HttpStatus.OK_200, response.getStatus());
-       // assertEquals(feedback, response.getEntity());
+        assertEquals(feedback, response.getEntity());
 
     }
 
@@ -104,7 +101,6 @@ public class FeedbackResourceTest {
 
     @Test
     public void testGetFeedbackById(){
-        when(userDAO.retrieve(anyString())).thenReturn(user);
         when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
@@ -114,7 +110,6 @@ public class FeedbackResourceTest {
 
     @Test
     public void testExceptionFetchingFeedbackForAnotherUser(){
-        when(userDAO.retrieve(anyString())).thenReturn(user);
         when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
         when(feedback.getUserId()).thenReturn(rand.nextInt());
         when(user.getId()).thenReturn(rand.nextInt());
@@ -127,7 +122,6 @@ public class FeedbackResourceTest {
 
     @Test
     public void testExceptionFetchingInvalidFeedback(){
-        when(userDAO.retrieve(anyString())).thenReturn(user);
         when(feedbackDAO.retrieveOne(anyInt())).thenReturn(null);
 
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
@@ -139,8 +133,6 @@ public class FeedbackResourceTest {
 
     @Test
     public void testFetchingFeedbackForInvalidUser(){
-
-        when(userDAO.retrieve(anyString())).thenReturn(user);
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.getOne(RandomStringUtils.random(5),rand.nextInt());
@@ -163,7 +155,6 @@ public class FeedbackResourceTest {
 
     @Test
     public void testDeletingInvalidFeedback(){
-        when(userDAO.retrieve(anyString())).thenReturn(user);
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.delete(RandomStringUtils.random(5),rand.nextInt());
@@ -174,7 +165,6 @@ public class FeedbackResourceTest {
 
     @Test
     public void testExceptionDeletingFeedbackForAnotherUser(){
-        when(userDAO.retrieve(anyString())).thenReturn(user);
         when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
         when(feedback.getUserId()).thenReturn(rand.nextInt());
         when(user.getId()).thenReturn(rand.nextInt());
@@ -187,7 +177,6 @@ public class FeedbackResourceTest {
 
     @Test
     public void testDeletingFeedbackById(){
-        when(userDAO.retrieve(anyString())).thenReturn(user);
         when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
