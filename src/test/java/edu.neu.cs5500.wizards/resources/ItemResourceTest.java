@@ -194,7 +194,7 @@ public class ItemResourceTest {
 
         Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: Invalid item, update failed", response.getEntity());
+        assertEquals("Error: Item not found, update failed", response.getEntity());
     }
 
     @Test
@@ -232,7 +232,7 @@ public class ItemResourceTest {
 
         Response response = itemResource.update(randomInt, item, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: item id cannot be changed", response.getEntity());
+        assertEquals("Error: Item id cannot be changed", response.getEntity());
     }
 
     @Test
