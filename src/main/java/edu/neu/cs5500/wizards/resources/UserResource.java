@@ -34,7 +34,6 @@ public class UserResource {
         this.itemDao = itemDao;
     }
 
-
     /**
      * Given a user, if the user is valid, creates the given user in the database. Send an error response if: (1) the
      * given user is null; (2) the username already exists in the database.
@@ -222,9 +221,11 @@ public class UserResource {
 
         //fields to ignore in the json response
         for (Item item : items) {
-            item.setSellerId(null);
-            if (item.getBuyerId() == 0) { //if the item does not have a buyer or has yet to be sold
-                item.setBuyerId(null);
+            if (item != null) {
+                item.setSellerId(null);
+                if (item.getBuyerId() == 0) { // not sold
+                    item.setBuyerId(null);
+                }
             }
         }
 
