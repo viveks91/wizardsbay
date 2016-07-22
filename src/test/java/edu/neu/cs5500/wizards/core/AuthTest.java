@@ -41,28 +41,28 @@ public class AuthTest {
         user = Mockito.mock(User.class);
 
         when(user.getUsername()).thenReturn("testUser");
-	when(user.getPassword()).thenReturn("testPassword");
+	    when(user.getPassword()).thenReturn("testPassword");
         when(userDAO.retrieve(anyString())).thenReturn(user);
     }
 
     @Test
-    public void testAuthenticateUser() {
+    public void testAuthenticateUser() throws AuthenticationException {
 	ServiceAuthenticator serviceAuthenticator = new ServiceAuthenticator(userDAO);
-	BasicCredentials credentials = new BasicCredentials("testUser",
-							"testPassword");
+	BasicCredentials credentials = new BasicCredentials(user.getUsername(),
+							                        user.getPassword());
 
         Optional<User> response = serviceAuthenticator.authenticate(credentials);
         assertEquals(user, response.get());
     }
-/*
+    
     @Test
-    public void testExceptionOnPostingUserWhenContentIsNull() {
-        UserResource userResource = new UserResource(userDAO, itemDAO);
+    public void testAuthenticateUserBadPassword() throws AuthenticationException {
+	ServiceAuthenticator serviceAuthenticator = new ServiceAuthenticator(userDAO);
+	BasicCredentials credentials = new BasicCredentials(user.getUsername(),
+							                        "BAD_PASSWORD@#$@");
 
-        Response response = userResource.create(null);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: User is empty", response.getEntity());
+        Optional<User> response = serviceAuthenticator.authenticate(credentials);
+        assertEquals(Optional.absent(), response);
     }
-*/
 
 }
