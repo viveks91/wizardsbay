@@ -272,7 +272,7 @@ public class BidResource {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -281,7 +281,7 @@ public class BidResource {
         Bid bid = this.bidDao.retrieve(bidId);
         if (bid == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Bid does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -289,8 +289,8 @@ public class BidResource {
 
         if (!bid.getItemId().equals(itemId)) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: The bid requested does not belong to the item")
+                    .status(HttpStatus.FORBIDDEN_403)
+                    .entity("Forbidden: The bid requested does not belong to the item")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -305,6 +305,6 @@ public class BidResource {
         }
 
         bidDao.delete(bid);
-        return Response.status(204).build();
+        return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
 }
