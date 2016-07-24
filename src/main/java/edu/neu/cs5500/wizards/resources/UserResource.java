@@ -281,5 +281,4 @@ public class UserResource {
         this.userDao.delete(username);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
-
 }

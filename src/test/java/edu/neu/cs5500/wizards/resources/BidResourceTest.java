@@ -1,15 +1,11 @@
 package edu.neu.cs5500.wizards.resources;
 
 import edu.neu.cs5500.wizards.core.Bid;
-import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.db.BidDAO;
-import edu.neu.cs5500.wizards.db.ItemDAO;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by susannaedens on 7/8/16.

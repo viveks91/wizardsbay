@@ -3,26 +3,15 @@ package edu.neu.cs5500.wizards.auth;
 import com.google.common.base.Optional;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.UserDAO;
-import edu.neu.cs5500.wizards.auth.ServiceAuthenticator;
 import io.dropwizard.auth.AuthenticationException;
-import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 import org.apache.commons.lang.RandomStringUtils;
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import javax.ws.rs.core.Response;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
