@@ -10,10 +10,7 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -26,7 +23,7 @@ import java.util.List;
  * Created by susannaedens on 6/21/16.
  */
 @Path("/item/{itemId}/bids")
-@Api(value = "/user", description = "Operations involving users")
+@Api(value = "bids", description = "Operations involving bids on specific item")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BidResource {
@@ -59,18 +56,19 @@ public class BidResource {
     @ExceptionMetered
     @ApiOperation(value = "Creates an bid in the database given the bid", response = Bid.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Bidder does not exist"),
-            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
-            @ApiResponse(code = 400, message = "Error: Item does not exist"),
-            @ApiResponse(code = 400, message = "Error: Your bid must be higher than current highest bid: " +
-                    "[min. bid amount]")
-            //TODO: Don't know if message above is correctly formatted)
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Bidder does not exist"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Your bid must be higher than current highest bid: " +
+                    "$[highest bid amount]")
     })
-    public Response create(@PathParam("itemId") int itemId, @Valid Bid incomingBid, @Auth User auth_user) {
+    public Response create(@ApiParam(value = "Id of the item to bid on", required = true) @PathParam("itemId") int itemId,
+                           @ApiParam(value = "New bid object", required = true) @Valid Bid incomingBid,
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         User biddingUser = userDao.retrieve(incomingBid.getBidderUsername());
         if (biddingUser == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Bidder does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -88,7 +86,7 @@ public class BidResource {
         Item item = this.itemDao.findItemById(itemId);
         if (item == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -131,12 +129,12 @@ public class BidResource {
             response = Bid.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Item does not exist")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist")
     })
-    public Response getAll(@PathParam("itemId") int itemId) {
+    public Response getAll(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId) {
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -167,15 +165,16 @@ public class BidResource {
     @ExceptionMetered
     @ApiOperation(value = "Finds a bid by it's id", response = Bid.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Item does not exist"),
-            @ApiResponse(code = 400, message = "Error: Bid not found"),
-            @ApiResponse(code = 400, message = "Error: The bid requested does not belong to the item")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Bid not found"),
+            @ApiResponse(code = HttpStatus.FORBIDDEN_403, message = "Forbidden: The bid requested does not belong to the item")
     })
-    public Response getOne(@PathParam("itemId") int itemId, @PathParam("id") int id) {
+    public Response getOne(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId,
+                           @ApiParam(value = "Bid Id", required = true) @PathParam("id") int id) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -184,7 +183,7 @@ public class BidResource {
         Bid bid = this.bidDao.retrieve(id);
         if (bid == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Bid not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -192,8 +191,8 @@ public class BidResource {
 
         if (!bid.getItemId().equals(itemId)) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: The bid requested does not belong to the item")
+                    .status(HttpStatus.FORBIDDEN_403)
+                    .entity("Forbidden: The bid requested does not belong to the item")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -217,14 +216,14 @@ public class BidResource {
     @ApiOperation(value = "Finds the current highest bid for an item by the item id",
             response = Bid.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Item does not exist"),
-            @ApiResponse(code = 400, message = "Error: There are no bids for this item yet")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: There are no bids for this item yet")
     })
-    public Response getHighest(@PathParam("itemId") int itemId) {
+    public Response getHighest(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -233,7 +232,7 @@ public class BidResource {
         List<Bid> bids = this.bidDao.findBidsByItemId(itemId);
         if (bids.isEmpty()) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: There are no bids for this item yet")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -261,16 +260,18 @@ public class BidResource {
     @ExceptionMetered
     @ApiOperation(value = "Deletes a bid by it's id")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Item does not exist"),
-            @ApiResponse(code = 400, message = "Error: Bid does not exist"),
-            @ApiResponse(code = 400, message = "Error: The bid requested does not belong to the item"),
-            @ApiResponse(code = 401, message = "Error: Invalid credentials")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Bid does not exist"),
+            @ApiResponse(code = HttpStatus.FORBIDDEN_403, message = "Forbidden: The bid requested does not belong to the item"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials")
     })
-    public Response delete(@PathParam("itemId") int itemId, @PathParam("bidId") int bidId, @Auth User auth_user) {
+    public Response delete(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId,
+                           @ApiParam(value = "Id of the bid to be deleted", required = true) @PathParam("bidId") int bidId,
+                           @ApiParam(hidden = true) @Auth User auth_user) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -279,7 +280,7 @@ public class BidResource {
         Bid bid = this.bidDao.retrieve(bidId);
         if (bid == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Bid does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -287,8 +288,8 @@ public class BidResource {
 
         if (!bid.getItemId().equals(itemId)) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: The bid requested does not belong to the item")
+                    .status(HttpStatus.FORBIDDEN_403)
+                    .entity("Forbidden: The bid requested does not belong to the item")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -303,7 +304,6 @@ public class BidResource {
         }
 
         bidDao.delete(bid);
-        return Response.status(204).build();
+        return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
-
 }

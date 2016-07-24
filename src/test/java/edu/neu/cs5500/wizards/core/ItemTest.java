@@ -6,8 +6,6 @@ import org.junit.Test;
 
 import java.sql.Timestamp;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by susannaedens on 7/20/16.
  */
