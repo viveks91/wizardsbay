@@ -77,7 +77,7 @@ public class UserResourceTest {
 
         Response response = userResource.create(null);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: User is empty", response.getEntity());
+        assertEquals("Error: Given user is empty", response.getEntity());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class UserResourceTest {
 
         Response response = userResource.create(user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: User already exists!", response.getEntity());
+        assertEquals("Error: Username is already taken!", response.getEntity());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class UserResourceTest {
 
         Response response = userResource.update(RandomStringUtils.random(8), null, auth_user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: Invalid user", response.getEntity());
+        assertEquals("Error: Given user is empty", response.getEntity());
     }
 
     @Test
@@ -200,10 +200,11 @@ public class UserResourceTest {
 
     @Test
     public void testUpdateWithChangeInUsername() {
-        when(user.getUsername()).thenReturn(RandomStringUtils.random(5));
+        when(user.getUsername()).thenReturn(RandomStringUtils.random(5))
+                                .thenReturn(RandomStringUtils.random(5))
+                                .thenReturn(RandomStringUtils.random(5));
         when(userDAO.retrieve(anyString())).thenReturn(user);
         UserResource userResource = new UserResource(userDAO, itemDAO);
-        user.setUsername(RandomStringUtils.random(10));
 
         Response response = userResource.update(RandomStringUtils.random(5), user, user);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
