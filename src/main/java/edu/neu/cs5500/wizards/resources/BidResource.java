@@ -60,8 +60,7 @@ public class BidResource {
             @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
             @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist"),
             @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Your bid must be higher than current highest bid: " +
-                    "[min. bid amount]")
-            //TODO: Don't know if message above is correctly formatted)
+                    "$[highest bid amount]")
     })
     public Response create(@ApiParam(value = "Id of the item to bid on", required = true) @PathParam("itemId") int itemId,
                            @ApiParam(value = "New bid object", required = true) @Valid Bid incomingBid,
