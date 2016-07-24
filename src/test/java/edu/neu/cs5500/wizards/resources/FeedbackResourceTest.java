@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.ws.rs.core.Response;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -70,7 +69,7 @@ public class FeedbackResourceTest {
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.create(randomUser,feedback);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: The user you are trying to create feedback for does not exist", response.getEntity());
 
     }
@@ -93,7 +92,7 @@ public class FeedbackResourceTest {
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.getAll(RandomStringUtils.random(10));
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: User not found", response.getEntity());
 
     }
@@ -109,25 +108,25 @@ public class FeedbackResourceTest {
     }
 
     @Test
-    public void testExceptionFetchingFeedbackForAnotherUser(){
+    public void testFetchingFeedbackForDifferentUser(){
         when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
         when(feedback.getUserId()).thenReturn(rand.nextInt());
         when(user.getId()).thenReturn(rand.nextInt());
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.getOne(RandomStringUtils.random(5),rand.nextInt());
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: The feedback requested does not belong to this user", response.getEntity());
+        assertEquals(HttpStatus.FORBIDDEN_403, response.getStatus());
+        assertEquals("Forbidden: The feedback requested does not belong to this user", response.getEntity());
     }
 
     @Test
-    public void testExceptionFetchingInvalidFeedback(){
+    public void testFetchingInvalidFeedback(){
         when(feedbackDAO.retrieveOne(anyInt())).thenReturn(null);
 
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.getOne(RandomStringUtils.random(5),rand.nextInt());
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: No feedback matches your request", response.getEntity());
     }
 
@@ -137,7 +136,7 @@ public class FeedbackResourceTest {
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.getOne(RandomStringUtils.random(5),rand.nextInt());
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: User not found", response.getEntity());
 
     }
@@ -148,9 +147,8 @@ public class FeedbackResourceTest {
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.delete(RandomStringUtils.random(5),rand.nextInt(),user);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: User does not exist", response.getEntity());
-
     }
 
 
@@ -159,21 +157,33 @@ public class FeedbackResourceTest {
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.delete(RandomStringUtils.random(5),rand.nextInt(),user);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: Feedback not found", response.getEntity());
-
     }
 
     @Test
-    public void testExceptionDeletingFeedbackForAnotherUser(){
-        when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
+    public void testDeletingFeedbackForDifferentUser(){
         when(feedback.getUserId()).thenReturn(rand.nextInt());
+        when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
         when(user.getId()).thenReturn(rand.nextInt());
         FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
 
         Response response = feedbackResource.delete(RandomStringUtils.random(5),rand.nextInt(),user);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-        assertEquals("Error: The feedback requested does not belong to this user", response.getEntity());
+        assertEquals(HttpStatus.FORBIDDEN_403, response.getStatus());
+        assertEquals("Forbidden: The feedback requested does not belong to this user", response.getEntity());
+    }
+
+    @Test
+    public void testDeletingFeedbackWithInvalidCredentials(){
+        int random = rand.nextInt();
+        when(feedback.getUserId()).thenReturn(random);
+        when(feedbackDAO.retrieveOne(anyInt())).thenReturn(feedback);
+        when(user.getId()).thenReturn(random);
+        FeedbackResource feedbackResource = new FeedbackResource(feedbackDAO,userDAO);
+
+        Response response = feedbackResource.delete(RandomStringUtils.random(5),rand.nextInt(),Mockito.mock(User.class));
+        assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
+        assertEquals("Error: Invalid credentials", response.getEntity());
     }
 
     @Test
@@ -184,5 +194,4 @@ public class FeedbackResourceTest {
         Response response = feedbackResource.delete(RandomStringUtils.random(5),rand.nextInt(),user);
         assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
     }
-
 }

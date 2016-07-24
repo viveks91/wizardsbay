@@ -72,7 +72,7 @@ public class ItemResourceTest {
     }
 
     @Test
-    public void testExceptionOnPostingItemWhenContentIsNull() {
+    public void testPostingItemWhenContentIsNull() {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.create(null, auth_user);
@@ -81,7 +81,7 @@ public class ItemResourceTest {
     }
 
     @Test
-    public void testExceptionOnPostingItemWithInvalidCredentials() {
+    public void testPostingItemWithInvalidCredentials() {
         when(userDAO.retrieve(anyString())).thenReturn(Mockito.mock(User.class));
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
@@ -91,17 +91,17 @@ public class ItemResourceTest {
     }
 
     @Test
-    public void testExceptionOnPostingItemWithInvalidSellerId() {
+    public void testPostingItemWithInvalidSellerId() {
         when(userDAO.retrieve(anyString())).thenReturn(null);
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.create(item, auth_user);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: Seller does not exist", response.getEntity());
     }
 
     @Test
-    public void testExceptionOnPostingItemWithInvalidAuctionEndTime() {
+    public void testPostingItemWithInvalidAuctionEndTime() {
         String dummyEndTime = "2016-01-01 11:11:11";
         int numberMoreThanZero = (int)Math.random() + 1 ;
         when(item.getSellerId()).thenReturn(rand.nextInt());
@@ -114,17 +114,6 @@ public class ItemResourceTest {
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
         assertEquals("Error: Invalid auction end time", response.getEntity());
     }
-
-//    @Test
-//    public void testFetchingItemsBySellerId() {
-//        List<Item> mockResult = new LinkedList<>();
-//        mockResult.add(item);
-//        when(itemDAO.findItemsBySellerId(anyInt())).thenReturn(mockResult);
-//        ItemResource itemResource = new ItemResource(itemDAO);
-//
-//        Response response = itemResource.getActive((int) Math.random());
-//        assertEquals(response.getEntity(), mockResult);
-//    }
 
     @Test
     public void testFetchingActiveItems() {
@@ -161,7 +150,7 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.delete(rand.nextInt(), auth_user);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: Item not found", response.getEntity());
     }
 
@@ -193,7 +182,7 @@ public class ItemResourceTest {
         int randomInt = rand.nextInt();
 
         Response response = itemResource.update(randomInt, item, auth_user);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: Item not found, update failed", response.getEntity());
     }
 

@@ -8,10 +8,7 @@ import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -24,7 +21,7 @@ import java.util.List;
  * Created by susannaedens on 6/23/16.
  */
 @Path("/user/{username}/feedback")
-@Api(value = "/user/{username}/feedback", description = "Operations involving feedback for a specific user")
+@Api(value = "feedback", description = "Operations involving feedback for a specific user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeedbackResource {
@@ -51,13 +48,14 @@ public class FeedbackResource {
     @ApiOperation(value = "Creates a feedback in the database for specified user given the feedback",
             response = Feedback.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: The user you are trying to create feedback for does not exist")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: The user you are trying to create feedback for does not exist")
     })
-    public Response create(@PathParam("username") String username, @Valid Feedback feedback) {
+    public Response create(@ApiParam(value = "Username of the user getting the feedback", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Feedback to be posted", required = true) @Valid Feedback feedback) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: The user you are trying to create feedback for does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -82,13 +80,13 @@ public class FeedbackResource {
             response = Feedback.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: User not found")
     })
-    public Response getAll(@PathParam("username") String username) {
+    public Response getAll(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -117,15 +115,16 @@ public class FeedbackResource {
     @ExceptionMetered
     @ApiOperation(value = "Finds feedback by it's id", response = Feedback.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found"),
-            @ApiResponse(code = 400, message = "Error: No feedback matches your request"),
-            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: User not found"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: No feedback matches your request"),
+            @ApiResponse(code = HttpStatus.FORBIDDEN_403, message = "Forbidden: The feedback requested does not belong to this user")
     })
-    public Response getOne(@PathParam("username") String username, @PathParam("id") int id) {
+    public Response getOne(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Feedback Id", required = true) @PathParam("id") int id) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -134,7 +133,7 @@ public class FeedbackResource {
         Feedback feedback = this.feedbackDao.retrieveOne(id);
         if (feedback == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: No feedback matches your request")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -142,8 +141,8 @@ public class FeedbackResource {
 
         if (!feedback.getUserId().equals(user.getId())) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: The feedback requested does not belong to this user")
+                    .status(HttpStatus.FORBIDDEN_403)
+                    .entity("Forbidden: The feedback requested does not belong to this user")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -166,25 +165,19 @@ public class FeedbackResource {
     @ExceptionMetered
     @ApiOperation(value = "Deletes a feedback from the database by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User does not exist"),
-            @ApiResponse(code = 400, message = "Error: Feedback not found"),
-            @ApiResponse(code = 400, message = "The feedback requested does not belong to this user")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: User does not exist"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Feedback not found"),
+            @ApiResponse(code = HttpStatus.FORBIDDEN_403, message = "Forbidden: The feedback requested does not belong to this user"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials")
     })
-    public Response delete(@PathParam("username") String username, @PathParam("feedbackId") int feedbackId,
-                           @Auth User auth_user) {
+    public Response delete(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Id of the feedback to be deleted", required = true) @PathParam("feedbackId") int feedbackId,
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: User does not exist")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        }
-        
-        if (!auth_user.equals(user)) {
-            return Response
-                    .status(HttpStatus.UNAUTHORIZED_401)
-                    .entity("Error: Invalid credentials")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -192,17 +185,24 @@ public class FeedbackResource {
         Feedback feedback = this.feedbackDao.retrieveOne(feedbackId);
         if (feedback == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Feedback not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
 
-
         if (!feedback.getUserId().equals(user.getId())) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
-                    .entity("Error: The feedback requested does not belong to this user")
+                    .status(HttpStatus.FORBIDDEN_403)
+                    .entity("Forbidden: The feedback requested does not belong to this user")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if (!auth_user.equals(user)) {
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }

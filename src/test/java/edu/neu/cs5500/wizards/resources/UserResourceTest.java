@@ -12,15 +12,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.ws.rs.core.Response;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 public class UserResourceTest {
@@ -72,7 +69,7 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testExceptionOnPostingUserWhenContentIsNull() {
+    public void testCreatingUserWhenContentIsNull() {
         UserResource userResource = new UserResource(userDAO, itemDAO);
 
         Response response = userResource.create(null);
@@ -81,7 +78,7 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testExceptionOnCreatingExistingUser() {
+    public void testCreatingWithExistingUsername() {
         UserResource userResource = new UserResource(userDAO, itemDAO);
 
         Response response = userResource.create(user);
@@ -103,7 +100,7 @@ public class UserResourceTest {
         UserResource userResource = new UserResource(userDAO, itemDAO);
 
         Response response = userResource.getOne(RandomStringUtils.random(5));
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: User not found", response.getEntity());
     }
 
@@ -119,12 +116,12 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testFetchingItemsWhenInvaliduser() {
+    public void testFetchingItemsWhenInvalidUser() {
         when(userDAO.retrieve(anyString())).thenReturn(null);
         UserResource userResource = new UserResource(userDAO, itemDAO);
 
         Response response = userResource.getItems(RandomStringUtils.random(5));
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: User not found", response.getEntity());
     }
 
@@ -145,7 +142,7 @@ public class UserResourceTest {
         UserResource userResource = new UserResource(userDAO, itemDAO);
 
         Response response = userResource.delete(RandomStringUtils.random(8), auth_user);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
         assertEquals("Error: User not found", response.getEntity());
     }
 
@@ -161,11 +158,13 @@ public class UserResourceTest {
 
     @Test
     public void testDeletingUserWithAdmin() {
-        when(userDAO.retrieve(anyString())).thenReturn(user);
+        when(userDAO.retrieve(anyString())).thenReturn(auth_user);
         UserResource userResource = new UserResource(userDAO, itemDAO);
-        User testUser = new User();
-        testUser.setUsername("admin");
-        Response response = userResource.delete(RandomStringUtils.random(8), auth_user);
+        String adminUsername = "admin";
+
+        Response response = userResource.delete(adminUsername, auth_user);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: Admin cannot be deleted", response.getEntity());
     }
 
     @Test

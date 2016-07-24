@@ -1,32 +1,23 @@
-package edu.neu.cs5500.wizards.resources;
+package edu.neu.cs5500.wizards.auth;
 
 import com.google.common.base.Optional;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.UserDAO;
-import edu.neu.cs5500.wizards.auth.ServiceAuthenticator;
 import io.dropwizard.auth.AuthenticationException;
-import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 import org.apache.commons.lang.RandomStringUtils;
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import javax.ws.rs.core.Response;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-public class AuthTest {
+public class ServiceAuthenticatorTest {
+    public static String TEST_USERNAME = "testUser";
+    public static String TEST_PASSWORD = "testPassword";
 
     @Mock
     UserDAO userDAO;
@@ -40,16 +31,15 @@ public class AuthTest {
         userDAO = Mockito.mock(UserDAO.class);
         user = Mockito.mock(User.class);
 
-        when(user.getUsername()).thenReturn("testUser");
-	    when(user.getPassword()).thenReturn("testPassword");
+        when(user.getUsername()).thenReturn(ServiceAuthenticatorTest.TEST_USERNAME);
+	    when(user.getPassword()).thenReturn(ServiceAuthenticatorTest.TEST_PASSWORD);
         when(userDAO.retrieve(anyString())).thenReturn(user);
     }
 
     @Test
     public void testAuthenticateUser() throws AuthenticationException {
-	ServiceAuthenticator serviceAuthenticator = new ServiceAuthenticator(userDAO);
-	BasicCredentials credentials = new BasicCredentials(user.getUsername(),
-							                        user.getPassword());
+        ServiceAuthenticator serviceAuthenticator = new ServiceAuthenticator(userDAO);
+        BasicCredentials credentials = new BasicCredentials(ServiceAuthenticatorTest.TEST_USERNAME, ServiceAuthenticatorTest.TEST_PASSWORD);
 
         Optional<User> response = serviceAuthenticator.authenticate(credentials);
         assertEquals(user, response.get());
@@ -57,9 +47,8 @@ public class AuthTest {
     
     @Test
     public void testAuthenticateUserBadPassword() throws AuthenticationException {
-	ServiceAuthenticator serviceAuthenticator = new ServiceAuthenticator(userDAO);
-	BasicCredentials credentials = new BasicCredentials(user.getUsername(),
-							                        "BAD_PASSWORD@#$@");
+        ServiceAuthenticator serviceAuthenticator = new ServiceAuthenticator(userDAO);
+        BasicCredentials credentials = new BasicCredentials(user.getUsername(), RandomStringUtils.random(7));
 
         Optional<User> response = serviceAuthenticator.authenticate(credentials);
         assertEquals(Optional.absent(), response);
