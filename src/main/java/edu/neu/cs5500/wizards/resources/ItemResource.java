@@ -51,10 +51,10 @@ public class ItemResource {
     @ApiOperation(value = "Creates an item in the database given that item",
             response = Item.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Invalid item"),
-            @ApiResponse(code = 400, message = "Error: Seller does not exist"),
-            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
-            @ApiResponse(code = 400, message = "Error: Invalid auction end time")
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Invalid item"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Seller does not exist"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Invalid auction end time")
     })
     public Response create(@ApiParam(value = "Item object to be created", required = true) @Valid Item item,
                            @ApiParam(hidden = true) @Auth User auth_user) {
@@ -69,7 +69,7 @@ public class ItemResource {
         User itemSeller = this.userDao.retrieve(item.getSellerUsername());
         if (itemSeller == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Seller does not exist")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -128,13 +128,13 @@ public class ItemResource {
     @ApiOperation(value = "Updates an item in the database given the item with updated information",
             response = Item.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Invalid item"),
-            @ApiResponse(code = 400, message = "Error: Item not found, update failed"),
-            @ApiResponse(code = 400, message = "Error: Seller cannot be changed"),
-            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
-            @ApiResponse(code = 400, message = "Error: Item id cannot be changed"),
-            @ApiResponse(code = 400, message = "Error: Auction end time cannot be changed, since it has already passed"),
-            @ApiResponse(code = 400, message = "Error: Minimum bid amount cannot be less than $1")
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Invalid item"),
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item not found, update failed"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Seller cannot be changed"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Item id cannot be changed"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Auction end time cannot be changed, since it has already passed"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Minimum bid amount cannot be less than $1")
     })
     public Response update(@ApiParam(value = "id of the item to be updated", required = true) @PathParam("id") int id,
                            @ApiParam(value = "Updated item object", required = true) Item item,
@@ -149,7 +149,7 @@ public class ItemResource {
         Item existingItem = this.itemDao.findItemById(id);
         if (existingItem == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item not found, update failed")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -255,13 +255,13 @@ public class ItemResource {
     @ExceptionMetered
     @ApiOperation(value = "Finds an item by id", response = Item.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Item not found")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item not found")
     })
     public Response getOne(@ApiParam(value = "Id of the item", required = true) @PathParam("id") int id) {
         Item item = this.itemDao.findItemById(id);
         if (item == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -290,8 +290,8 @@ public class ItemResource {
     @ExceptionMetered
     @ApiOperation(value = "Deletes an item from the database by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Invalid item"),
-            @ApiResponse(code = 401, message = "Error: Invalid credentials")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item not found"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials")
     })
     public Response delete(@ApiParam(value = "Id of the item to be deleted", required = true) @PathParam("itemId") int itemId,
                            @ApiParam(hidden = true) @Auth User auth_user) {
@@ -299,7 +299,7 @@ public class ItemResource {
 
         if (item == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
