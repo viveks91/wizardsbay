@@ -180,6 +180,14 @@ public class FeedbackResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+        
+        if (!auth_user.equals(user)) {
+            return Response
+                    .status(HttpStatus.UNAUTHORIZED_401)
+                    .entity("Error: Invalid credentials")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
 
         Feedback feedback = this.feedbackDao.retrieveOne(feedbackId);
         if (feedback == null) {
