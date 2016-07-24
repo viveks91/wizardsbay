@@ -11,6 +11,7 @@ import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
 import edu.neu.cs5500.wizards.resources.UserResource;
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
@@ -44,6 +45,9 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
+
+        // Static assets
+        bootstrap.addBundle(new AssetsBundle("/assets/", "/"));
 
         // Swagger
         bootstrap.addBundle(new SwaggerBundle<ServiceConfiguration>() {
