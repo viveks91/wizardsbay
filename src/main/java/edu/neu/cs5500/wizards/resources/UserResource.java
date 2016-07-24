@@ -96,7 +96,7 @@ public class UserResource {
     })
     public Response update(@ApiParam(value = "Username of the user to be updated", required = true) @PathParam("username") String username,
                            @ApiParam(value = "Updated user object", required = true) User user,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -253,7 +253,7 @@ public class UserResource {
             @ApiResponse(code = 204, message = "")
     })
     public Response delete(@ApiParam(value = "Username of the user to be deleted", required = true) @PathParam("username") String username,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         User existingUser = this.userDao.retrieve(username);
         if (existingUser == null) {
             return Response

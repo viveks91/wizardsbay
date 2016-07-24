@@ -57,7 +57,7 @@ public class ItemResource {
             @ApiResponse(code = 400, message = "Error: Invalid auction end time")
     })
     public Response create(@ApiParam(value = "Item object to be created", required = true) @Valid Item item,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         if (item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -138,7 +138,7 @@ public class ItemResource {
     })
     public Response update(@ApiParam(value = "id of the item to be updated", required = true) @PathParam("id") int id,
                            @ApiParam(value = "Updated item object", required = true) Item item,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         if (item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -294,7 +294,7 @@ public class ItemResource {
             @ApiResponse(code = 401, message = "Error: Invalid credentials")
     })
     public Response delete(@ApiParam(value = "Id of the item to be deleted", required = true) @PathParam("itemId") int itemId,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         Item item = this.itemDao.findItemById(itemId);
 
         if (item == null) {

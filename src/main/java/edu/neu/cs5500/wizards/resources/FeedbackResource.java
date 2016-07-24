@@ -21,7 +21,7 @@ import java.util.List;
  * Created by susannaedens on 6/23/16.
  */
 @Path("/user/{username}/feedback")
-@Api(value = "/user/{username}/feedback", description = "Operations involving feedback for a specific user")
+@Api(value = "feedback", description = "Operations involving feedback for a specific user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeedbackResource {
@@ -171,7 +171,7 @@ public class FeedbackResource {
     })
     public Response delete(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username,
                            @ApiParam(value = "Id of the feedback to be deleted", required = true) @PathParam("feedbackId") int feedbackId,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response

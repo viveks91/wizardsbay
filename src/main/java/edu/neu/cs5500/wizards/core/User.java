@@ -1,16 +1,16 @@
 package edu.neu.cs5500.wizards.core;
 
 import com.fasterxml.jackson.annotation.*;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
 import java.security.Principal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(value = {"id"})
+@JsonIgnoreProperties(value = {"id", "name"})
 @JsonPropertyOrder({"firstName", "lastName", "username", "password", "email", "address"})
 public class User implements Principal {
-    //TODO: why does User implement Principal?? purpose?
 
     @JsonProperty
     private Integer id;
@@ -61,6 +61,7 @@ public class User implements Principal {
         this.id = id;
     }
 
+    @ApiModelProperty(value = "Email-id of the user", required = true)
     public String getEmail() {
         return email;
     }
@@ -69,6 +70,7 @@ public class User implements Principal {
         this.email = email;
     }
 
+    @ApiModelProperty(value = "Username of the user", required = true, allowableValues = "Length more than 3")
     public String getUsername() {
         return username;
     }
@@ -77,6 +79,7 @@ public class User implements Principal {
         this.username = username;
     }
 
+    @ApiModelProperty(value = "Password for the user", required = true, allowableValues = "Length more than 3")
     public String getPassword() {
         return password;
     }
@@ -85,30 +88,33 @@ public class User implements Principal {
         this.password = password;
     }
 
+    @ApiModelProperty(value = "First name of the user", required = true)
+    public String getFirstName() {
+        return firstName;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getFirstName() {
-        return firstName;
+    @ApiModelProperty(value = "Second name of the user", required = true)
+    public String getLastName() {
+        return lastName;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public String getLastName() {
-        return lastName;
+    @ApiModelProperty(value = "Address of the user")
+    public String getAddress() {
+        return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
     }
 
-    public String getAddress() {
-        return address;
-    }
-    
     public String getName() {
         return username;
     }

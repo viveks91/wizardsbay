@@ -23,7 +23,7 @@ import java.util.List;
  * Created by susannaedens on 6/21/16.
  */
 @Path("/item/{itemId}/bids")
-@Api(value = "/item/{itemId}/bids", description = "Operations involving bids on specific item")
+@Api(value = "bids", description = "Operations involving bids on specific item")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BidResource {
@@ -65,7 +65,7 @@ public class BidResource {
     })
     public Response create(@ApiParam(value = "Id of the item to bid on", required = true) @PathParam("itemId") int itemId,
                            @ApiParam(value = "New bid object", required = true) @Valid Bid incomingBid,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         User biddingUser = userDao.retrieve(incomingBid.getBidderUsername());
         if (biddingUser == null) {
             return Response
@@ -268,7 +268,7 @@ public class BidResource {
     })
     public Response delete(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId,
                            @ApiParam(value = "Id of the bid to be deleted", required = true) @PathParam("bidId") int bidId,
-                           @Auth User auth_user) {
+                           @ApiParam(hidden = true) @Auth User auth_user) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
