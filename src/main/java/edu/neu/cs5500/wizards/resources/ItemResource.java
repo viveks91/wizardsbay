@@ -8,10 +8,7 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -59,7 +56,8 @@ public class ItemResource {
             @ApiResponse(code = 401, message = "Error: Invalid credentials"),
             @ApiResponse(code = 400, message = "Error: Invalid auction end time")
     })
-    public Response create(@Valid Item item, @Auth User auth_user) {
+    public Response create(@ApiParam(value = "Item object to be created", required = true) @Valid Item item,
+                           @Auth User auth_user) {
         if (item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -138,7 +136,9 @@ public class ItemResource {
             @ApiResponse(code = 400, message = "Error: Auction end time cannot be changed, since it has already passed"),
             @ApiResponse(code = 400, message = "Error: Minimum bid amount cannot be less than $1")
     })
-    public Response update(@PathParam("id") int id, Item item, @Auth User auth_user) {
+    public Response update(@ApiParam(value = "id of the item to be updated", required = true) @PathParam("id") int id,
+                           @ApiParam(value = "Updated item object", required = true) Item item,
+                           @Auth User auth_user) {
         if (item == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -257,7 +257,7 @@ public class ItemResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: Item not found")
     })
-    public Response getOne(@PathParam("id") int id) {
+    public Response getOne(@ApiParam(value = "Id of the item", required = true) @PathParam("id") int id) {
         Item item = this.itemDao.findItemById(id);
         if (item == null) {
             return Response
@@ -293,7 +293,8 @@ public class ItemResource {
             @ApiResponse(code = 400, message = "Error: Invalid item"),
             @ApiResponse(code = 401, message = "Error: Invalid credentials")
     })
-    public Response delete(@PathParam("itemId") int itemId, @Auth User auth_user) {
+    public Response delete(@ApiParam(value = "Id of the item to be deleted", required = true) @PathParam("itemId") int itemId,
+                           @Auth User auth_user) {
         Item item = this.itemDao.findItemById(itemId);
 
         if (item == null) {

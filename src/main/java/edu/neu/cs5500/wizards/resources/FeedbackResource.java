@@ -8,10 +8,7 @@ import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -53,7 +50,8 @@ public class FeedbackResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: The user you are trying to create feedback for does not exist")
     })
-    public Response create(@PathParam("username") String username, @Valid Feedback feedback) {
+    public Response create(@ApiParam(value = "Username of the user getting the feedback", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Feedback to be posted", required = true) @Valid Feedback feedback) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -84,7 +82,7 @@ public class FeedbackResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: User not found")
     })
-    public Response getAll(@PathParam("username") String username) {
+    public Response getAll(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -121,7 +119,8 @@ public class FeedbackResource {
             @ApiResponse(code = 400, message = "Error: No feedback matches your request"),
             @ApiResponse(code = 400, message = "The feedback requested does not belong to this user")
     })
-    public Response getOne(@PathParam("username") String username, @PathParam("id") int id) {
+    public Response getOne(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Feedback Id", required = true) @PathParam("id") int id) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -170,7 +169,8 @@ public class FeedbackResource {
             @ApiResponse(code = 400, message = "Error: Feedback not found"),
             @ApiResponse(code = 400, message = "The feedback requested does not belong to this user")
     })
-    public Response delete(@PathParam("username") String username, @PathParam("feedbackId") int feedbackId,
+    public Response delete(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Id of the feedback to be deleted", required = true) @PathParam("feedbackId") int feedbackId,
                            @Auth User auth_user) {
         User user = this.userDao.retrieve(username);
         if (user == null) {

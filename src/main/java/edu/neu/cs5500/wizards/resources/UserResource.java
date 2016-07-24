@@ -8,10 +8,7 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -49,7 +46,7 @@ public class UserResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: Given user is empty"),
             @ApiResponse(code = 400, message = "Error: Username is already taken!")})
-    public Response create(@Valid User user) {
+    public Response create(@ApiParam(value = "User object to be created", required = true) @Valid User user) {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -97,7 +94,9 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Error: Username cannot be changed"),
             @ApiResponse(code = 400, message = "Error: New password must be at least 3 characters")
     })
-    public Response update(@PathParam("username") String username, User user, @Auth User auth_user) {
+    public Response update(@ApiParam(value = "Username of the user to be updated", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Updated user object", required = true) User user,
+                           @Auth User auth_user) {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -176,7 +175,7 @@ public class UserResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: User not found")
     })
-    public Response getOne(@PathParam("username") String username) {
+    public Response getOne(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -207,7 +206,7 @@ public class UserResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: User not found")
     })
-    public Response getItems(@PathParam("username") String username) {
+    public Response getItems(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
@@ -253,7 +252,8 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Error: Admin cannot be deleted"),
             @ApiResponse(code = 204, message = "")
     })
-    public Response delete(@PathParam("username") String username, @Auth User auth_user) {
+    public Response delete(@ApiParam(value = "Username of the user to be deleted", required = true) @PathParam("username") String username,
+                           @Auth User auth_user) {
         User existingUser = this.userDao.retrieve(username);
         if (existingUser == null) {
             return Response

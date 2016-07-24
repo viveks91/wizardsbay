@@ -1,5 +1,5 @@
 swagger:
-  resourcePackage: com.example.helloworld
+  resourcePackage: edu.neu.cs5500.wizards
 
 database:
   driverClass: org.postgresql.Driver

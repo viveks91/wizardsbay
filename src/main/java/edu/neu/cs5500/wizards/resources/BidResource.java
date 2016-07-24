@@ -10,10 +10,7 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -26,7 +23,7 @@ import java.util.List;
  * Created by susannaedens on 6/21/16.
  */
 @Path("/item/{itemId}/bids")
-@Api(value = "/user", description = "Operations involving users")
+@Api(value = "/item/{itemId}/bids", description = "Operations involving bids on specific item")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BidResource {
@@ -66,7 +63,9 @@ public class BidResource {
                     "[min. bid amount]")
             //TODO: Don't know if message above is correctly formatted)
     })
-    public Response create(@PathParam("itemId") int itemId, @Valid Bid incomingBid, @Auth User auth_user) {
+    public Response create(@ApiParam(value = "Id of the item to bid on", required = true) @PathParam("itemId") int itemId,
+                           @ApiParam(value = "New bid object", required = true) @Valid Bid incomingBid,
+                           @Auth User auth_user) {
         User biddingUser = userDao.retrieve(incomingBid.getBidderUsername());
         if (biddingUser == null) {
             return Response
@@ -133,7 +132,7 @@ public class BidResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Error: Item does not exist")
     })
-    public Response getAll(@PathParam("itemId") int itemId) {
+    public Response getAll(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId) {
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -171,7 +170,8 @@ public class BidResource {
             @ApiResponse(code = 400, message = "Error: Bid not found"),
             @ApiResponse(code = 400, message = "Error: The bid requested does not belong to the item")
     })
-    public Response getOne(@PathParam("itemId") int itemId, @PathParam("id") int id) {
+    public Response getOne(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId,
+                           @ApiParam(value = "Bid Id", required = true) @PathParam("id") int id) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
@@ -220,7 +220,7 @@ public class BidResource {
             @ApiResponse(code = 400, message = "Error: Item does not exist"),
             @ApiResponse(code = 400, message = "Error: There are no bids for this item yet")
     })
-    public Response getHighest(@PathParam("itemId") int itemId) {
+    public Response getHighest(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
@@ -266,7 +266,9 @@ public class BidResource {
             @ApiResponse(code = 400, message = "Error: The bid requested does not belong to the item"),
             @ApiResponse(code = 401, message = "Error: Invalid credentials")
     })
-    public Response delete(@PathParam("itemId") int itemId, @PathParam("bidId") int bidId, @Auth User auth_user) {
+    public Response delete(@ApiParam(value = "Id of the item", required = true) @PathParam("itemId") int itemId,
+                           @ApiParam(value = "Id of the bid to be deleted", required = true) @PathParam("bidId") int bidId,
+                           @Auth User auth_user) {
 
         if (this.itemDao.findItemById(itemId) == null) {
             return Response
@@ -305,5 +307,4 @@ public class BidResource {
         bidDao.delete(bid);
         return Response.status(204).build();
     }
-
 }
