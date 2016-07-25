@@ -6,6 +6,7 @@ import edu.neu.cs5500.wizards.db.BidDAO;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import edu.neu.cs5500.wizards.db.binder.IntegerListArgumentFactory;
 import edu.neu.cs5500.wizards.jobs.TestJob;
 import edu.neu.cs5500.wizards.resources.BidResource;
 import edu.neu.cs5500.wizards.resources.FeedbackResource;
@@ -84,6 +85,9 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
     public void run(ServiceConfiguration configuration, Environment environment) throws ClassNotFoundException {
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
+
+        // Jdbi List Binder
+        jdbi.registerArgumentFactory(new IntegerListArgumentFactory());
 
         // User endpoints
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
