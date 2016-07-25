@@ -7,7 +7,8 @@ import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.db.binder.IntegerListArgumentFactory;
-import edu.neu.cs5500.wizards.jobs.TestJob;
+import edu.neu.cs5500.wizards.scheduler.JobScheduler;
+import edu.neu.cs5500.wizards.scheduler.jobs.TestJob;
 import edu.neu.cs5500.wizards.resources.BidResource;
 import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
@@ -117,13 +118,12 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
-        SchedulerFactory sf = new StdSchedulerFactory();
-        try {
-            Scheduler scheduler = sf.getScheduler();
-            scheduler.start();
-            LOGGER.info("Scheduler started");
+        // Scheduler
+        final Scheduler scheduler = JobScheduler.getScheduler();
 
-            String endDateStr = "2016-07-25 01:56:00 AM";
+        try {
+
+            String endDateStr = "2016-07-25 03:58:00 PM";
             Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a").parse(endDateStr);
 
             // Add jobs
@@ -138,11 +138,10 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
 
             scheduler.scheduleJob(job1, trigger);
 
-//            scheduler.shutdown();
         } catch (SchedulerException e) {
-            LOGGER.error("Scheduler failed to initialize", e);
+            LOGGER.error("Failed to schedule a job", e);
         } catch (ParseException e) {
-            LOGGER.error("Scheduler failed to parse the date", e);
+            LOGGER.error("Failed to parse the date", e);
         }
 
     }

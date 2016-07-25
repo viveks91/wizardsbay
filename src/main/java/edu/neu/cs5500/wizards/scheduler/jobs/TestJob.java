@@ -1,6 +1,5 @@
-package edu.neu.cs5500.wizards.jobs;
+package edu.neu.cs5500.wizards.scheduler.jobs;
 
-import edu.neu.cs5500.wizards.EbayCloneApplication;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
