@@ -142,12 +142,11 @@ public class BidResource {
 
         List<Bid> bids = this.bidDao.findBidsByItemId(itemId);
         for (Bid bid : bids) {
-            // set username
-            bid.setBidderUsername(this.userDao.retrieveById(bid.getBidderId()).getUsername());
             // hide unwanted fields
             bid.setId(null);
             bid.setItemId(null);
         }
+
         return Response.ok(bids).build();
     }
 
