@@ -6,6 +6,7 @@ import edu.neu.cs5500.wizards.db.BidDAO;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import edu.neu.cs5500.wizards.jobs.TestJob;
 import edu.neu.cs5500.wizards.resources.BidResource;
 import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
@@ -24,12 +25,25 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 import org.skife.jdbi.v2.DBI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 public class EbayCloneApplication extends Application<ServiceConfiguration> {
     public static void main(String[] args) throws Exception {
         new EbayCloneApplication().run(args);
     }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EbayCloneApplication.class);
 
     @Override
     public String getName() {
@@ -99,5 +113,34 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
+        SchedulerFactory sf = new StdSchedulerFactory();
+        try {
+            Scheduler scheduler = sf.getScheduler();
+            scheduler.start();
+            LOGGER.info("Scheduler started");
+
+            String endDateStr = "2016-07-25 01:56:00 AM";
+            Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a").parse(endDateStr);
+
+            // Add jobs
+            JobDetail job1 = newJob(TestJob.class)
+                    .withIdentity("job1", "group1")
+                    .build();
+
+            Trigger trigger = newTrigger()
+                    .withIdentity("trigger1", "group1")
+                    .startAt(startDate)
+                    .build();
+
+            scheduler.scheduleJob(job1, trigger);
+
+//            scheduler.shutdown();
+        } catch (SchedulerException e) {
+            LOGGER.error("Scheduler failed to initialize", e);
+        } catch (ParseException e) {
+            LOGGER.error("Scheduler failed to parse the date", e);
+        }
+
     }
+
 }

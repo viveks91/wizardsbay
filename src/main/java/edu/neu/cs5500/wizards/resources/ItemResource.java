@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public class ItemResource {
                     .build();
         }
 
-        Timestamp now = new Timestamp(new Date().getTime());
+        Date now = new Date();
         if (item.getAuctionEndTime().before(now)) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -181,7 +180,7 @@ public class ItemResource {
             }
         }
         if (item.getAuctionEndTime() != null) {
-            Timestamp now = new Timestamp(new Date().getTime());
+            Date now = new Date();
             if (!item.getAuctionEndTime().equals(existingItem.getAuctionEndTime())
                     && existingItem.getAuctionEndTime().before(now)) {
                 return Response
