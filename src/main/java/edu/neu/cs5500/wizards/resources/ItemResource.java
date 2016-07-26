@@ -329,14 +329,14 @@ public class ItemResource {
      * @return all active, matching items
      */
     @GET
-    @Path("/search")
+    @Path("/search/{key}")
     @Timed
     @UnitOfWork
     @ExceptionMetered
     @ApiOperation(value = "Finds all matching items in the database",
             response = Item.class,
             responseContainer = "List")
-    public Response getActive(@PathParam("search") String searchString) {
+    public Response getActive(@PathParam("key") String searchString) {
         List<Item> activeItems = this.itemDao.searchItems(searchString);
         for (Item item : activeItems) {
             //hide some details
@@ -344,6 +344,7 @@ public class ItemResource {
             // set seller username
             item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
         }
+        
         return Response.ok(activeItems).build();
     }
     

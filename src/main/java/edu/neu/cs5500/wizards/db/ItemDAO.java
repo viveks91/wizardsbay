@@ -97,7 +97,7 @@ public interface ItemDAO {
      *      *
      * @return a list of matching active items
      */
-    @SqlQuery("select * from items where auction_end_time > localtimestamp AND itemName LIKE '%:search%' OR itemDescription LIKE %:search%")
+    @SqlQuery("select * from items where auction_end_time > localtimestamp AND item_name ~* :search OR item_description ~* :search")
     List<Item> searchItems(@Bind("search") String search);
 
 }
