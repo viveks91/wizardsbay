@@ -20,7 +20,7 @@ public class MailService {
             .from("WizardsBay No-Reply", MAILGUN_LOGIN);
 
     public void notifyWinner(User winner, Item item) {
-        // TODO: craft a nice little email for the winning bidder :D
+        // TODO: craft a nice little email for the winning bidder :D Winning price is the minBidAMount
     }
 
     public void notifyBidders(User bidder, Item item) {

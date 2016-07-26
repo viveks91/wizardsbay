@@ -1,6 +1,7 @@
 package edu.neu.cs5500.wizards;
 
 import edu.neu.cs5500.wizards.auth.ServiceAuthenticator;
+import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.BidDAO;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
@@ -34,9 +35,7 @@ import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -117,29 +116,29 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
         // Scheduler
-        final Scheduler scheduler = JobScheduler.getScheduler();
+        JobScheduler jobScheduler = JobScheduler.getInstance();
+        final Scheduler scheduler = jobScheduler.getScheduler();
 
+        // Schedule all the active items
         try {
+            ItemDAO itemDAOForJobs = jdbi.onDemand(ItemDAO.class);
+            List<Item> activeItems = itemDAOForJobs.findAllActiveItems();
+            for (Item item : activeItems) {
+                JobDetail job = newJob(TestJob.class)
+                        .withIdentity("job" + item.getId(), "active")
+                        .build();
+                job.getJobDataMap().put("item", item.getId());
 
-            String endDateStr = "2016-07-25 03:58:00 PM";
-            Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a").parse(endDateStr);
+                Trigger trigger = newTrigger()
+                        .withIdentity("trigger" + item.getId(), "active")
+                        .startAt(item.getAuctionEndTime())
+                        .build();
 
-            // Add jobs
-            JobDetail job1 = newJob(TestJob.class)
-                    .withIdentity("job1", "group1")
-                    .build();
-
-            Trigger trigger = newTrigger()
-                    .withIdentity("trigger1", "group1")
-                    .startAt(startDate)
-                    .build();
-
-            scheduler.scheduleJob(job1, trigger);
+                scheduler.scheduleJob(job, trigger);
+            }
 
         } catch (SchedulerException e) {
             LOGGER.error("Failed to schedule a job", e);
-        } catch (ParseException e) {
-            LOGGER.error("Failed to parse the date", e);
         }
 
     }

@@ -1,6 +1,7 @@
 package edu.neu.cs5500.wizards.scheduler.jobs;
 
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -15,6 +16,11 @@ public class TestJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LOGGER.info("Hello from job");
+        JobDataMap data = jobExecutionContext.getJobDetail().getJobDataMap();
+        int itemId = data.getIntValue("item");
+
+
+
+
     }
 }
