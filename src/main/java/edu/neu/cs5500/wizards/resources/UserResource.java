@@ -8,10 +8,7 @@ import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.validation.Valid;
@@ -47,9 +44,9 @@ public class UserResource {
     @ExceptionMetered
     @ApiOperation(value = "Creates a user in the database given the user", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Given user is empty"),
-            @ApiResponse(code = 400, message = "Error: Username is already taken!")})
-    public Response create(@Valid User user) {
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Given user is empty"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Username is already taken!")})
+    public Response create(@ApiParam(value = "User object to be created", required = true) @Valid User user) {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -91,13 +88,15 @@ public class UserResource {
             notes = "Must provide the username of the user and a user object containing new information",
             response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: Given user is empty"),
-            @ApiResponse(code = 400, message = "Error: Invalid username, update failed"),
-            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
-            @ApiResponse(code = 400, message = "Error: Username cannot be changed"),
-            @ApiResponse(code = 400, message = "Error: New password must be at least 3 characters")
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Given user is empty"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Invalid username, update failed"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Username cannot be changed"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: New password must be at least 3 characters")
     })
-    public Response update(@PathParam("username") String username, User user, @Auth User auth_user) {
+    public Response update(@ApiParam(value = "Username of the user to be updated", required = true) @PathParam("username") String username,
+                           @ApiParam(value = "Updated user object", required = true) User user,
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         if (user == null) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -174,13 +173,13 @@ public class UserResource {
     @ExceptionMetered
     @ApiOperation(value = "Finds and returns a user from the database by username", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: User not found")
     })
-    public Response getOne(@PathParam("username") String username) {
+    public Response getOne(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -205,13 +204,13 @@ public class UserResource {
             response = Item.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: User not found")
     })
-    public Response getItems(@PathParam("username") String username) {
+    public Response getItems(@ApiParam(value = "Username of the user", required = true) @PathParam("username") String username) {
         User user = this.userDao.retrieve(username);
         if (user == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
@@ -248,20 +247,21 @@ public class UserResource {
     @ExceptionMetered
     @ApiOperation(value = "Deletes a specified user from the database by username")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Error: User not found"),
-            @ApiResponse(code = 401, message = "Error: Invalid credentials"),
-            @ApiResponse(code = 400, message = "Error: Admin cannot be deleted"),
-            @ApiResponse(code = 204, message = "")
+            @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: User not found"),
+            @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Admin cannot be deleted"),
     })
-    public Response delete(@PathParam("username") String username, @Auth User auth_user) {
+    public Response delete(@ApiParam(value = "Username of the user to be deleted", required = true) @PathParam("username") String username,
+                           @ApiParam(hidden = true) @Auth User auth_user) {
         User existingUser = this.userDao.retrieve(username);
         if (existingUser == null) {
             return Response
-                    .status(HttpStatus.BAD_REQUEST_400)
+                    .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: User not found")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
         if (!auth_user.equals(existingUser)) {
             return Response
                     .status(HttpStatus.UNAUTHORIZED_401)
@@ -269,6 +269,7 @@ public class UserResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+
         if (username.equals("admin")) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -276,8 +277,8 @@ public class UserResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-        this.userDao.delete(username);
-        return Response.status(204).build();
-    }
 
+        this.userDao.delete(username);
+        return Response.status(HttpStatus.NO_CONTENT_204).build();
+    }
 }

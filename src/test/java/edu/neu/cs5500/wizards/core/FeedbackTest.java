@@ -1,13 +1,10 @@
 package edu.neu.cs5500.wizards.core;
 
-import io.swagger.models.auth.In;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Timestamp;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by susannaedens on 7/19/16.
