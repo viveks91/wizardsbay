@@ -321,4 +321,31 @@ public class ItemResource {
         this.itemDao.deleteItem(itemId);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
+    
+    /**
+     * Returns all matching, active items in the database.
+     *
+     * @return all active, matching items
+     */
+    @GET
+    @Path("/search/{key}")
+    @Timed
+    @UnitOfWork
+    @ExceptionMetered
+    @ApiOperation(value = "Finds all matching items in the database",
+            response = Item.class,
+            responseContainer = "List")
+    public Response getBySearchKey(@ApiParam(value = "Key for search query", required = true)
+                                   @PathParam("key") String searchString) {
+        List<Item> activeItems = this.itemDao.searchItems(searchString);
+        for (Item item : activeItems) {
+            //hide some details
+            item.setAuctionStartTime(null);
+            // set seller username
+            item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
+        }
+        
+        return Response.ok(activeItems).build();
+    }
+    
 }
