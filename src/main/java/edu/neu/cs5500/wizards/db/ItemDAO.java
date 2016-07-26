@@ -89,7 +89,7 @@ public interface ItemDAO {
      *
      * @return a list of all active items
      */
-    @SqlQuery("select * from items where auction_end_time > localtimestamp")
+    @SqlQuery("select items.*, username from items LEFT OUTER JOIN users on (items.seller_id = users.id) where auction_end_time > localtimestamp")
     List<Item> findAllActiveItems();
     
     /**
@@ -97,7 +97,7 @@ public interface ItemDAO {
      *      *
      * @return a list of matching active items
      */
-    @SqlQuery("select * from items where auction_end_time > localtimestamp AND item_name ~* :search OR item_description ~* :search")
+    @SqlQuery("select items.*, username from items LEFT OUTER JOIN users on (items.seller_id = users.id) where auction_end_time > localtimestamp AND ( item_name ~* :search OR item_description ~* :search )")
     List<Item> searchItems(@Bind("search") String search);
 
 }

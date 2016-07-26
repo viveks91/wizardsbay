@@ -238,8 +238,6 @@ public class ItemResource {
         for (Item item : activeItems) {
             //hide some details
             item.setAuctionStartTime(null);
-            // set seller username
-            item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
         }
         return Response.ok(activeItems).build();
     }
@@ -341,8 +339,6 @@ public class ItemResource {
         for (Item item : activeItems) {
             //hide some details
             item.setAuctionStartTime(null);
-            // set seller username
-            item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
         }
         
         return Response.ok(activeItems).build();

@@ -22,6 +22,11 @@ public class ItemMapper implements ResultSetMapper<Item> {
         item.setAuctionEndTime(r.getTimestamp("auction_end_time"));
         item.setMinBidAmount(r.getInt("min_bid_amount"));
 
+        try {
+            item.setSellerUsername(r.getString("username"));
+        } catch (SQLException ignored) {
+        }
+
         return item;
     }
 }
