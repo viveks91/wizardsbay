@@ -9,7 +9,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
@@ -27,9 +27,8 @@ public class ServiceAuthenticatorTest {
 
     // This function gets invoked before each of the tests below
     @Before
-    public void before() {
-        userDAO = Mockito.mock(UserDAO.class);
-        user = Mockito.mock(User.class);
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
 
         when(user.getUsername()).thenReturn(ServiceAuthenticatorTest.TEST_USERNAME);
 	    when(user.getPassword()).thenReturn(ServiceAuthenticatorTest.TEST_PASSWORD);

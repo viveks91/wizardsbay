@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 import java.util.LinkedList;
@@ -41,12 +42,8 @@ public class FeedbackResourceTest {
     Random rand = new Random();
 
     @Before
-    public void before() {
-        userDAO = Mockito.mock(UserDAO.class);
-        feedbackDAO =Mockito.mock(FeedbackDAO.class);
-
-        user = Mockito.mock(User.class);
-        feedback = Mockito.mock(Feedback.class);
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
 
         when(userDAO.retrieve(anyString())).thenReturn(user);
     }

@@ -1,15 +1,19 @@
 package edu.neu.cs5500.wizards;
 
 import edu.neu.cs5500.wizards.auth.ServiceAuthenticator;
+import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.BidDAO;
 import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import edu.neu.cs5500.wizards.db.binder.IntegerListArgumentFactory;
 import edu.neu.cs5500.wizards.resources.BidResource;
 import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
 import edu.neu.cs5500.wizards.resources.UserResource;
+import edu.neu.cs5500.wizards.scheduler.JobScheduler;
+import edu.neu.cs5500.wizards.scheduler.jobs.TestJob;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -23,12 +27,25 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 import org.skife.jdbi.v2.DBI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 public class EbayCloneApplication extends Application<ServiceConfiguration> {
     public static void main(String[] args) throws Exception {
         new EbayCloneApplication().run(args);
     }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EbayCloneApplication.class);
 
     @Override
     public String getName() {
@@ -67,6 +84,9 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
+        // Jdbi List Binder
+        jdbi.registerArgumentFactory(new IntegerListArgumentFactory());
+
         // User endpoints
         final UserDAO userDao = jdbi.onDemand(UserDAO.class);
         final ItemDAO itemDaoForUser = jdbi.onDemand(ItemDAO.class);
@@ -95,5 +115,32 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
+        // Scheduler
+        JobScheduler jobScheduler = JobScheduler.getInstance();
+        final Scheduler scheduler = jobScheduler.getScheduler();
+
+        // Schedule all the active items
+        try {
+            ItemDAO itemDAOForJobs = jdbi.onDemand(ItemDAO.class);
+            List<Item> activeItems = itemDAOForJobs.findAllActiveItems();
+            for (Item item : activeItems) {
+                JobDetail job = newJob(TestJob.class)
+                        .withIdentity("job" + item.getId(), "active")
+                        .build();
+                job.getJobDataMap().put("item", item.getId());
+
+                Trigger trigger = newTrigger()
+                        .withIdentity("trigger" + item.getId(), "active")
+                        .startAt(item.getAuctionEndTime())
+                        .build();
+
+                scheduler.scheduleJob(job, trigger);
+            }
+
+        } catch (SchedulerException e) {
+            LOGGER.error("Failed to schedule a job", e);
+        }
+
     }
+
 }

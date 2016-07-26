@@ -20,6 +20,12 @@ public class BidMapper implements ResultSetMapper<Bid> {
         bid.setBidderId(resultSet.getInt("bidder_id"));
         bid.setBidAmount(resultSet.getInt("bid_amount"));
         bid.setBidTime(resultSet.getTimestamp("bid_time"));
+
+        try {
+            bid.setBidderUsername(resultSet.getString("username"));
+        } catch (SQLException ignored) {
+        }
+
         return bid;
     }
 

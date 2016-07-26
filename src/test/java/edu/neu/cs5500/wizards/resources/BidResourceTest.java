@@ -5,7 +5,7 @@ import edu.neu.cs5500.wizards.db.BidDAO;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 /**
  * Created by susannaedens on 7/8/16.
@@ -21,8 +21,7 @@ public class BidResourceTest {
 
     @Before
     public void setUp() throws Exception {
-        bidDAO = Mockito.mock(BidDAO.class);
-        bid = Mockito.mock(Bid.class);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test

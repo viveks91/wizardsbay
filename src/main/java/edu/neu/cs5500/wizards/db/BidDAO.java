@@ -37,24 +37,14 @@ public interface BidDAO {
     @SqlQuery("select * from bids where id = :id")
     Bid retrieve(@Bind("id") int id);
 
-//    /**
-//     * Retrieves the highest current bid on an item given the item's id.
-//     *
-//     * @param itemId the id of the item
-//     * @return the current highest bid
-//     */
-//    @SqlQuery("with items as (select * from bids where itemId = :itemId) select * from items order by bidAmount desc limit 1")
-//    Bid retrieveHighestBid(@Bind("itemId") int itemId);
-
     /**
      * Retrieve a list of bids representing the bid history for a certain item given the item's id.
      *
      * @param itemId the id of the item
      * @return a history of bids for a given item
      */
-    @SqlQuery("select * from bids where item_id = :itemId order by bid_amount desc")
+    @SqlQuery("select bids.*, username from bids LEFT OUTER JOIN users on (bids.bidder_id = users.id) where item_id = :itemId order by bid_amount desc")
     List<Bid> findBidsByItemId(@Bind("itemId") int itemId);
-
 
     /**
      * Given a bid, delete it from the database.

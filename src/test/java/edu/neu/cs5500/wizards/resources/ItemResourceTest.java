@@ -4,15 +4,22 @@ import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import edu.neu.cs5500.wizards.mail.MailService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -21,6 +28,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ItemResource.class)
 public class ItemResourceTest {
 
     @Mock
@@ -38,20 +47,22 @@ public class ItemResourceTest {
     @Mock
     Item item2;
 
+    @Mock
+    MailService mailService;
+
     Random rand = new Random();
 
     // This function gets invoked before each of the tests below
     @Before
-    public void before() {
-        userDAO = Mockito.mock(UserDAO.class);
-        itemDAO = Mockito.mock(ItemDAO.class);
-        item = Mockito.mock(Item.class);
-        item2 = Mockito.mock(Item.class);
-        auth_user = Mockito.mock(User.class);
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
 
         when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
+        when(auth_user.getEmail()).thenReturn(RandomStringUtils.random(5));
         when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         when(userDAO.retrieve(anyString())).thenReturn(auth_user);
+
+        PowerMockito.whenNew(MailService.class).withAnyArguments().thenReturn(mailService);
     }
 
     @Test
@@ -260,5 +271,18 @@ public class ItemResourceTest {
 
         Response response = itemResource.update(randomInt, randItem, auth_user);
         assertEquals(HttpStatus.OK_200, response.getStatus());
+    }
+
+    @Test
+    public void testItemSearchByKey() {
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        when(itemDAO.searchItems(anyString())).thenReturn(items);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+
+        Response response = itemResource.getBySearchKey(RandomStringUtils.random(5));
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(items, response.getEntity());
     }
 }

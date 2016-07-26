@@ -8,6 +8,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
+import java.util.List;
+
 @RegisterMapper(UserMapper.class)
 public interface UserDAO {
 
@@ -61,6 +63,13 @@ public interface UserDAO {
     @SqlUpdate("delete from users where username = :username")
     void delete(@Bind("username") String username);
 
+    /**
+     * Given a list of user ids, return the corresponding users from the database.
+     *
+     * @param userIds list of user ids
+     */
+    @SqlQuery("select * from users where id = any(:userIds)")
+    List<User> RetrieveUsersByIds(@Bind("userIds") List<Integer> userIds);
 }
 
 

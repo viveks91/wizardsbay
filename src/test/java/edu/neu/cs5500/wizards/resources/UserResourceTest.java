@@ -10,11 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
@@ -24,6 +24,8 @@ public class UserResourceTest {
 
     @Mock
     UserDAO userDAO;
+
+    @Mock
     ItemDAO itemDAO;
 
     @Mock
@@ -38,20 +40,12 @@ public class UserResourceTest {
     @Mock
     Item item;
 
-
-    Random rand = new Random();
-
     // This function gets invoked before each of the tests below
     @Before
-    public void before() {
-        userDAO = Mockito.mock(UserDAO.class);
-        itemDAO = Mockito.mock(ItemDAO.class);
-        user = Mockito.mock(User.class);
-        testUser = Mockito.mock(User.class);
-        auth_user = Mockito.mock(User.class);
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
 
         when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
-
         when(user.getUsername()).thenReturn(RandomStringUtils.random(5));
         when(userDAO.retrieveById(anyInt())).thenReturn(user);
         when(userDAO.retrieve(anyString())).thenReturn(user);

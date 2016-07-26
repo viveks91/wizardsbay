@@ -6,7 +6,7 @@ import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
-import edu.neu.cs5500.wizards.mail.MailNotification;
+import edu.neu.cs5500.wizards.mail.MailService;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.*;
@@ -16,7 +16,6 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -84,7 +83,7 @@ public class ItemResource {
                     .build();
         }
 
-        Timestamp now = new Timestamp(new Date().getTime());
+        Date now = new Date();
         if (item.getAuctionEndTime().before(now)) {
             return Response
                     .status(HttpStatus.BAD_REQUEST_400)
@@ -96,8 +95,8 @@ public class ItemResource {
         item.setSellerId(itemSeller.getId());
         Item createdItem = this.itemDao.create(item);
 
-        MailNotification mailNotification = new MailNotification();
-        mailNotification.notifyItemListed(itemSeller, item);
+        MailService mailService = new MailService();
+        mailService.notifyItemListed(itemSeller, item);
 
         return Response.ok(createdItem).build();
     }
@@ -186,7 +185,7 @@ public class ItemResource {
             }
         }
         if (item.getAuctionEndTime() != null) {
-            Timestamp now = new Timestamp(new Date().getTime());
+            Date now = new Date();
             if (!item.getAuctionEndTime().equals(existingItem.getAuctionEndTime())
                     && existingItem.getAuctionEndTime().before(now)) {
                 return Response
@@ -239,8 +238,6 @@ public class ItemResource {
         for (Item item : activeItems) {
             //hide some details
             item.setAuctionStartTime(null);
-            // set seller username
-            item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
         }
         return Response.ok(activeItems).build();
     }
@@ -336,14 +333,11 @@ public class ItemResource {
     @ApiOperation(value = "Finds all matching items in the database",
             response = Item.class,
             responseContainer = "List")
-    public Response getBySearchKey(@ApiParam(value = "Key for search query", required = true)
-                                   @PathParam("key") String searchString) {
+    public Response getBySearchKey(@ApiParam(value = "Key for search query", required = true) @PathParam("key") String searchString) {
         List<Item> activeItems = this.itemDao.searchItems(searchString);
         for (Item item : activeItems) {
             //hide some details
             item.setAuctionStartTime(null);
-            // set seller username
-            item.setSellerUsername(this.userDao.retrieveById(item.getSellerId()).getUsername());
         }
         
         return Response.ok(activeItems).build();
