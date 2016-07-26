@@ -20,7 +20,6 @@ database:
 server:
   type: simple
   applicationContextPath: /wizardsbay
-  rootPath: /api/
   connector:
     type: http
     port: ${PORT}
