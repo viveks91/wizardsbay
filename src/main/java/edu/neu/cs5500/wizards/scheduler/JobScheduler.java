@@ -10,39 +10,48 @@ import org.slf4j.LoggerFactory;
 public class JobScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JobScheduler.class);
-    private static Scheduler scheduler = null;
+    private static JobScheduler jobScheduler = null;
+    private Scheduler scheduler = null;
 
     private JobScheduler() {
     }
 
-    private static void initiateScheduler() {
+    public static JobScheduler getInstance() {
+        if (jobScheduler == null) {
+            jobScheduler = new JobScheduler();
+        }
+
+        return jobScheduler;
+    }
+
+    private void initiateScheduler() {
         try {
             SchedulerFactory sf = new StdSchedulerFactory();
-            scheduler = sf.getScheduler();
-            scheduler.start();
+            this.scheduler = sf.getScheduler();
+            this.scheduler.start();
             LOGGER.info("Scheduler started");
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler failed to start", e);
         }
     }
 
-    public static Scheduler getScheduler() {
-        if (scheduler == null) {
-            initiateScheduler();
+    public Scheduler getScheduler() {
+        if (this.scheduler == null) {
+            this.initiateScheduler();
         }
-        return scheduler;
+        return this.scheduler;
     }
 
-    public static void shutdownScheduler() {
+    public void shutdownScheduler() {
         try {
-            scheduler.shutdown();
+            this.scheduler.shutdown();
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler failed to shutdown", e);
         }
     }
 
-    public static Scheduler renewScheduler() {
-        initiateScheduler();
-        return scheduler;
+    public Scheduler renewScheduler() {
+        this.initiateScheduler();
+        return this.scheduler;
     }
 }
