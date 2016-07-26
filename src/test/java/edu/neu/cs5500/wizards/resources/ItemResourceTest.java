@@ -19,6 +19,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -270,5 +271,18 @@ public class ItemResourceTest {
 
         Response response = itemResource.update(randomInt, randItem, auth_user);
         assertEquals(HttpStatus.OK_200, response.getStatus());
+    }
+
+    @Test
+    public void testItemSearchByKey() {
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        when(itemDAO.searchItems(anyString())).thenReturn(items);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+
+        Response response = itemResource.getBySearchKey(RandomStringUtils.random(5));
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(items, response.getEntity());
     }
 }
