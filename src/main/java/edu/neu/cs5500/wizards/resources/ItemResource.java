@@ -336,7 +336,8 @@ public class ItemResource {
     @ApiOperation(value = "Finds all matching items in the database",
             response = Item.class,
             responseContainer = "List")
-    public Response getActive(@PathParam("key") String searchString) {
+    public Response getBySearchKey(@ApiParam(value = "Key for search query", required = true)
+                                   @PathParam("key") String searchString) {
         List<Item> activeItems = this.itemDao.searchItems(searchString);
         for (Item item : activeItems) {
             //hide some details
