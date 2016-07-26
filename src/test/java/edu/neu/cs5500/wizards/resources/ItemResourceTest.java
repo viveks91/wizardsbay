@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -52,13 +53,8 @@ public class ItemResourceTest {
 
     // This function gets invoked before each of the tests below
     @Before
-    public void before() throws Exception {
-        userDAO = Mockito.mock(UserDAO.class);
-        itemDAO = Mockito.mock(ItemDAO.class);
-        item = Mockito.mock(Item.class);
-        item2 = Mockito.mock(Item.class);
-        auth_user = Mockito.mock(User.class);
-        mailService = Mockito.mock(MailService.class);
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
 
         when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
         when(auth_user.getEmail()).thenReturn(RandomStringUtils.random(5));
