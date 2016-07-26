@@ -6,7 +6,7 @@ import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
-import edu.neu.cs5500.wizards.mail.MailNotification;
+import edu.neu.cs5500.wizards.mail.MailService;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.*;
@@ -95,8 +95,8 @@ public class ItemResource {
         item.setSellerId(itemSeller.getId());
         Item createdItem = this.itemDao.create(item);
 
-        MailNotification mailNotification = new MailNotification();
-        mailNotification.notifyItemListed(itemSeller, item);
+        MailService mailService = new MailService();
+        mailService.notifyItemListed(itemSeller, item);
 
         return Response.ok(createdItem).build();
     }

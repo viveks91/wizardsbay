@@ -4,12 +4,17 @@ import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
+import edu.neu.cs5500.wizards.mail.MailService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
@@ -21,6 +26,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ItemResource.class)
 public class ItemResourceTest {
 
     @Mock
@@ -38,20 +45,27 @@ public class ItemResourceTest {
     @Mock
     Item item2;
 
+    @Mock
+    MailService mailService;
+
     Random rand = new Random();
 
     // This function gets invoked before each of the tests below
     @Before
-    public void before() {
+    public void before() throws Exception {
         userDAO = Mockito.mock(UserDAO.class);
         itemDAO = Mockito.mock(ItemDAO.class);
         item = Mockito.mock(Item.class);
         item2 = Mockito.mock(Item.class);
         auth_user = Mockito.mock(User.class);
+        mailService = Mockito.mock(MailService.class);
 
         when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
+        when(auth_user.getEmail()).thenReturn(RandomStringUtils.random(5));
         when(userDAO.retrieveById(anyInt())).thenReturn(auth_user);
         when(userDAO.retrieve(anyString())).thenReturn(auth_user);
+
+        PowerMockito.whenNew(MailService.class).withAnyArguments().thenReturn(mailService);
     }
 
     @Test
