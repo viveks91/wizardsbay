@@ -50,6 +50,7 @@ public class Messenger implements Job {
             userIds.add(bid.getBidderId());
         }
 
+        //> notify all users that bid on the item whether they have won or lost the auction
         List<User> users = userDao.RetrieveUsersByIds(userIds);
         MailService mailService = new MailService();
         for (User user : users) {
@@ -62,6 +63,9 @@ public class Messenger implements Job {
             }
         }
 
+        // notify the seller of the auction that the auction is over
+        User seller = userDao.retrieve(item.getSellerUsername());
+        mailService.notifySeller(seller, item);
 
     }
 }

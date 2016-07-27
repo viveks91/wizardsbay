@@ -109,6 +109,7 @@ public class ItemResource {
 
         MailService mailService = new MailService();
         mailService.notifyItemListed(itemSeller, item);
+        LOGGER.info("Email has been sent to " + itemSeller.getUsername());
 
         // Scheduler
         JobScheduler jobScheduler = JobScheduler.getInstance();

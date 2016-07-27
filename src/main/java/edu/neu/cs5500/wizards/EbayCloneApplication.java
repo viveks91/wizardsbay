@@ -123,7 +123,6 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
         JobScheduler jobScheduler = JobScheduler.getInstance();
         final Scheduler scheduler = jobScheduler.getScheduler();
 
-
         // Schedule all the active items
         try {
             ItemDAO itemDAOForJobs = jdbiInstance.onDemand(ItemDAO.class);
@@ -145,7 +144,6 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
         } catch (SchedulerException e) {
             LOGGER.error("Failed to schedule a job", e);
         }
-
     }
 
 }
