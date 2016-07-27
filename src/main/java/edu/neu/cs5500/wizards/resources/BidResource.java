@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,6 +89,14 @@ public class BidResource {
             return Response
                     .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if (item.getAuctionEndTime().before(new Date())) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: The auction for this item has ended")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
