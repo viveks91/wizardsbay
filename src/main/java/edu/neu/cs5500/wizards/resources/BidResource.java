@@ -60,6 +60,7 @@ public class BidResource {
             @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Bidder does not exist"),
             @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
             @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: The auction for this item has ended"),
             @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Your bid must be higher than current highest bid: " +
                     "$[highest bid amount]")
     })
