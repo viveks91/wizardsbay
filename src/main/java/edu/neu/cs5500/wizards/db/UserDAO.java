@@ -70,6 +70,14 @@ public interface UserDAO {
      */
     @SqlQuery("select * from users where id = any(:userIds)")
     List<User> RetrieveUsersByIds(@Bind("userIds") List<Integer> userIds);
+
+    /**
+     * Returns all users who participated in a particular item's auction
+     *      *
+     * @return a list of users
+     */
+    @SqlQuery("select users.* from bids LEFT OUTER JOIN users on (bids.bidder_id = users.id) where bids.item_id = :itemId")
+    List<User> getParticipantsByItemId(@Bind("itemId") int itemId);
 }
 
 

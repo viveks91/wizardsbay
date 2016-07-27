@@ -37,31 +37,21 @@ public class Messenger implements Job {
         final DBI jdbiInstance = jdbiManager.getJdbi();
 
         // get dao instances
-        final BidDAO bidDao = jdbiInstance.onDemand(BidDAO.class);
-        final UserDAO userDao = jdbiInstance.onDemand(UserDAO.class);
         final ItemDAO itemDao = jdbiInstance.onDemand(ItemDAO.class);
+        final UserDAO userDAO = jdbiInstance.onDemand(UserDAO.class);
 
-        // retrieve the item and the list of bids for that item
+        // retrieve the item and the list of participants
         Item item = itemDao.findItemById(itemId);
-        List<Bid> bidList = bidDao.findBidsByItemId(itemId);
+        List<User> users = userDAO.getParticipantsByItemId(itemId);
 
-        List<Integer> userIds = new ArrayList<>();
-        for (Bid bid : bidList) {
-            userIds.add(bid.getBidderId());
-        }
-
-        List<User> users = userDao.RetrieveUsersByIds(userIds);
+        // Notify participants
         MailService mailService = new MailService();
         for (User user : users) {
             if (user.getId().equals(item.getBuyerId())) {
                 mailService.notifyWinner(user, item);
-                LOGGER.info("Winner: " + user.getUsername());
             } else {
                 mailService.notifyLoser(user, item);
-                LOGGER.info("Bidder: " + user.getUsername());
             }
         }
-
-
     }
 }

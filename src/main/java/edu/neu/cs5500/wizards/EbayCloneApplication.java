@@ -132,5 +132,4 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
             jobHelper.createNewMessengerJob(item.getId(), item.getAuctionEndTime());
         }
     }
-
 }

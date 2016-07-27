@@ -99,5 +99,4 @@ public interface ItemDAO {
      */
     @SqlQuery("select items.*, username from items LEFT OUTER JOIN users on (items.seller_id = users.id) where auction_end_time > localtimestamp AND ( item_name ~* :search OR item_description ~* :search )")
     List<Item> searchItems(@Bind("search") String search);
-
 }
