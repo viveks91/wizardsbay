@@ -383,10 +383,13 @@ public class ItemResource {
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
     
+
     /**
-     * Returns all matching, active items in the database.
+     * Given a search term, search the active items in the database and return a list of items that match the key
+     * search terms.
      *
-     * @return all active, matching items
+     * @param searchString the key search terms
+     * @return a list of items whose name or description match these search terms
      */
     @GET
     @Path("/search/{key}")

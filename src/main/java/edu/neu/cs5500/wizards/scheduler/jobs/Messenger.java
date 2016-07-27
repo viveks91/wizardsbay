@@ -66,6 +66,7 @@ public class Messenger implements Job {
         // notify the seller of the auction that the auction is over
         User seller = userDao.retrieve(item.getSellerUsername());
         mailService.notifySeller(seller, item);
+        LOGGER.info("Sent email to seller: " + seller.getUsername() );
 
     }
 }
