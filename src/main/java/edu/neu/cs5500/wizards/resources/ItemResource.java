@@ -8,6 +8,7 @@ import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.mail.MailService;
+import edu.neu.cs5500.wizards.scheduler.JobHelper;
 import edu.neu.cs5500.wizards.scheduler.JobScheduler;
 import edu.neu.cs5500.wizards.scheduler.jobs.Messenger;
 import io.dropwizard.auth.Auth;
@@ -110,41 +111,12 @@ public class ItemResource {
         MailService mailService = new MailService();
         mailService.notifyItemListed(itemSeller, item);
 
-        // Scheduler
-        JobScheduler jobScheduler = JobScheduler.getInstance();
-        final Scheduler scheduler = jobScheduler.getScheduler();
-
-        // Schedule all the active items
-        try {
-            JobDetail job = newJob(Messenger.class)
-                    .withIdentity("job" + createdItem.getId(), "active")
-                    .build();
-            job.getJobDataMap().put("itemId", createdItem.getId());
-
-            Trigger trigger = newTrigger()
-                    .withIdentity("trigger" + createdItem.getId(), "active")
-                    .startAt(createdItem.getAuctionEndTime())
-                    .build();
-
-            scheduler.scheduleJob(job, trigger);
-
-        } catch (SchedulerException e) {
-            LOGGER.error("Failed to schedule a job", e);
-        }
+        // Add a job
+        JobHelper jobHelper = new JobHelper();
+        jobHelper.createNewMessengerJob(createdItem.getId(), createdItem.getAuctionEndTime());
         
         return Response.ok(createdItem).build();
     }
-
-    //getActive all items listed by a seller
-    // added this to user/{username}/items
-//    @GET
-//    @Path("/seller/{sellerId}")
-//    @Timed
-//    @UnitOfWork
-//    @ExceptionMetered
-//    public Response getActive(@PathParam("sellerId") int sellerId) {
-//        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
-//    }
 
 
     /**
@@ -250,32 +222,11 @@ public class ItemResource {
         }
         this.itemDao.update(existingItem.getId(), existingItem.getItemName(), existingItem.getItemDescription(),
                 existingItem.getAuctionEndTime(), existingItem.getMinBidAmount());
-
-
+        
         if (item.getAuctionEndTime() != null) {
-            // Scheduler
-            JobScheduler jobScheduler = JobScheduler.getInstance();
-            final Scheduler scheduler = jobScheduler.getScheduler();
-
-            // Schedule all the active items
-            try {
-//                // retrieve the old trigger
-//                Trigger oldTrigger = scheduler.getTrigger(TriggerKey.triggerKey("trigger" + existingItem.getId(), "active"));
-//                // obtain a builder that would produce the trigger
-//                TriggerBuilder tb = oldTrigger.getTriggerBuilder();
-//                Trigger newTrigger = tb.startAt(existingItem.getAuctionEndTime())
-//                        .withIdentity("trigger" + existingItem.getId(), "active")
-//                        .build();
-
-                Trigger trigger = newTrigger()
-                        .withIdentity("trigger" + existingItem.getId(), "active")
-                        .startAt(existingItem.getAuctionEndTime())
-                        .build();
-
-                scheduler.rescheduleJob(TriggerKey.triggerKey("trigger" + existingItem.getId(), "active"), trigger);
-            } catch (SchedulerException e) {
-                LOGGER.error("Failed to schedule a job", e);
-            }
+            // Update the job
+            JobHelper jobHelper = new JobHelper();
+            jobHelper.updateMessengerJob(existingItem.getId(), existingItem.getAuctionEndTime());
         }
 
         return Response.ok(existingItem).build();

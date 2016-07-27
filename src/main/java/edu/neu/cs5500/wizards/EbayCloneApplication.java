@@ -13,6 +13,7 @@ import edu.neu.cs5500.wizards.resources.BidResource;
 import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
 import edu.neu.cs5500.wizards.resources.UserResource;
+import edu.neu.cs5500.wizards.scheduler.JobHelper;
 import edu.neu.cs5500.wizards.scheduler.JobScheduler;
 import edu.neu.cs5500.wizards.scheduler.jobs.Messenger;
 import io.dropwizard.Application;
@@ -123,29 +124,13 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
         JobScheduler jobScheduler = JobScheduler.getInstance();
         final Scheduler scheduler = jobScheduler.getScheduler();
 
-
         // Schedule all the active items
-        try {
-            ItemDAO itemDAOForJobs = jdbiInstance.onDemand(ItemDAO.class);
-            List<Item> activeItems = itemDAOForJobs.findAllActiveItems();
-            for (Item item : activeItems) {
-                JobDetail job = newJob(Messenger.class)
-                        .withIdentity("job" + item.getId(), "active")
-                        .build();
-                job.getJobDataMap().put("itemId", item.getId());
-
-                Trigger trigger = newTrigger()
-                        .withIdentity("trigger" + item.getId(), "active")
-                        .startAt(item.getAuctionEndTime())
-                        .build();
-
-                scheduler.scheduleJob(job, trigger);
-            }
-
-        } catch (SchedulerException e) {
-            LOGGER.error("Failed to schedule a job", e);
+        ItemDAO itemDAOForJobs = jdbiInstance.onDemand(ItemDAO.class);
+        List<Item> activeItems = itemDAOForJobs.findAllActiveItems();
+        JobHelper jobHelper = new JobHelper();
+        for (Item item : activeItems) {
+            jobHelper.createNewMessengerJob(item.getId(), item.getAuctionEndTime());
         }
-
     }
 
 }
