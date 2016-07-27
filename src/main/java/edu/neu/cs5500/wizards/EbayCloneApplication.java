@@ -13,9 +13,7 @@ import edu.neu.cs5500.wizards.resources.BidResource;
 import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
 import edu.neu.cs5500.wizards.resources.UserResource;
-import edu.neu.cs5500.wizards.scheduler.JobHelper;
-import edu.neu.cs5500.wizards.scheduler.JobScheduler;
-import edu.neu.cs5500.wizards.scheduler.jobs.Messenger;
+import edu.neu.cs5500.wizards.scheduler.SchedulingAssistant;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -28,10 +26,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
 import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 public class EbayCloneApplication extends Application<ServiceConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -81,7 +75,7 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
     }
 
     @Override
-    public void run(ServiceConfiguration configuration, Environment environment) throws ClassNotFoundException {
+    public void run(ServiceConfiguration configuration, Environment environment) throws ClassNotFoundException, SchedulerException {
         // Get jdbi instance
         JdbiManager jdbiManager = JdbiManager.getInstance(configuration, environment);
         final DBI jdbiInstance = jdbiManager.getJdbi();
@@ -120,16 +114,12 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
-        // Scheduler
-        JobScheduler jobScheduler = JobScheduler.getInstance();
-        final Scheduler scheduler = jobScheduler.getScheduler();
-
         // Schedule all the active items
         ItemDAO itemDAOForJobs = jdbiInstance.onDemand(ItemDAO.class);
         List<Item> activeItems = itemDAOForJobs.findAllActiveItems();
-        JobHelper jobHelper = new JobHelper();
+        SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
         for (Item item : activeItems) {
-            jobHelper.createNewMessengerJob(item.getId(), item.getAuctionEndTime());
+            schedulingAssistant.createNewMessengerJob(item.getId(), item.getAuctionEndTime());
         }
     }
 }

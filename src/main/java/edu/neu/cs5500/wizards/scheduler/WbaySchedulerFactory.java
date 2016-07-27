@@ -7,24 +7,24 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JobScheduler {
+public final class WbaySchedulerFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobScheduler.class);
-    private static JobScheduler jobScheduler = null;
+    private static final Logger LOGGER = LoggerFactory.getLogger(WbaySchedulerFactory.class);
+    private static WbaySchedulerFactory wbaySchedulerFactory = null;
     private Scheduler scheduler = null;
 
-    private JobScheduler() {
+    private WbaySchedulerFactory() {
     }
 
-    public static JobScheduler getInstance() {
-        if (jobScheduler == null) {
-            jobScheduler = new JobScheduler();
+    public static WbaySchedulerFactory getInstance() {
+        if (wbaySchedulerFactory == null) {
+            wbaySchedulerFactory = new WbaySchedulerFactory();
         }
 
-        return jobScheduler;
+        return wbaySchedulerFactory;
     }
 
-    private void initiateScheduler() {
+    private void initiateScheduler() throws SchedulerException {
         try {
             SchedulerFactory sf = new StdSchedulerFactory();
             this.scheduler = sf.getScheduler();
@@ -32,25 +32,27 @@ public class JobScheduler {
             LOGGER.info("Scheduler started");
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler failed to start", e);
+            throw e;
         }
     }
 
-    public Scheduler getScheduler() {
+    public Scheduler getScheduler() throws SchedulerException {
         if (this.scheduler == null) {
             this.initiateScheduler();
         }
         return this.scheduler;
     }
 
-    public void shutdownScheduler() {
+    public void shutdownScheduler() throws SchedulerException {
         try {
             this.scheduler.shutdown();
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler failed to shutdown", e);
+            throw e;
         }
     }
 
-    public Scheduler renewScheduler() {
+    public Scheduler renewScheduler() throws SchedulerException {
         this.initiateScheduler();
         return this.scheduler;
     }

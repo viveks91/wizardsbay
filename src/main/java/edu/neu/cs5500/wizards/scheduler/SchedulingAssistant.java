@@ -10,19 +10,17 @@ import java.sql.Timestamp;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
-public class JobHelper {
+public final class SchedulingAssistant {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulingAssistant.class);
 
-    private JobScheduler jobScheduler;
     private final Scheduler scheduler;
 
-    public JobHelper() {
-        this.jobScheduler = JobScheduler.getInstance();
-        this.scheduler = this.jobScheduler.getScheduler();
+    public SchedulingAssistant() throws SchedulerException {
+        this.scheduler = WbaySchedulerFactory.getInstance().getScheduler();
     }
 
-    public void createNewMessengerJob(int itemId, Timestamp time) {
+    public void createNewMessengerJob(int itemId, Timestamp time) throws SchedulerException {
         JobDetail job = newJob(Messenger.class)
                 .withIdentity("job" + itemId, "active")
                 .build();
@@ -32,24 +30,24 @@ public class JobHelper {
                 .withIdentity("trigger" + itemId, "active")
                 .startAt(time)
                 .build();
-
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
             LOGGER.error("Failed to schedule a job", e);
+            throw e;
         }
     }
 
-    public void updateMessengerJob(int itemId, Timestamp newTime) {
+    public void updateMessengerJob(int itemId, Timestamp newTime) throws SchedulerException {
         Trigger trigger = newTrigger()
                 .withIdentity("trigger" + itemId, "active")
                 .startAt(newTime)
                 .build();
-
         try {
             scheduler.rescheduleJob(TriggerKey.triggerKey("trigger" + itemId, "active"), trigger);
         } catch (SchedulerException e) {
             LOGGER.error("Failed to update the job", e);
+            throw e;
         }
     }
 }

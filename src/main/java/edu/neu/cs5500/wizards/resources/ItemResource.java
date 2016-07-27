@@ -2,15 +2,12 @@ package edu.neu.cs5500.wizards.resources;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import edu.neu.cs5500.wizards.EbayCloneApplication;
 import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.mail.MailService;
-import edu.neu.cs5500.wizards.scheduler.JobHelper;
-import edu.neu.cs5500.wizards.scheduler.JobScheduler;
-import edu.neu.cs5500.wizards.scheduler.jobs.Messenger;
+import edu.neu.cs5500.wizards.scheduler.SchedulingAssistant;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.*;
@@ -27,8 +24,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.quartz.JobBuilder.newJob;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 @Path("/item")
 @Api(value = "/item", description = "Operations involving items")
@@ -113,9 +108,13 @@ public class ItemResource {
         LOGGER.info("Item confirmation email has been sent to " + itemSeller.getUsername());
 
         // Add a job
-        JobHelper jobHelper = new JobHelper();
-        jobHelper.createNewMessengerJob(createdItem.getId(), createdItem.getAuctionEndTime());
-        
+        try {
+            SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
+            schedulingAssistant.createNewMessengerJob(createdItem.getId(), createdItem.getAuctionEndTime());
+        } catch (SchedulerException e) {
+            LOGGER.error("Scheduler failure!", e);
+        }
+
         return Response.ok(createdItem).build();
     }
 
@@ -226,8 +225,12 @@ public class ItemResource {
         
         if (item.getAuctionEndTime() != null) {
             // Update the job
-            JobHelper jobHelper = new JobHelper();
-            jobHelper.updateMessengerJob(existingItem.getId(), existingItem.getAuctionEndTime());
+            try {
+                SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
+                schedulingAssistant.updateMessengerJob(existingItem.getId(), existingItem.getAuctionEndTime());
+            } catch (SchedulerException e) {
+                LOGGER.error("Scheduler failure!", e);
+            }
         }
 
         return Response.ok(existingItem).build();

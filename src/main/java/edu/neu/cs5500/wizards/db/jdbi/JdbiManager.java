@@ -8,7 +8,7 @@ import org.skife.jdbi.v2.DBI;
 /**
  * Created by susannaedens on 7/26/16.
  */
-public class JdbiManager {
+public final class JdbiManager {
 
     private DBI jdbi = null;
     private final ServiceConfiguration configuration;
