@@ -2,15 +2,21 @@ package edu.neu.cs5500.wizards.resources;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
+import edu.neu.cs5500.wizards.EbayCloneApplication;
 import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.mail.MailService;
+import edu.neu.cs5500.wizards.scheduler.JobScheduler;
+import edu.neu.cs5500.wizards.scheduler.jobs.Messenger;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
+import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -19,11 +25,17 @@ import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.TriggerBuilder.newTrigger;
+
 @Path("/item")
 @Api(value = "/item", description = "Operations involving items")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ItemResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemResource.class);
 
     private final ItemDAO itemDao;
     private final UserDAO userDao;
@@ -98,6 +110,28 @@ public class ItemResource {
         MailService mailService = new MailService();
         mailService.notifyItemListed(itemSeller, item);
 
+        // Scheduler
+        JobScheduler jobScheduler = JobScheduler.getInstance();
+        final Scheduler scheduler = jobScheduler.getScheduler();
+
+        // Schedule all the active items
+        try {
+            JobDetail job = newJob(Messenger.class)
+                    .withIdentity("job" + createdItem.getId(), "active")
+                    .build();
+            job.getJobDataMap().put("itemId", createdItem.getId());
+
+            Trigger trigger = newTrigger()
+                    .withIdentity("trigger" + createdItem.getId(), "active")
+                    .startAt(createdItem.getAuctionEndTime())
+                    .build();
+
+            scheduler.scheduleJob(job, trigger);
+
+        } catch (SchedulerException e) {
+            LOGGER.error("Failed to schedule a job", e);
+        }
+        
         return Response.ok(createdItem).build();
     }
 
@@ -216,6 +250,34 @@ public class ItemResource {
         }
         this.itemDao.update(existingItem.getId(), existingItem.getItemName(), existingItem.getItemDescription(),
                 existingItem.getAuctionEndTime(), existingItem.getMinBidAmount());
+
+
+        if (item.getAuctionEndTime() != null) {
+            // Scheduler
+            JobScheduler jobScheduler = JobScheduler.getInstance();
+            final Scheduler scheduler = jobScheduler.getScheduler();
+
+            // Schedule all the active items
+            try {
+//                // retrieve the old trigger
+//                Trigger oldTrigger = scheduler.getTrigger(TriggerKey.triggerKey("trigger" + existingItem.getId(), "active"));
+//                // obtain a builder that would produce the trigger
+//                TriggerBuilder tb = oldTrigger.getTriggerBuilder();
+//                Trigger newTrigger = tb.startAt(existingItem.getAuctionEndTime())
+//                        .withIdentity("trigger" + existingItem.getId(), "active")
+//                        .build();
+
+                Trigger trigger = newTrigger()
+                        .withIdentity("trigger" + existingItem.getId(), "active")
+                        .startAt(existingItem.getAuctionEndTime())
+                        .build();
+
+                scheduler.rescheduleJob(TriggerKey.triggerKey("trigger" + existingItem.getId(), "active"), trigger);
+            } catch (SchedulerException e) {
+                LOGGER.error("Failed to schedule a job", e);
+            }
+        }
+
         return Response.ok(existingItem).build();
     }
 

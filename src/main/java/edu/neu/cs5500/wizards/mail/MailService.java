@@ -19,12 +19,42 @@ public class MailService {
             .apiKey(MAILGUN_API_KEY)
             .from("WizardsBay No-Reply", MAILGUN_LOGIN);
 
+    /**
+     * Constructs and sends an email to the winnder of an auction. Includes information on the final price of
+     * the item that was won.
+     * @param winner the winner of the auction
+     * @param item the item that was won
+     */
     public void notifyWinner(User winner, Item item) {
-        // TODO: craft a nice little email for the winning bidder :D Winning price is the minBidAMount
+        if (item == null || winner == null) {
+            return;
+        }
+        //TODO: fill out this template
+        String subject = "Thank you for your listing on WizardsBay - " + item.getItemName();
+        Body body = Body.builder()
+                .h3("Item " + item.getItemName() + " has been successfully listed on WizardsBay")
+                .p("This is a confirmation email for your posting the following item:")
+                .br()
+                .h4(item.getItemName())
+                .p(item.getItemDescription())
+                .build();
+        this.send(winner.getEmail(), subject, body);
     }
 
-    public void notifyBidders(User bidder, Item item) {
-        // TODO: craft a nice little email for the other bidders
+    public void notifyLoser(User bidder, Item item) {
+        if (item == null || bidder == null) {
+            return;
+        }
+        //TODO: fill out this template
+        String subject = "Thank you for your listing on WizardsBay - " + item.getItemName();
+        Body body = Body.builder()
+                .h3("Item " + item.getItemName() + " has been successfully listed on WizardsBay")
+                .p("This is a confirmation email for your posting the following item:")
+                .br()
+                .h4(item.getItemName())
+                .p(item.getItemDescription())
+                .build();
+        this.send(bidder.getEmail(), subject, body);
     }
 
     public void notifyItemListed(User user, Item item) {
