@@ -53,5 +53,11 @@ public class Messenger implements Job {
                 mailService.notifyLoser(user, item);
             }
         }
+
+        // notify the seller of the auction that the auction is over
+        User seller = userDAO.retrieveById(item.getSellerId());
+        mailService.notifySeller(seller, item);
+
+        LOGGER.info("Item: " + item.getItemName() + " auction has ended. The seller has been notified.");
     }
 }
