@@ -8,12 +8,12 @@ import edu.neu.cs5500.wizards.db.FeedbackDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.db.binder.IntegerListArgumentFactory;
+import edu.neu.cs5500.wizards.db.jdbi.JdbiManager;
 import edu.neu.cs5500.wizards.resources.BidResource;
 import edu.neu.cs5500.wizards.resources.FeedbackResource;
 import edu.neu.cs5500.wizards.resources.ItemResource;
 import edu.neu.cs5500.wizards.resources.UserResource;
-import edu.neu.cs5500.wizards.scheduler.JobScheduler;
-import edu.neu.cs5500.wizards.scheduler.jobs.TestJob;
+import edu.neu.cs5500.wizards.scheduler.SchedulingAssistant;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -21,24 +21,17 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
 import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 public class EbayCloneApplication extends Application<ServiceConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -80,31 +73,35 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
     }
 
     @Override
-    public void run(ServiceConfiguration configuration, Environment environment) throws ClassNotFoundException {
-        final DBIFactory factory = new DBIFactory();
-        final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
+    public void run(ServiceConfiguration configuration, Environment environment) throws ClassNotFoundException, SchedulerException {
+        // Get jdbi instance
+        JdbiManager jdbiManager = JdbiManager.getInstance(configuration, environment);
+        final DBI jdbiInstance = jdbiManager.getJdbi();
 
         // Jdbi List Binder
-        jdbi.registerArgumentFactory(new IntegerListArgumentFactory());
+        jdbiInstance.registerArgumentFactory(new IntegerListArgumentFactory());
+
+        // setting global attribute: jdbi instance
+        environment.getApplicationContext().setAttribute("jdbi", jdbiInstance);
 
         // User endpoints
-        final UserDAO userDao = jdbi.onDemand(UserDAO.class);
-        final ItemDAO itemDaoForUser = jdbi.onDemand(ItemDAO.class);
+        final UserDAO userDao = jdbiInstance.onDemand(UserDAO.class);
+        final ItemDAO itemDaoForUser = jdbiInstance.onDemand(ItemDAO.class);
         environment.jersey().register(new UserResource(userDao, itemDaoForUser));
 
         // Item endpoints
-        final ItemDAO itemDao = jdbi.onDemand(ItemDAO.class);
+        final ItemDAO itemDao = jdbiInstance.onDemand(ItemDAO.class);
         environment.jersey().register(new ItemResource(itemDao, userDao));
 
         // Bids endpoints
-        final BidDAO bidDao = jdbi.onDemand(BidDAO.class);
-        final UserDAO userDaoForBids = jdbi.onDemand(UserDAO.class);
-        final ItemDAO itemDaoForBids = jdbi.onDemand(ItemDAO.class);
+        final BidDAO bidDao = jdbiInstance.onDemand(BidDAO.class);
+        final UserDAO userDaoForBids = jdbiInstance.onDemand(UserDAO.class);
+        final ItemDAO itemDaoForBids = jdbiInstance.onDemand(ItemDAO.class);
         environment.jersey().register(new BidResource(bidDao, userDaoForBids, itemDaoForBids));
 
         // Feedback endpoints
-        final FeedbackDAO feedbackDao = jdbi.onDemand(FeedbackDAO.class);
-        final UserDAO userDaoForFeedback = jdbi.onDemand(UserDAO.class);
+        final FeedbackDAO feedbackDao = jdbiInstance.onDemand(FeedbackDAO.class);
+        final UserDAO userDaoForFeedback = jdbiInstance.onDemand(UserDAO.class);
         environment.jersey().register(new FeedbackResource(feedbackDao, userDaoForFeedback));
 
         // authentication
@@ -115,32 +112,12 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
-        // Scheduler
-        JobScheduler jobScheduler = JobScheduler.getInstance();
-        final Scheduler scheduler = jobScheduler.getScheduler();
-
         // Schedule all the active items
-        try {
-            ItemDAO itemDAOForJobs = jdbi.onDemand(ItemDAO.class);
-            List<Item> activeItems = itemDAOForJobs.findAllActiveItems();
-            for (Item item : activeItems) {
-                JobDetail job = newJob(TestJob.class)
-                        .withIdentity("job" + item.getId(), "active")
-                        .build();
-                job.getJobDataMap().put("item", item.getId());
-
-                Trigger trigger = newTrigger()
-                        .withIdentity("trigger" + item.getId(), "active")
-                        .startAt(item.getAuctionEndTime())
-                        .build();
-
-                scheduler.scheduleJob(job, trigger);
-            }
-
-        } catch (SchedulerException e) {
-            LOGGER.error("Failed to schedule a job", e);
+        ItemDAO itemDAOForJobs = jdbiInstance.onDemand(ItemDAO.class);
+        List<Item> activeItems = itemDAOForJobs.findAllActiveItems();
+        SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
+        for (Item item : activeItems) {
+            schedulingAssistant.createNewMessengerJob(item.getId(), item.getAuctionEndTime());
         }
-
     }
-
 }

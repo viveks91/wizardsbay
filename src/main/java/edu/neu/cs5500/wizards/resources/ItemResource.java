@@ -7,10 +7,14 @@ import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.mail.MailService;
+import edu.neu.cs5500.wizards.scheduler.SchedulingAssistant;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
+import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -24,6 +28,8 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ItemResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemResource.class);
 
     private final ItemDAO itemDao;
     private final UserDAO userDao;
@@ -97,20 +103,18 @@ public class ItemResource {
 
         MailService mailService = new MailService();
         mailService.notifyItemListed(itemSeller, item);
+        LOGGER.info("Item confirmation email has been sent to " + itemSeller.getUsername());
+
+        // Add a job
+        try {
+            SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
+            schedulingAssistant.createNewMessengerJob(createdItem.getId(), createdItem.getAuctionEndTime());
+        } catch (SchedulerException e) {
+            LOGGER.error("Scheduler failure!", e);
+        }
 
         return Response.ok(createdItem).build();
     }
-
-    //getActive all items listed by a seller
-    // added this to user/{username}/items
-//    @GET
-//    @Path("/seller/{sellerId}")
-//    @Timed
-//    @UnitOfWork
-//    @ExceptionMetered
-//    public Response getActive(@PathParam("sellerId") int sellerId) {
-//        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
-//    }
 
 
     /**
@@ -216,6 +220,17 @@ public class ItemResource {
         }
         this.itemDao.update(existingItem.getId(), existingItem.getItemName(), existingItem.getItemDescription(),
                 existingItem.getAuctionEndTime(), existingItem.getMinBidAmount());
+
+        if (item.getAuctionEndTime() != null) {
+            // Update the job
+            try {
+                SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
+                schedulingAssistant.updateMessengerJob(existingItem.getId(), existingItem.getAuctionEndTime());
+            } catch (SchedulerException e) {
+                LOGGER.error("Scheduler failure!", e);
+            }
+        }
+
         return Response.ok(existingItem).build();
     }
 
@@ -319,11 +334,14 @@ public class ItemResource {
         this.itemDao.deleteItem(itemId);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
-    
+
+
     /**
-     * Returns all matching, active items in the database.
+     * Given a search term, search the active items in the database and return a list of items that match the key
+     * search terms.
      *
-     * @return all active, matching items
+     * @param searchString the key search terms
+     * @return a list of items whose name or description match these search terms
      */
     @GET
     @Path("/search/{key}")
@@ -339,8 +357,8 @@ public class ItemResource {
             //hide some details
             item.setAuctionStartTime(null);
         }
-        
+
         return Response.ok(activeItems).build();
     }
-    
+
 }

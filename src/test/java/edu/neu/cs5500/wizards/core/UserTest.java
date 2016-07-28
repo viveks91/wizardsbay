@@ -8,9 +8,9 @@ import org.junit.Test;
  * Created by susannaedens on 7/20/16.
  */
 public class UserTest {
-    
+
     User u1, u2, u3, u4, u5;
-    
+
     @Before
     public void setUp() throws Exception {
         u1 = new User();
@@ -137,5 +137,5 @@ public class UserTest {
         Assert.assertEquals(u3.hashCode(), u4.hashCode());
         Assert.assertNotEquals(u1.hashCode(), u2.hashCode());
     }
-    
+
 }

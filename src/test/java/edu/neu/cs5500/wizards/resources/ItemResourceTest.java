@@ -5,6 +5,7 @@ import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.mail.MailService;
+import edu.neu.cs5500.wizards.scheduler.SchedulingAssistant;
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
@@ -16,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
@@ -29,12 +32,12 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(ItemResource.class)
+@PrepareForTest({ItemResource.class, LoggerFactory.class})
 public class ItemResourceTest {
 
     @Mock
     ItemDAO itemDAO;
-    
+
     @Mock
     UserDAO userDAO;
 
@@ -50,12 +53,19 @@ public class ItemResourceTest {
     @Mock
     MailService mailService;
 
+    @Mock
+    SchedulingAssistant schedulingAssistant;
+
+    @Mock
+    Logger logger;
+
     Random rand = new Random();
 
     // This function gets invoked before each of the tests below
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        PowerMockito.mockStatic(LoggerFactory.class);
 
         when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
         when(auth_user.getEmail()).thenReturn(RandomStringUtils.random(5));
@@ -63,14 +73,16 @@ public class ItemResourceTest {
         when(userDAO.retrieve(anyString())).thenReturn(auth_user);
 
         PowerMockito.whenNew(MailService.class).withAnyArguments().thenReturn(mailService);
+        PowerMockito.whenNew(SchedulingAssistant.class).withAnyArguments().thenReturn(schedulingAssistant);
+        PowerMockito.when(LoggerFactory.getLogger(any(Class.class))).thenReturn(logger);
     }
 
     @Test
     public void testItemCreation() {
         String dummyStartTime = "1990-01-01 11:11:11";
         String dummyEndTime = "2100-01-01 11:11:11";
-        int numberMoreThanZero = (int)Math.random() + 1 ;
-        when(item.getSellerId()).thenReturn((int)Math.random());
+        int numberMoreThanZero = (int) Math.random() + 1;
+        when(item.getSellerId()).thenReturn((int) Math.random());
         when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
         when(item.getAuctionStartTime()).thenReturn(Timestamp.valueOf(dummyStartTime));
         when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));
@@ -114,7 +126,7 @@ public class ItemResourceTest {
     @Test
     public void testPostingItemWithInvalidAuctionEndTime() {
         String dummyEndTime = "2016-01-01 11:11:11";
-        int numberMoreThanZero = (int)Math.random() + 1 ;
+        int numberMoreThanZero = (int) Math.random() + 1;
         when(item.getSellerId()).thenReturn(rand.nextInt());
         when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
         when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));
