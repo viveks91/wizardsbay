@@ -2,19 +2,17 @@ package edu.neu.cs5500.wizards.resources;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import edu.neu.cs5500.wizards.EbayCloneApplication;
 import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.mail.MailService;
-import edu.neu.cs5500.wizards.scheduler.JobScheduler;
-import edu.neu.cs5500.wizards.scheduler.jobs.Messenger;
+import edu.neu.cs5500.wizards.scheduler.SchedulingAssistant;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
-import org.quartz.*;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
-
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 @Path("/item")
 @Api(value = "/item", description = "Operations involving items")
@@ -109,43 +103,18 @@ public class ItemResource {
 
         MailService mailService = new MailService();
         mailService.notifyItemListed(itemSeller, item);
-        LOGGER.info("Email has been sent to " + itemSeller.getUsername());
+        LOGGER.info("Item confirmation email has been sent to " + itemSeller.getUsername());
 
-        // Scheduler
-        JobScheduler jobScheduler = JobScheduler.getInstance();
-        final Scheduler scheduler = jobScheduler.getScheduler();
-
-        // Schedule all the active items
+        // Add a job
         try {
-            JobDetail job = newJob(Messenger.class)
-                    .withIdentity("job" + createdItem.getId(), "active")
-                    .build();
-            job.getJobDataMap().put("itemId", createdItem.getId());
-
-            Trigger trigger = newTrigger()
-                    .withIdentity("trigger" + createdItem.getId(), "active")
-                    .startAt(createdItem.getAuctionEndTime())
-                    .build();
-
-            scheduler.scheduleJob(job, trigger);
-
+            SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
+            schedulingAssistant.createNewMessengerJob(createdItem.getId(), createdItem.getAuctionEndTime());
         } catch (SchedulerException e) {
-            LOGGER.error("Failed to schedule a job", e);
+            LOGGER.error("Scheduler failure!", e);
         }
-        
+
         return Response.ok(createdItem).build();
     }
-
-    //getActive all items listed by a seller
-    // added this to user/{username}/items
-//    @GET
-//    @Path("/seller/{sellerId}")
-//    @Timed
-//    @UnitOfWork
-//    @ExceptionMetered
-//    public Response getActive(@PathParam("sellerId") int sellerId) {
-//        return Response.ok(itemDao.findItemsBySellerId(sellerId)).build();
-//    }
 
 
     /**
@@ -252,30 +221,13 @@ public class ItemResource {
         this.itemDao.update(existingItem.getId(), existingItem.getItemName(), existingItem.getItemDescription(),
                 existingItem.getAuctionEndTime(), existingItem.getMinBidAmount());
 
-
         if (item.getAuctionEndTime() != null) {
-            // Scheduler
-            JobScheduler jobScheduler = JobScheduler.getInstance();
-            final Scheduler scheduler = jobScheduler.getScheduler();
-
-            // Schedule all the active items
+            // Update the job
             try {
-//                // retrieve the old trigger
-//                Trigger oldTrigger = scheduler.getTrigger(TriggerKey.triggerKey("trigger" + existingItem.getId(), "active"));
-//                // obtain a builder that would produce the trigger
-//                TriggerBuilder tb = oldTrigger.getTriggerBuilder();
-//                Trigger newTrigger = tb.startAt(existingItem.getAuctionEndTime())
-//                        .withIdentity("trigger" + existingItem.getId(), "active")
-//                        .build();
-
-                Trigger trigger = newTrigger()
-                        .withIdentity("trigger" + existingItem.getId(), "active")
-                        .startAt(existingItem.getAuctionEndTime())
-                        .build();
-
-                scheduler.rescheduleJob(TriggerKey.triggerKey("trigger" + existingItem.getId(), "active"), trigger);
+                SchedulingAssistant schedulingAssistant = new SchedulingAssistant();
+                schedulingAssistant.updateMessengerJob(existingItem.getId(), existingItem.getAuctionEndTime());
             } catch (SchedulerException e) {
-                LOGGER.error("Failed to schedule a job", e);
+                LOGGER.error("Scheduler failure!", e);
             }
         }
 
@@ -382,7 +334,7 @@ public class ItemResource {
         this.itemDao.deleteItem(itemId);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
-    
+
 
     /**
      * Given a search term, search the active items in the database and return a list of items that match the key
@@ -405,8 +357,8 @@ public class ItemResource {
             //hide some details
             item.setAuctionStartTime(null);
         }
-        
+
         return Response.ok(activeItems).build();
     }
-    
+
 }

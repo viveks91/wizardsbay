@@ -31,7 +31,7 @@ public class ServiceAuthenticatorTest {
         MockitoAnnotations.initMocks(this);
 
         when(user.getUsername()).thenReturn(ServiceAuthenticatorTest.TEST_USERNAME);
-	    when(user.getPassword()).thenReturn(ServiceAuthenticatorTest.TEST_PASSWORD);
+        when(user.getPassword()).thenReturn(ServiceAuthenticatorTest.TEST_PASSWORD);
         when(userDAO.retrieve(anyString())).thenReturn(user);
     }
 
@@ -43,7 +43,7 @@ public class ServiceAuthenticatorTest {
         Optional<User> response = serviceAuthenticator.authenticate(credentials);
         assertEquals(user, response.get());
     }
-    
+
     @Test
     public void testAuthenticateUserBadPassword() throws AuthenticationException {
         ServiceAuthenticator serviceAuthenticator = new ServiceAuthenticator(userDAO);

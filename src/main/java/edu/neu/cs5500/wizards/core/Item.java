@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(value = { "sellerId", "buyerId" })
-@JsonPropertyOrder({ "itemName", "itemDescription", "minBidAmount", "auctionStartTime", "auctionEndTime", "sellerUsername", "buyerUsername", "itemId"})
+@JsonIgnoreProperties(value = {"sellerId", "buyerId"})
+@JsonPropertyOrder({"itemName", "itemDescription", "minBidAmount", "auctionStartTime", "auctionEndTime", "sellerUsername", "buyerUsername", "itemId"})
 public class Item {
 
     @JsonProperty
@@ -38,12 +38,12 @@ public class Item {
     private String buyerUsername;
 
     @JsonProperty
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss a", timezone = "PST")
     private Timestamp auctionStartTime;
 
     @JsonProperty
     @NotNull
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd hh:mm:ss a", timezone="PST")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss a", timezone = "PST")
     private Timestamp auctionEndTime;
 
     @JsonProperty

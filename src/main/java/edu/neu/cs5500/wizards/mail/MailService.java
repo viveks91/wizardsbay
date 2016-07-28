@@ -116,7 +116,7 @@ public class MailService {
         }
         String subject = "The auction for " + item.getItemName() + " has ended";
         Body body;
-        if (item.getSellerUsername() == null) {
+        if (item.getBuyerId() == 0) { // Not sold
             body = Body.builder()
                     .h3("The auction on your item has ended.")
                     .p("Sorry, there were no bids made on your item. ")

@@ -10,9 +10,9 @@ import java.sql.Timestamp;
  * Created by susannaedens on 7/20/16.
  */
 public class ItemTest {
-    
+
     Item i1, i2, i3, i4, i5;
-    
+
     @Before
     public void setUp() throws Exception {
         i1 = new Item();
@@ -38,7 +38,7 @@ public class ItemTest {
         i2.setAuctionStartTime(new Timestamp(22998522L));
         i2.setAuctionEndTime(new Timestamp(584927743L));
         i2.setMinBidAmount(5);
-        
+
 
         i3 = new Item();
         i3.setId(2);
@@ -51,7 +51,7 @@ public class ItemTest {
         i3.setAuctionStartTime(new Timestamp(667998522L));
         i3.setAuctionEndTime(new Timestamp(112327743L));
         i3.setMinBidAmount(27);
-        
+
         i4 = i3;
         i5 = i3;
     }
@@ -182,5 +182,5 @@ public class ItemTest {
         Assert.assertEquals(i3.hashCode(), i4.hashCode());
         Assert.assertNotEquals(i1.hashCode(), i2.hashCode());
     }
-    
+
 }

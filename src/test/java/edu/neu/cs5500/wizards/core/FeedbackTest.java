@@ -127,5 +127,5 @@ public class FeedbackTest {
         Assert.assertEquals(f3.hashCode(), f4.hashCode());
         Assert.assertNotEquals(f1.hashCode(), f2.hashCode());
     }
-    
+
 }

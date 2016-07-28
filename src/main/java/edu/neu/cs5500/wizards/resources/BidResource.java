@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,6 +60,7 @@ public class BidResource {
             @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Bidder does not exist"),
             @ApiResponse(code = HttpStatus.UNAUTHORIZED_401, message = "Error: Invalid credentials"),
             @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "Error: Item does not exist"),
+            @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: The auction for this item has ended"),
             @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Error: Your bid must be higher than current highest bid: " +
                     "$[highest bid amount]")
     })
@@ -88,6 +90,14 @@ public class BidResource {
             return Response
                     .status(HttpStatus.NOT_FOUND_404)
                     .entity("Error: Item does not exist")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+
+        if (item.getAuctionEndTime().before(new Date())) {
+            return Response
+                    .status(HttpStatus.BAD_REQUEST_400)
+                    .entity("Error: The auction for this item has ended")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }

@@ -138,5 +138,5 @@ public class BidResourceTest {
 
         // delete the item
     }
-    
+
 }
