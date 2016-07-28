@@ -21,19 +21,18 @@ import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.skife.jdbi.v2.DBI;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({LoggerFactory.class, WbaySchedulerFactory.class, JdbiManager.class, Messenger.class})
+@PrepareForTest({LoggerFactory.class, WbaySchedulerFactory.class, JdbiManager.class, Messenger.class, LoggerFactory.class})
 public class MessengerTest {
 
     @Mock
@@ -69,10 +68,14 @@ public class MessengerTest {
     @Mock
     JobDetail jobDetail;
 
+    @Mock
+    Logger logger;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(JdbiManager.class);
+        PowerMockito.mockStatic(LoggerFactory.class);
 
         when(jobDataMap.getIntValue(anyString())).thenReturn(new Random().nextInt());
         when(jobDetail.getJobDataMap()).thenReturn(jobDataMap);
@@ -97,6 +100,7 @@ public class MessengerTest {
         when(jdbiManager.getJdbi()).thenReturn(jdbi);
         PowerMockito.when(JdbiManager.getInstance()).thenReturn(jdbiManager);
         PowerMockito.whenNew(MailService.class).withAnyArguments().thenReturn(mailService);
+        PowerMockito.when(LoggerFactory.getLogger(any(Class.class))).thenReturn(logger);
     }
 
     @Test

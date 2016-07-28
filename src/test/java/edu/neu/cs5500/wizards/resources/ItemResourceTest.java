@@ -17,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
@@ -30,7 +32,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(ItemResource.class)
+@PrepareForTest({ItemResource.class, LoggerFactory.class})
 public class ItemResourceTest {
 
     @Mock
@@ -54,12 +56,16 @@ public class ItemResourceTest {
     @Mock
     SchedulingAssistant schedulingAssistant;
 
+    @Mock
+    Logger logger;
+
     Random rand = new Random();
 
     // This function gets invoked before each of the tests below
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        PowerMockito.mockStatic(LoggerFactory.class);
 
         when(auth_user.getUsername()).thenReturn(RandomStringUtils.random(5));
         when(auth_user.getEmail()).thenReturn(RandomStringUtils.random(5));
@@ -68,6 +74,7 @@ public class ItemResourceTest {
 
         PowerMockito.whenNew(MailService.class).withAnyArguments().thenReturn(mailService);
         PowerMockito.whenNew(SchedulingAssistant.class).withAnyArguments().thenReturn(schedulingAssistant);
+        PowerMockito.when(LoggerFactory.getLogger(any(Class.class))).thenReturn(logger);
     }
 
     @Test
