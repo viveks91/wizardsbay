@@ -10,18 +10,18 @@ import org.slf4j.LoggerFactory;
 public final class WbaySchedulerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WbaySchedulerFactory.class);
-    private static WbaySchedulerFactory wbaySchedulerFactory = null;
+    private static WbaySchedulerFactory instance = null;
     private Scheduler scheduler = null;
 
     private WbaySchedulerFactory() {
     }
 
     public static WbaySchedulerFactory getInstance() {
-        if (wbaySchedulerFactory == null) {
-            wbaySchedulerFactory = new WbaySchedulerFactory();
+        if (WbaySchedulerFactory.instance == null) {
+            WbaySchedulerFactory.instance = new WbaySchedulerFactory();
         }
 
-        return wbaySchedulerFactory;
+        return WbaySchedulerFactory.instance;
     }
 
     private void initiateScheduler() throws SchedulerException {
