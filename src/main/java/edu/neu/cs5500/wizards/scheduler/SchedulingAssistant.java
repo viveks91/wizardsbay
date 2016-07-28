@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
-public final class SchedulingAssistant {
+public class SchedulingAssistant {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulingAssistant.class);
 

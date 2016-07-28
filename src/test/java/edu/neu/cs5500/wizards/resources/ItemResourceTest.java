@@ -5,6 +5,7 @@ import edu.neu.cs5500.wizards.core.User;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.mail.MailService;
+import edu.neu.cs5500.wizards.scheduler.SchedulingAssistant;
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
@@ -50,6 +51,9 @@ public class ItemResourceTest {
     @Mock
     MailService mailService;
 
+    @Mock
+    SchedulingAssistant schedulingAssistant;
+
     Random rand = new Random();
 
     // This function gets invoked before each of the tests below
@@ -63,6 +67,7 @@ public class ItemResourceTest {
         when(userDAO.retrieve(anyString())).thenReturn(auth_user);
 
         PowerMockito.whenNew(MailService.class).withAnyArguments().thenReturn(mailService);
+        PowerMockito.whenNew(SchedulingAssistant.class).withAnyArguments().thenReturn(schedulingAssistant);
     }
 
     @Test

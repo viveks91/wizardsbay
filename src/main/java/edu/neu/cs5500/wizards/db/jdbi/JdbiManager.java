@@ -8,9 +8,9 @@ import org.skife.jdbi.v2.DBI;
 /**
  * Created by susannaedens on 7/26/16.
  */
-public final class JdbiManager {
+public class JdbiManager {
 
-    private DBI jdbi = null;
+    protected DBI jdbi = null;
     private final ServiceConfiguration configuration;
     private final Environment environment;
     private static JdbiManager instance;
