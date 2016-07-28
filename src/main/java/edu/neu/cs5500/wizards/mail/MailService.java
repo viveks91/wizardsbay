@@ -32,18 +32,18 @@ public class MailService {
         }
         String subject = "You have won the auction for - " + item.getItemName() + "!";
         Body body = Body.builder()
-                .h3("You have successfully won " + item.getItemName() + " on WizardsBay!")
-                .p("You were the highest bidder for this auction.")
-                .br()
-                .h4(item.getItemName())
-                .p("Final price: " + item.getMinBidAmount())
-                .p("Item description" + item.getItemDescription())
-                .br()
-                .p("Please sign into WizardsBay and confirm your purchase as soon as possible.")
-                .br()
-                .p("Thank you for your service, ")
-                .p("The WizardsBay Team")
-                .build();
+                        .h3("You have successfully won " + item.getItemName() + " on WizardsBay!")
+                        .p("You were the highest bidder for this auction.")
+                        .br()
+                        .h4(item.getItemName())
+                        .p("Final price: " + item.getMinBidAmount())
+                        .p("Item description" + item.getItemDescription())
+                        .br()
+                        .p("Please sign into WizardsBay and confirm your purchase as soon as possible.")
+                        .br()
+                        .p("Thank you for your service, ")
+                        .p("The WizardsBay Team")
+                        .build();
         this.send(winner.getEmail(), subject, body);
     }
 
@@ -61,16 +61,16 @@ public class MailService {
         }
         String subject = "The auction for " + item.getItemName() + " has ended";
         Body body = Body.builder()
-                .h3("Sorry, you have not won the auction this time.")
-                .br()
-                .h4(item.getItemName())
-                .p("Final price: " + item.getMinBidAmount())
-                .p("Item description: " + item.getItemDescription())
-                .br()
-                .p("Continue bidding on items and better luck next time!")
-                .p("Thank you for your service, ")
-                .p("The WizardsBay Team")
-                .build();
+                        .h3("Sorry, you have not won the auction this time.")
+                        .br()
+                        .h4(item.getItemName())
+                        .p("Final price: " + item.getMinBidAmount())
+                        .p("Item description: " + item.getItemDescription())
+                        .br()
+                        .p("Continue bidding on items and better luck next time!")
+                        .p("Thank you for your service, ")
+                        .p("The WizardsBay Team")
+                        .build();
         this.send(bidder.getEmail(), subject, body);
     }
 
@@ -88,17 +88,17 @@ public class MailService {
         }
         String subject = "Thank you for your listing on WizardsBay - " + item.getItemName();
         Body body = Body.builder()
-                .h3("Item " + item.getItemName() + " has been successfully listed on WizardsBay")
-                .p("This is a confirmation email for your posting the following item:")
-                .br()
-                .h4(item.getItemName())
-                .p("Starting price: " + item.getMinBidAmount())
-                .p("Ending time of the auction: " + item.getAuctionEndTime().toString())
-                .p("Item description: " + item.getItemDescription())
-                .br()
-                .p("Thank you for your service, ")
-                .p("The WizardsBay Team")
-                .build();
+                        .h3("Item " + item.getItemName() + " has been successfully listed on WizardsBay")
+                        .p("This is a confirmation email for your posting the following item:")
+                        .br()
+                        .h4(item.getItemName())
+                        .p("Starting price: " + item.getMinBidAmount())
+                        .p("Ending time of the auction: " + item.getAuctionEndTime().toString())
+                        .p("Item description: " + item.getItemDescription())
+                        .br()
+                        .p("Thank you for your service, ")
+                        .p("The WizardsBay Team")
+                        .build();
         this.send(user.getEmail(), subject, body);
     }
 
@@ -118,32 +118,32 @@ public class MailService {
         Body body;
         if (item.getBuyerId() == 0) { // Not sold
             body = Body.builder()
-                    .h3("The auction on your item has ended.")
-                    .p("Sorry, there were no bids made on your item. ")
-                    .br()
-                    .h4(item.getItemName())
-                    .p("Starting price: " + item.getMinBidAmount())
-                    .p("Item description: " + item.getItemDescription())
-                    .br()
-                    .h4("You may re-list the item on WizardsBay as soon as you like.")
-                    .p("Thank you for your service, ")
-                    .p("The WizardsBay Team")
-                    .build();
+                       .h3("The auction on your item has ended.")
+                       .p("Sorry, there were no bids made on your item. ")
+                       .br()
+                       .h4(item.getItemName())
+                       .p("Starting price: " + item.getMinBidAmount())
+                       .p("Item description: " + item.getItemDescription())
+                       .br()
+                       .h4("You may re-list the item on WizardsBay as soon as you like.")
+                       .p("Thank you for your service, ")
+                       .p("The WizardsBay Team")
+                       .build();
 
         } else {
             body = Body.builder()
-                    .h3("Congratulations on your sale of: " + item.getItemName())
-                    .p("This is a confirmation email for the successful sale of the following item:")
-                    .br()
-                    .h4(item.getItemName())
-                    .p("Final price: " + item.getMinBidAmount())
-                    .p("Buyer username: " + item.getSellerUsername())
-                    .p("Item description: " + item.getItemDescription())
-                    .br()
-                    .p("You should be receiving your payment soon.")
-                    .p("Thank you for your service, ")
-                    .p("The WizardsBay Team")
-                    .build();
+                       .h3("Congratulations on your sale of: " + item.getItemName())
+                       .p("This is a confirmation email for the successful sale of the following item:")
+                       .br()
+                       .h4(item.getItemName())
+                       .p("Final price: " + item.getMinBidAmount())
+                       .p("Buyer username: " + item.getSellerUsername())
+                       .p("Item description: " + item.getItemDescription())
+                       .br()
+                       .p("You should be receiving your payment soon.")
+                       .p("Thank you for your service, ")
+                       .p("The WizardsBay Team")
+                       .build();
         }
         this.send(user.getEmail(), subject, body);
     }
@@ -159,11 +159,11 @@ public class MailService {
      */
     private boolean send(String toAddress, String subject, Body body) {
         return Mail.using(configuration)
-                .to(toAddress)
-                .subject(subject)
-                .content(body)
-                .build()
-                .send()
-                .isOk();
+                   .to(toAddress)
+                   .subject(subject)
+                   .content(body)
+                   .build()
+                   .send()
+                   .isOk();
     }
 }

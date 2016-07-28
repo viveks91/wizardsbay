@@ -220,7 +220,7 @@ public class ItemResource {
         }
         this.itemDao.update(existingItem.getId(), existingItem.getItemName(), existingItem.getItemDescription(),
                 existingItem.getAuctionEndTime(), existingItem.getMinBidAmount());
-        
+
         if (item.getAuctionEndTime() != null) {
             // Update the job
             try {
@@ -334,7 +334,7 @@ public class ItemResource {
         this.itemDao.deleteItem(itemId);
         return Response.status(HttpStatus.NO_CONTENT_204).build();
     }
-    
+
 
     /**
      * Given a search term, search the active items in the database and return a list of items that match the key
@@ -357,8 +357,8 @@ public class ItemResource {
             //hide some details
             item.setAuctionStartTime(null);
         }
-        
+
         return Response.ok(activeItems).build();
     }
-    
+
 }

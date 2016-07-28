@@ -46,7 +46,8 @@
                 <constraints foreignKeyName="fk_item_buyer" referencedTableName="users" referencedColumnNames="id"/>
             </column>
             <column name="seller_id" type="int">
-                <constraints foreignKeyName="fk_item_seller" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
+                <constraints foreignKeyName="fk_item_seller" nullable="false" referencedTableName="users"
+                             referencedColumnNames="id"/>
             </column>
             <column name="auction_start_time" type="timestamp" defaultValue="now()">
                 <constraints nullable="false"/>
@@ -63,10 +64,12 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="bidder_id" type="int">
-                <constraints foreignKeyName="fk_bids_bidder" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
+                <constraints foreignKeyName="fk_bids_bidder" nullable="false" referencedTableName="users"
+                             referencedColumnNames="id"/>
             </column>
             <column name="item_id" type="int">
-                <constraints foreignKeyName="fk_bids_itemid" nullable="false" referencedTableName="items" referencedColumnNames="id"/>
+                <constraints foreignKeyName="fk_bids_itemid" nullable="false" referencedTableName="items"
+                             referencedColumnNames="id"/>
             </column>
             <column name="bid_time" type="timestamp" defaultValue="now()">
                 <constraints nullable="false"/>
@@ -82,7 +85,8 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="user_id" type="int">
-                <constraints foreignKeyName="fk_feedback_userid" nullable="false" referencedTableName="users" referencedColumnNames="id"/>
+                <constraints foreignKeyName="fk_feedback_userid" nullable="false" referencedTableName="users"
+                             referencedColumnNames="id"/>
             </column>
             <column name="rating" type="smallint">
                 <constraints nullable="false"/>

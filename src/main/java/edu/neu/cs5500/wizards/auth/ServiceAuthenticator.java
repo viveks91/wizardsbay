@@ -11,15 +11,15 @@ public class ServiceAuthenticator implements Authenticator<BasicCredentials, Use
 
     private final UserDAO userDao;
 
-    public ServiceAuthenticator(UserDAO userDao){
-        this.userDao =userDao;
+    public ServiceAuthenticator(UserDAO userDao) {
+        this.userDao = userDao;
     }
 
     @Override
     public Optional<User> authenticate(BasicCredentials credentials) throws AuthenticationException {
 
         User user = this.userDao.retrieve(credentials.getUsername());
-        if(user != null && user.getPassword().equals(credentials.getPassword())){
+        if (user != null && user.getPassword().equals(credentials.getPassword())) {
             return Optional.of(user);
         }
         return Optional.absent();

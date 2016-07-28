@@ -20,7 +20,7 @@ public class JdbiManager {
         this.environment = environment;
     }
 
-    private void instantiateJdbi(){
+    private void instantiateJdbi() {
         final DBIFactory factory = new DBIFactory();
         this.jdbi = factory.build(this.environment, this.configuration.getDataSourceFactory(), "postgresql");
     }
@@ -32,14 +32,14 @@ public class JdbiManager {
         return this.jdbi;
     }
 
-    public static JdbiManager getInstance(ServiceConfiguration configuration, Environment environment){
-        if(JdbiManager.instance == null){
+    public static JdbiManager getInstance(ServiceConfiguration configuration, Environment environment) {
+        if (JdbiManager.instance == null) {
             JdbiManager.instance = new JdbiManager(configuration, environment);
         }
         return JdbiManager.instance;
     }
 
-    public static JdbiManager getInstance(){
+    public static JdbiManager getInstance() {
         return JdbiManager.instance;
     }
 

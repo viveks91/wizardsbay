@@ -50,7 +50,7 @@ public class SchedulingAssistantTest {
         schedulingAssistant.createNewMessengerJob(new Random().nextInt(), Timestamp.valueOf(this.randomDate));
     }
 
-    @Test (expected = SchedulerException.class)
+    @Test(expected = SchedulerException.class)
     public void testCreateMessengerJobException() throws SchedulerException {
         when(scheduler.scheduleJob(any(JobDetail.class), any(Trigger.class))).thenThrow(new SchedulerException());
         when(wbaySchedulerFactory.getScheduler()).thenReturn(scheduler);
@@ -66,7 +66,7 @@ public class SchedulingAssistantTest {
         schedulingAssistant.updateMessengerJob(new Random().nextInt(), Timestamp.valueOf(this.randomDate));
     }
 
-    @Test (expected = SchedulerException.class)
+    @Test(expected = SchedulerException.class)
     public void testUpdateMessengerJobException() throws SchedulerException {
         when(scheduler.rescheduleJob(any(TriggerKey.class), any(Trigger.class))).thenThrow(new SchedulerException());
         when(wbaySchedulerFactory.getScheduler()).thenReturn(scheduler);

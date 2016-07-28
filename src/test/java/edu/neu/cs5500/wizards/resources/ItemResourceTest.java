@@ -35,7 +35,7 @@ public class ItemResourceTest {
 
     @Mock
     ItemDAO itemDAO;
-    
+
     @Mock
     UserDAO userDAO;
 
@@ -74,8 +74,8 @@ public class ItemResourceTest {
     public void testItemCreation() {
         String dummyStartTime = "1990-01-01 11:11:11";
         String dummyEndTime = "2100-01-01 11:11:11";
-        int numberMoreThanZero = (int)Math.random() + 1 ;
-        when(item.getSellerId()).thenReturn((int)Math.random());
+        int numberMoreThanZero = (int) Math.random() + 1;
+        when(item.getSellerId()).thenReturn((int) Math.random());
         when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
         when(item.getAuctionStartTime()).thenReturn(Timestamp.valueOf(dummyStartTime));
         when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));
@@ -119,7 +119,7 @@ public class ItemResourceTest {
     @Test
     public void testPostingItemWithInvalidAuctionEndTime() {
         String dummyEndTime = "2016-01-01 11:11:11";
-        int numberMoreThanZero = (int)Math.random() + 1 ;
+        int numberMoreThanZero = (int) Math.random() + 1;
         when(item.getSellerId()).thenReturn(rand.nextInt());
         when(item.getMinBidAmount()).thenReturn(numberMoreThanZero);
         when(item.getAuctionEndTime()).thenReturn(Timestamp.valueOf(dummyEndTime));

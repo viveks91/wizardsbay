@@ -20,8 +20,8 @@ public interface FeedbackDAO {
     /**
      * Creates a feedback given the userId of the user to leave feedback for and the description.
      *
-     * @param userId       userId of the user to leave feedback for
-     * @param rating       rating for the feedback
+     * @param userId              userId of the user to leave feedback for
+     * @param rating              rating for the feedback
      * @param feedbackDescription the body of the feedback, the description
      */
     @SqlQuery("insert into feedback (user_id, rating, feedback_description) values (:userId, :rating, :feedbackDescription) RETURNING *")

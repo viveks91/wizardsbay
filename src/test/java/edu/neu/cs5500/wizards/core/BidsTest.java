@@ -126,5 +126,5 @@ public class BidsTest {
         Assert.assertEquals(b3.hashCode(), b4.hashCode());
         Assert.assertNotEquals(b1.hashCode(), b2.hashCode());
     }
-    
+
 }

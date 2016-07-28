@@ -68,5 +68,5 @@ public class BidResourceTest {
         //> logic needed
         //1. Can only delete bid if admin or if user who created the bid?
     }
-    
+
 }

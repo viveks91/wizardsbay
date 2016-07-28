@@ -73,7 +73,8 @@ public interface UserDAO {
 
     /**
      * Returns all users who participated in a particular item's auction
-     *      *
+     * *
+     *
      * @return a list of users
      */
     @SqlQuery("select users.* from bids LEFT OUTER JOIN users on (bids.bidder_id = users.id) where bids.item_id = :itemId")

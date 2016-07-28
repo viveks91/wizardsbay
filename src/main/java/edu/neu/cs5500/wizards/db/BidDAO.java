@@ -22,7 +22,7 @@ public interface BidDAO {
      * not higher than the highest bid amount for the given item, the bid will not be created.
      *
      * @param itemId    the id of the item to bid on
-     * @param bidderId    the id of the user bidding on the item
+     * @param bidderId  the id of the user bidding on the item
      * @param bidAmount the bid amount
      */
     @SqlQuery("insert into bids (item_id, bidder_id, bid_amount) values (:itemId, :bidderId, :bidAmount) RETURNING *")

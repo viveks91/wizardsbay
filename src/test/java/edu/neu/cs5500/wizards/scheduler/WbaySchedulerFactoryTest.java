@@ -9,6 +9,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class WbaySchedulerFactoryTest {
         assertEquals(WbaySchedulerFactory.class, wbaySchedulerFactory.getClass());
     }
 
-    /*  Unstable tests!
+    /*
     @Test
     public void testGetScheduler() throws Exception {
         when(stdSchedulerFactory.getScheduler()).thenReturn(scheduler);
