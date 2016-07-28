@@ -28,10 +28,6 @@
           <version>2.7</version>
         </plugin>
         <plugin>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <version>1.4.1</version>
-        </plugin>
-        <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.3</version>
         </plugin>
@@ -58,22 +54,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <DependencyConvergence />
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
@@ -146,10 +126,6 @@
           <groupId>org.mockito</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>objenesis</artifactId>
-          <groupId>org.objenesis</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>assertj-core</artifactId>
           <groupId>org.assertj</groupId>
         </exclusion>
@@ -208,6 +184,22 @@
         <exclusion>
           <artifactId>asm-debug-all</artifactId>
           <groupId>org.ow2.asm</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.kislayverma.rulette</groupId>
+      <artifactId>rulette-rest</artifactId>
+      <version>1.2.0-SNAPSHOT</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>rulette-core</artifactId>
+          <groupId>com.github.kislayverma.rulette</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>RestExpress</artifactId>
+          <groupId>com.strategicgains</groupId>
         </exclusion>
       </exclusions>
     </dependency>
