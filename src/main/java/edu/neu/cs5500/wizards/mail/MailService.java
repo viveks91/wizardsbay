@@ -5,7 +5,6 @@ import edu.neu.cs5500.wizards.core.User;
 import net.sargue.mailgun.Configuration;
 import net.sargue.mailgun.Mail;
 import net.sargue.mailgun.content.Body;
-import net.sargue.mailgun.content.ContentConverter;
 
 /**
  * Created by amala on 24/07/16.
@@ -37,7 +36,7 @@ public class MailService {
                 .p("You were the highest bidder for this auction.")
                 .br()
                 .h4(item.getItemName())
-                .p("Final price: " + item.getMinBidAmount())
+                .p("Final price: $" + item.getMinBidAmount())
                 .p("Item description" + item.getItemDescription())
                 .br()
                 .p("Please sign into WizardsBay and confirm your purchase as soon as possible.")
@@ -65,7 +64,7 @@ public class MailService {
                 .h3("Sorry, you have not won the auction this time.")
                 .br()
                 .h4(item.getItemName())
-                .p("Final price: " + item.getMinBidAmount())
+                .p("Final price: $" + item.getMinBidAmount())
                 .p("Item description: " + item.getItemDescription())
                 .br()
                 .p("Continue bidding on items and better luck next time!")
@@ -93,7 +92,7 @@ public class MailService {
                 .p("This is a confirmation email for your posting the following item:")
                 .br()
                 .h4(item.getItemName())
-                .p("Starting price: " + item.getMinBidAmount())
+                .p("Starting price: $" + item.getMinBidAmount())
                 .p("Ending time of the auction: " + item.getAuctionEndTime().toString())
                 .p("Item description: " + item.getItemDescription())
                 .br()
@@ -123,7 +122,7 @@ public class MailService {
                     .p("Sorry, there were no bids made on your item. ")
                     .br()
                     .h4(item.getItemName())
-                    .p("Starting price: " + item.getMinBidAmount())
+                    .p("Starting price: $" + item.getMinBidAmount())
                     .p("Item description: " + item.getItemDescription())
                     .br()
                     .h4("You may re-list the item on WizardsBay as soon as you like.")
@@ -137,7 +136,7 @@ public class MailService {
                     .p("This is a confirmation email for the successful sale of the following item:")
                     .br()
                     .h4(item.getItemName())
-                    .p("Final price: " + item.getMinBidAmount())
+                    .p("Final price: $" + item.getMinBidAmount())
                     .p("Buyer username: " + item.getSellerUsername())
                     .p("Item description: " + item.getItemDescription())
                     .br()
