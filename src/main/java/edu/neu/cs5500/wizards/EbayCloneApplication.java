@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static org.quartz.JobBuilder.newJob;
-
 public class EbayCloneApplication extends Application<ServiceConfiguration> {
     public static void main(String[] args) throws Exception {
         new EbayCloneApplication().run(args);

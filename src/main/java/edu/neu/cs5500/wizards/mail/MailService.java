@@ -5,7 +5,6 @@ import edu.neu.cs5500.wizards.core.User;
 import net.sargue.mailgun.Configuration;
 import net.sargue.mailgun.Mail;
 import net.sargue.mailgun.content.Body;
-import net.sargue.mailgun.content.ContentConverter;
 
 /**
  * Created by amala on 24/07/16.

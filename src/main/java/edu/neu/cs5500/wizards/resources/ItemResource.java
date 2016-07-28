@@ -12,7 +12,7 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.*;
 import org.eclipse.jetty.http.HttpStatus;
-import org.quartz.*;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
-
-import static org.quartz.JobBuilder.newJob;
 
 @Path("/item")
 @Api(value = "/item", description = "Operations involving items")

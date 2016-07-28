@@ -1,9 +1,7 @@
 package edu.neu.cs5500.wizards.scheduler.jobs;
 
-import edu.neu.cs5500.wizards.core.Bid;
 import edu.neu.cs5500.wizards.core.Item;
 import edu.neu.cs5500.wizards.core.User;
-import edu.neu.cs5500.wizards.db.BidDAO;
 import edu.neu.cs5500.wizards.db.ItemDAO;
 import edu.neu.cs5500.wizards.db.UserDAO;
 import edu.neu.cs5500.wizards.db.jdbi.JdbiManager;
@@ -16,7 +14,6 @@ import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Messenger implements Job {

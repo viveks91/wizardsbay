@@ -2,7 +2,6 @@ package edu.neu.cs5500.wizards.db.jdbi;
 
 
 import edu.neu.cs5500.wizards.ServiceConfiguration;
-import edu.neu.cs5500.wizards.resources.ItemResource;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
