@@ -8,6 +8,7 @@ import net.sargue.mailgun.content.Body;
 
 /**
  * Created by amala on 24/07/16.
+ * for Mail service
  */
 public class MailService {
     private static final String MAILGUN_DOMAIN = "wizardsbay.tixter.us";
