@@ -60,6 +60,7 @@ public class ItemResourceTest {
     Logger logger;
 
     Random rand = new Random();
+    static final Timestamp THE_FUTURE = new Timestamp(System.currentTimeMillis() + 1000000L);
 
     // This function gets invoked before each of the tests below
     @Before
@@ -149,6 +150,17 @@ public class ItemResourceTest {
         assertEquals(mockResult, response.getEntity());
     }
 
+
+    @Test
+    public void testGetOneInvalidItem() {
+        when(itemDAO.findItemById(anyInt())).thenReturn(null);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+
+        Response response = itemResource.getOne(rand.nextInt());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+        assertEquals("Error: Item not found", response.getEntity());
+    }
+
     @Test
     public void testFetchingItemById() {
         when(itemDAO.findItemById(anyInt())).thenReturn(item);
@@ -165,6 +177,7 @@ public class ItemResourceTest {
 
         Response response = itemResource.delete(rand.nextInt(), auth_user);
         assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
+        assertEquals(null, response.getEntity());
     }
 
     @Test
@@ -280,6 +293,9 @@ public class ItemResourceTest {
         ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
         Item randItem = new Item();
+        randItem.setAuctionEndTime(THE_FUTURE);
+        when(item2.getAuctionEndTime()).thenReturn(THE_FUTURE);
+        when(itemDAO.findItemById(anyInt())).thenReturn(item2);
 
         Response response = itemResource.update(randomInt, randItem, auth_user);
         assertEquals(HttpStatus.OK_200, response.getStatus());

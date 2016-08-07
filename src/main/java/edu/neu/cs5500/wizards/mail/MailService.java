@@ -110,13 +110,13 @@ public class MailService {
      * @param user the seller of the item
      * @param item the item whose auction has ended
      */
-    public void notifySeller(User user, Item item) {
+    public void notifySeller(User user, Item item, User buyer) {
         if (item == null || user == null) {
             return;
         }
         String subject = "The auction for " + item.getItemName() + " has ended";
         Body body;
-        if (item.getBuyerId() == 0) { // Not sold
+        if (buyer == null) { // Not sold
             body = Body.builder()
                     .h3("The auction on your item has ended.")
                     .p("Sorry, there were no bids made on your item. ")
@@ -137,7 +137,7 @@ public class MailService {
                     .br()
                     .h4(item.getItemName())
                     .p("Final price: $" + item.getMinBidAmount())
-                    .p("Buyer username: " + item.getSellerUsername())
+                    .p("Buyer username: " + buyer.getUsername())
                     .p("Item description: " + item.getItemDescription())
                     .br()
                     .p("You should be receiving your payment soon.")

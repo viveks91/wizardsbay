@@ -205,6 +205,18 @@ public class UserResourceTest {
     }
 
     @Test
+    public void testUpdateInvalidShortPassword() {
+        String randomString = RandomStringUtils.random(5);
+        when(user.getUsername()).thenReturn(randomString);
+        when(user.getPassword()).thenReturn(RandomStringUtils.random(2));
+        UserResource userResource = new UserResource(userDAO, itemDAO);
+
+        Response response = userResource.update(randomString, user, user);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Error: New password must be at least 3 characters", response.getEntity());
+    }
+
+    @Test
     public void testSuccessfulUpdate() {
         String randomString = RandomStringUtils.random(5);
         when(user.getUsername()).thenReturn(randomString);
