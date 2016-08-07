@@ -33,8 +33,7 @@ public class MailService {
         }
         String subject = "You have won the auction for - " + item.getItemName() + "!";
         Body body = Body.builder()
-                .h3("You have successfully won " + item.getItemName() + " on WizardsBay!")
-                .p("You were the highest bidder for this auction.")
+                .h3("Congratulations! You were the highest bidder for " + item.getItemName() + " on WizardsBay!")
                 .br()
                 .h4(item.getItemName())
                 .p("Final price: $" + item.getMinBidAmount())
@@ -62,8 +61,7 @@ public class MailService {
         }
         String subject = "The auction for " + item.getItemName() + " has ended";
         Body body = Body.builder()
-                .h3("Sorry, you have not won the auction this time.")
-                .br()
+                .h3("Sorry, you did not win the auction for:")
                 .h4(item.getItemName())
                 .p("Final price: $" + item.getMinBidAmount())
                 .p("Item description: " + item.getItemDescription())
@@ -89,9 +87,7 @@ public class MailService {
         }
         String subject = "Thank you for your listing on WizardsBay - " + item.getItemName();
         Body body = Body.builder()
-                .h3("Item " + item.getItemName() + " has been successfully listed on WizardsBay")
-                .p("This is a confirmation email for your posting the following item:")
-                .br()
+                .h3("Item " + item.getItemName() + " has been successfully listed on WizardsBay\n")
                 .h4(item.getItemName())
                 .p("Starting price: $" + item.getMinBidAmount())
                 .p("Ending time of the auction: " + item.getAuctionEndTime().toString())
@@ -130,11 +126,9 @@ public class MailService {
                     .p("Thank you for your service, ")
                     .p("The WizardsBay Team")
                     .build();
-
         } else {
             body = Body.builder()
-                    .h3("Congratulations on your sale of: " + item.getItemName())
-                    .p("This is a confirmation email for the successful sale of the following item:")
+                    .h3("Congratulations on the sale of your item : " + item.getItemName())
                     .br()
                     .h4(item.getItemName())
                     .p("Final price: $" + item.getMinBidAmount())
