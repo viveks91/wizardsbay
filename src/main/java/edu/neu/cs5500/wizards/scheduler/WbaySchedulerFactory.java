@@ -46,6 +46,7 @@ public final class WbaySchedulerFactory {
     public void shutdownScheduler() throws SchedulerException {
         try {
             this.scheduler.shutdown();
+            LOGGER.info("Scheduler shutdown");
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler failed to shutdown", e);
             throw e;
