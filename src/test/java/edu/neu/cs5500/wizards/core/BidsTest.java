@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  */
 public class BidsTest {
 
-    Bid b1, b2, b3, b4, b5;
+    Bid b1, b2, b3, b4, b5, test1;
 
     @Before
     public void setUp() throws Exception {
@@ -41,6 +41,14 @@ public class BidsTest {
 
         b4 = b3;
         b5 = b3;
+    
+        test1 = new Bid();
+        test1.setId(1);
+        test1.setBidderId(2);
+        test1.setBidderUsername("scott");
+        test1.setItemId(5);
+        test1.setBidAmount(54);
+        test1.setBidTime(new Timestamp(998325689907234L));
     }
 
     @Test
@@ -115,6 +123,18 @@ public class BidsTest {
         Assert.assertNotEquals(b1, b2);
         Assert.assertTrue(b3.equals(b4) && b4.equals(b5));
         Assert.assertNotEquals(null, b1);
+        Assert.assertEquals(test1, b1);
+
+        test1.setBidAmount(33);
+        Assert.assertNotEquals(test1, b1);
+        test1.setBidTime(new Timestamp(1L));
+        Assert.assertNotEquals(test1, b1);
+        test1.setBidderUsername("not same");
+        Assert.assertNotEquals(test1, b1);
+        test1.setBidderId(99);
+        Assert.assertNotEquals(test1, b1);
+        test1.setItemId(99);
+        Assert.assertNotEquals(test1, b1);
     }
 
 

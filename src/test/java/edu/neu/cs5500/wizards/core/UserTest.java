@@ -9,7 +9,7 @@ import org.junit.Test;
  */
 public class UserTest {
 
-    User u1, u2, u3, u4, u5;
+    User u1, u2, u3, u4, u5, test1;
 
     @Before
     public void setUp() throws Exception {
@@ -42,6 +42,15 @@ public class UserTest {
 
         u4 = u3;
         u5 = u3;
+    
+        test1 = new User();
+        test1.setId(1);
+        test1.setUsername("bobbybrown");
+        test1.setPassword("securePassword");
+        test1.setFirstName("Robert");
+        test1.setLastName("Brown");
+        test1.setAddress("45 main st seattle, wa");
+        test1.setEmail("bobby231@yahoo.com");
     }
 
     @Test
@@ -69,6 +78,11 @@ public class UserTest {
     @Test
     public void testGetUsername() throws Exception {
         Assert.assertEquals(u2.getUsername(), "skoobydoo");
+    }
+
+    @Test
+    public void testGetName() throws Exception {
+        Assert.assertEquals(u2.getName(), "skoobydoo");
     }
 
     @Test
@@ -127,6 +141,20 @@ public class UserTest {
         Assert.assertNotEquals(u1, u2);
         Assert.assertTrue(u3.equals(u4) && u4.equals(u5));
         Assert.assertNotEquals(null, u1);
+        Assert.assertEquals(u1, test1);
+
+        test1.setEmail("not same");
+        Assert.assertNotEquals(u1, test1);
+        test1.setAddress("not same");
+        Assert.assertNotEquals(u1, test1);
+        test1.setLastName("not same");
+        Assert.assertNotEquals(u1, test1);
+        test1.setFirstName("not same");
+        Assert.assertNotEquals(u1, test1);
+        test1.setPassword("not same");
+        Assert.assertNotEquals(u1, test1);
+        test1.setUsername("not same");
+        Assert.assertNotEquals(u1, test1);
     }
 
     @Test

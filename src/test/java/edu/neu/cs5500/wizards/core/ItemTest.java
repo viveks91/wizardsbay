@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  */
 public class ItemTest {
 
-    Item i1, i2, i3, i4, i5;
+    Item i1, i2, i3, i4, i5, test1;
 
     @Before
     public void setUp() throws Exception {
@@ -54,6 +54,18 @@ public class ItemTest {
 
         i4 = i3;
         i5 = i3;
+    
+        test1 = new Item();
+        test1.setId(1);
+        test1.setItemName("Black shoes size 9");
+        test1.setItemDescription("New black shoes, good for work");
+        test1.setSellerId(3);
+        test1.setSellerUsername("stacy9");
+        test1.setBuyerId(4);
+        test1.setBuyerUsername("george42");
+        test1.setAuctionStartTime(new Timestamp(34555522L));
+        test1.setAuctionEndTime(new Timestamp(999927743L));
+        test1.setMinBidAmount(55);
     }
 
     @Test
@@ -172,6 +184,25 @@ public class ItemTest {
         Assert.assertNotEquals(i1, i2);
         Assert.assertTrue(i3.equals(i4) && i4.equals(i5));
         Assert.assertNotEquals(null, i1);
+        Assert.assertEquals(i1, test1);
+
+        test1.setMinBidAmount(33);
+        Assert.assertNotEquals(test1, i1);
+        test1.setAuctionEndTime(new Timestamp(1L));
+        Assert.assertNotEquals(test1, i1);
+        test1.setAuctionStartTime(new Timestamp(1L));
+        Assert.assertNotEquals(test1, i1);
+        test1.setBuyerUsername("not same");
+        Assert.assertNotEquals(test1, i1);
+        test1.setBuyerId(1);
+        Assert.assertNotEquals(test1, i1);
+        test1.setSellerUsername("not same");
+        Assert.assertNotEquals(test1, i1);
+        test1.setSellerId(1);
+        Assert.assertNotEquals(test1, i1);
+        test1.setItemDescription("not same");
+        Assert.assertNotEquals(test1, i1);
+        test1.setItemName("not same");
     }
 
     @Test
