@@ -184,6 +184,7 @@ public class UserResource {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
+        user.setEmail(null);
         user.setPassword(null);
         return Response.ok(user).build();
     }
