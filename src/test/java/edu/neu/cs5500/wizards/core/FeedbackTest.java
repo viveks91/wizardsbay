@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  */
 public class FeedbackTest {
 
-    Feedback f1, f2, f3, f4, f5;
+    Feedback f1, f2, f3, f4, f5, test1;
     Timestamp t1;
 
     @Before
@@ -43,6 +43,14 @@ public class FeedbackTest {
 
         f4 = f3;
         f5 = f3;
+        
+        test1 = new Feedback();
+        test1.setId(1);
+        test1.setUserId(2);
+        test1.setRating(5);
+        test1.setUsername("Susanna9");
+        test1.setFeedbackDescription("Great seller!");
+        test1.setTime(t1);
     }
 
     @Test
@@ -117,6 +125,18 @@ public class FeedbackTest {
         Assert.assertNotEquals(f1, f2);
         Assert.assertTrue(f3.equals(f4) && f4.equals(f5));
         Assert.assertNotEquals(null, f1);
+        Assert.assertEquals(test1, f1);
+
+        test1.setTime(new Timestamp(1L));
+        Assert.assertNotEquals(test1, f1);
+        test1.setFeedbackDescription("not same");
+        Assert.assertNotEquals(test1, f1);
+        test1.setRating(1);
+        Assert.assertNotEquals(test1, f1);
+        test1.setUsername("not same");
+        Assert.assertNotEquals(test1, f1);
+        test1.setId(99);
+        Assert.assertNotEquals(test1, f1);
     }
 
     @Test

@@ -214,7 +214,7 @@ public class BidResource {
     /**
      * Retrieve the highest current bid for an item given the item's id.
      *
-     * @param itemId
+     * @param itemId the id of the item
      * @return Response containing highest bid for a specific item
      */
     @GET

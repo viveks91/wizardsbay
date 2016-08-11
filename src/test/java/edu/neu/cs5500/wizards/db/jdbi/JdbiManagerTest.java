@@ -48,6 +48,8 @@ public class JdbiManagerTest {
     public void testGetInstance() {
         JdbiManager jdbiManager = JdbiManager.getInstance(serviceConfiguration, environment);
         assertEquals(JdbiManager.class, jdbiManager.getClass());
+        JdbiManager jdbiManager2 = JdbiManager.getInstance();
+        assertEquals(JdbiManager.class, jdbiManager2.getClass());
     }
 
     @Test

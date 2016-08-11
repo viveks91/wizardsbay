@@ -43,15 +43,6 @@ public class User implements Principal {
     public User() {
     }
 
-    public User(String username, String password, String firstName, String lastName, String address, String email) {
-        this.username = username;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
-        this.email = email;
-    }
-
     @JsonIgnore
     public Integer getId() {
         return id;

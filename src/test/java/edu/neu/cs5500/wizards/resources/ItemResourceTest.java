@@ -60,6 +60,7 @@ public class ItemResourceTest {
     Logger logger;
 
     Random rand = new Random();
+    Timestamp THE_FUTURE;
 
     // This function gets invoked before each of the tests below
     @Before
@@ -75,6 +76,8 @@ public class ItemResourceTest {
         PowerMockito.whenNew(MailService.class).withAnyArguments().thenReturn(mailService);
         PowerMockito.whenNew(SchedulingAssistant.class).withAnyArguments().thenReturn(schedulingAssistant);
         PowerMockito.when(LoggerFactory.getLogger(any(Class.class))).thenReturn(logger);
+
+        THE_FUTURE = new Timestamp(System.currentTimeMillis() + 1000000L);
     }
 
     @Test
@@ -149,6 +152,17 @@ public class ItemResourceTest {
         assertEquals(mockResult, response.getEntity());
     }
 
+
+    @Test
+    public void testGetOneInvalidItem() {
+        when(itemDAO.findItemById(anyInt())).thenReturn(null);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
+
+        Response response = itemResource.getOne(rand.nextInt());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+        assertEquals("Error: Item not found", response.getEntity());
+    }
+
     @Test
     public void testFetchingItemById() {
         when(itemDAO.findItemById(anyInt())).thenReturn(item);
@@ -165,6 +179,7 @@ public class ItemResourceTest {
 
         Response response = itemResource.delete(rand.nextInt(), auth_user);
         assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
+        assertEquals(null, response.getEntity());
     }
 
     @Test
@@ -276,13 +291,21 @@ public class ItemResourceTest {
 
     @Test
     public void testSuccessfulUpdate() {
-        when(itemDAO.findItemById(anyInt())).thenReturn(item);
-        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
         int randomInt = rand.nextInt();
+        String randString = RandomStringUtils.random(5);
         Item randItem = new Item();
+        randItem.setAuctionEndTime(THE_FUTURE);
+        randItem.setItemName(randString);
+        randItem.setItemDescription(randString);
+        randItem.setMinBidAmount(33);
+        when(item2.getAuctionEndTime()).thenReturn(THE_FUTURE);
+        when(item2.getMinBidAmount()).thenReturn(32);
+        when(itemDAO.findItemById(anyInt())).thenReturn(item2);
+        ItemResource itemResource = new ItemResource(itemDAO, userDAO);
 
         Response response = itemResource.update(randomInt, randItem, auth_user);
         assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(item2, response.getEntity());
     }
 
     @Test
