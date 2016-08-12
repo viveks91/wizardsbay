@@ -35,6 +35,7 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 ## Running The Application
 
 * To package the application
+
         mvn package
 
 * To setup the postgres database
