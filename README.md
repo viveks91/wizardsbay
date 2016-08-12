@@ -1,4 +1,3 @@
-
 # Wizardsbay
 
 Wizardsbay is a clone of ebay web services. It provides basic functionality such as creating an account, posting items, placing a bid.
@@ -117,5 +116,6 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 
 * Finds feedback by it's id  
   GET /user/{username}/feedback/{id} 
+
 
 
