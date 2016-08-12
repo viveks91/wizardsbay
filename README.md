@@ -1,4 +1,3 @@
-
 # Wizardsbay
 
 Wizardsbay is a clone of ebay web services. It provides basic functionality such as creating an account, posting items, placing a bid.
@@ -24,7 +23,7 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 +	Web Host: __Heroku__
 +	Database: __Postgres__
 +	Dropwizard framework
-+   BD control: __Liquibase Migrations__
++       DB control: __Liquibase Migrations__
 +	Jackson JSON/Java parser Library
 +	Dependency manager: __Maven__
 +	Testing Framework: __Junit__
@@ -36,7 +35,6 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 ## Running The Application
 
 * To package the application
-
         mvn package
 
 * To setup the postgres database
@@ -116,5 +114,4 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
   DELETE /user/{username}/feedback/{feedbackId} 
 
 * Finds feedback by it's id  
-  GET /user/{username}/feedback/{id} 
-
+  GET /user/{username}/feedback/{id}
