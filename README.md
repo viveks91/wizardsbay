@@ -29,7 +29,7 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 +	Testing Framework: __Junit__
 +	Continuous Integration: __Codeship__
 +	Documentation: __Swagger__
-+	Email plugin: Mailgun plugin__
++	Email plugin: __Mailgun plugin__
 +	Scheduler: __Quartz__
 
 ## End points
