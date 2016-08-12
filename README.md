@@ -1,6 +1,6 @@
 # Wizardsbay
 
-Wizardsbay is a clone of ebay web services. It provides basic functionality such as creating an account, posting items, placing a bid.
+Wizardsbay is a clone of ebay web services. It provides basic functionality such as creating an account, posting items, and placing a bid.
 
 * Application URL : https://wizards-ebayclone.herokuapp.com/wizardsbay
 * Documentation : [https://wizards-ebayclone.herokuapp.com/wizardsbay/swagger](https://wizards-ebayclone.herokuapp.com/wizardsbay/swagger "Swagger")
