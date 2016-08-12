@@ -1,52 +1,120 @@
-# Introduction
 
-The Dropwizard example application was developed to, as its name implies, provide examples of some of the features
-present in Dropwizard.
+# Wizardsbay
 
-# Overview
+Wizardsbay is a clone of ebay web services. It provides basic functionality such as creating an account, posting items, placing a bid.
 
-Included with this application is an example of the optional DB API module. The examples provided illustrate a few of
-the features available in [Hibernate](http://hibernate.org/), along with demonstrating how these are used from within
-Dropwizard.
+* Application URL : https://wizards-ebayclone.herokuapp.com/wizardsbay
+* Documentation : [https://wizards-ebayclone.herokuapp.com/wizardsbay/swagger](https://wizards-ebayclone.herokuapp.com/wizardsbay/swagger "Swagger")
 
-This database example is comprised of the following classes:
+## Outline
 
-* The `PersonDAO` illustrates using the Data Access Object pattern with assisting of Hibernate.
+-	Store information about users
+  *	Allow user to authenticate
+-	Store information about items
+-	Store/track information about bids, auctions
+  *	Make bids
+-	View/search for items that are available
+-	Record and present feedback between buyers and sellers
+-	Access & modify stored information via an API of some sort (in JSON format)
+-	Email notification for customers
+-	Implement testing to ensure everything is working together as expected
 
-* The `Person` illustrates mapping of Java classes to database tables with assisting of JPA annotations.
+## More for nerds
 
-* All the JPQL statements for use in the `PersonDAO` are located in the `Person` class.
++	Web Host: __Heroku__
++	Database: __Postgres__
++	Dropwizard framework
++   BD control: __Liquibase Migrations__
++	Jackson JSON/Java parser Library
++	Dependency manager: __Maven__
++	Testing Framework: __Junit__
++	Continuous Integration: __Codeship__
++	Documentation: __Swagger__
++	Email plugin: __Mailgun plugin__
++	Scheduler: __Quartz__
 
-* `migrations.xml` illustrates the usage of `dropwizard-migrations` which can create your database prior to running
-your application for the first time.
+## Running The Application
 
-* The `PersonResource` and `PeopleResource` are the REST resource which use the PersonDAO to retrieve data from the database, note the injection
-of the PersonDAO in their constructors.
-
-As with all the modules the db example is wired up in the `initialize` function of the `HelloWorldApplication`.
-
-# Running The Application
-
-To test the example application run the following commands.
-
-* To package the example run.
+* To package the application
 
         mvn package
 
-* To setup the h2 database run.
+* To setup the postgres database
 
-        java -jar target/dropwizard-example-0.9.2-SNAPSHOT.jar db migrate example.yml
+        java -jar target/ebay-clone-0.9.2.jar db migrate configuration.yml
 
 * To run the server run.
 
-        java -jar target/dropwizard-example-0.9.2-SNAPSHOT.jar server example.yml
+        java -jar target/ebay-clone-0.9.2.jar server configuration.yml
 
-* To hit the Hello World example (hit refresh a few times).
 
-	http://localhost:8080/hello-world
+## End points
 
-* To post data into the application.
+### Item
 
-	curl -H "Content-Type: application/json" -X POST -d '{"fullName":"Other Person","jobTitle":"Other Title"}' http://localhost:8080/people
-	
-	open http://localhost:8080/people
+* Creates an item in the database given that item  
+  POST /item  
+
+* Finds all active items in the database  
+  GET /item/active 
+
+* Finds all matching items in the database  
+  GET /item/search/{key} 
+
+* Finds an item by id  
+  GET /item/{id} 
+
+* Updates an item in the database given the item with updated information  
+  PUT /item/{id}  
+
+* Deletes an item from the database by ID  
+  DELETE /item/{itemId} 
+
+### Bids
+
+* Creates an bid in the database given the bid  
+  POST /item/{itemId}/bids   
+
+* Finds the current highest bid for an item by the item id  
+  GET /item/{itemId}/bids/highest 
+
+* Finds all bids for a specified item given the item id  
+  GET /item/{itemId}/bids/history 
+
+* Deletes a bid by it's id  
+  DELETE /item/{itemId}/bids/{bidId} 
+
+* Finds a bid by it's id  
+  GET /item/{itemId}/bids/{id} 
+
+### User
+
+* Creates a user in the database given the user  
+  POST /user    
+
+* Deletes a specified user from the database by username  
+  DELETE /user/{username} 
+
+* Finds and returns a user from the database by username  
+  GET /user/{username} 
+
+* Updates a certain user with new information given the user with updated information  
+  PUT /user/{username}   
+
+* Finds all items linked to the specified user by username  
+  GET /user/{username}/items 
+
+### Feedback
+
+* Creates a feedback in the database for specified user given the feedback  
+  POST /user/{username}/feedback  
+
+* Finds all feedback for a user by username  
+  GET /user/{username}/feedback/all
+
+* Deletes a feedback from the database by id  
+  DELETE /user/{username}/feedback/{feedbackId} 
+
+* Finds feedback by it's id  
+  GET /user/{username}/feedback/{id} 
+
