@@ -42,7 +42,7 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 
         java -jar target/ebay-clone-0.9.2.jar db migrate configuration.yml
 
-* To run the server run.
+* To run the server
 
         java -jar target/ebay-clone-0.9.2.jar server configuration.yml
 
