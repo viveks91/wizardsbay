@@ -24,6 +24,7 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 +	Web Host: __Heroku__
 +	Database: __Postgres__
 +	Dropwizard framework
++	DB control: __Liquibase Migrations__
 +	Jackson JSON/Java parser Library
 +	Dependency manager: __Maven__
 +	Testing Framework: __Junit__
@@ -31,6 +32,21 @@ Wizardsbay is a clone of ebay web services. It provides basic functionality such
 +	Documentation: __Swagger__
 +	Email plugin: __Mailgun plugin__
 +	Scheduler: __Quartz__
+
+## Running The Application
+
+* To package the application
+
+        mvn package
+
+* To setup the postgres database
+
+        java -jar target/ebay-clone-0.9.2.jar db migrate configuration.yml
+
+* To run the server
+
+        java -jar target/ebay-clone-0.9.2.jar server configuration.yml
+
 
 ## End points
 
