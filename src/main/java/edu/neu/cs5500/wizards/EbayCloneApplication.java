@@ -74,6 +74,7 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
 
     @Override
     public void run(ServiceConfiguration configuration, Environment environment) throws ClassNotFoundException, SchedulerException {
+
         // Get jdbi instance
         JdbiManager jdbiManager = JdbiManager.getInstance(configuration, environment);
         final DBI jdbiInstance = jdbiManager.getJdbi();
