@@ -42,5 +42,4 @@ public class JdbiManager {
     public static JdbiManager getInstance() {
         return JdbiManager.instance;
     }
-
 }
