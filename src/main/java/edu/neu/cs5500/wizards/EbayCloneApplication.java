@@ -122,3 +122,4 @@ public class EbayCloneApplication extends Application<ServiceConfiguration> {
         }
     }
 }
+
